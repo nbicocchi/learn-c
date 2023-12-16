@@ -1,4 +1,4 @@
-# Programmazione di Sistema - DIEF/UNIMORE
+## Esercizi C (fork(), exec(), wait())
 Le system call fork(), exec(), e wait() per generare e sincronizzare processi paralleli. Utilizzo esclusivo e condiviso di file descriptors.
 
 Note: per utilizzare questa guida con vim utilizzare i seguenti due comandi 
