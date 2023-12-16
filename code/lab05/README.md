@@ -1,6 +1,4 @@
-﻿# Programmazione di Sistema - DIEF/UNIMORE
-
-## Esercizi C (File ed integrazione con la shell)
+﻿## Esercizi C (File ed integrazione con la shell)
 
 Si propone un gruppo di esercizi per imparare ad utilizzare l'accesso ai file e l'integrazione del C con la shell. In
 particolare, viene proposta una serie di implementazioni semplificate di famosi comandi shell.
