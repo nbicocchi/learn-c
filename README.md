@@ -1,88 +1,19 @@
-# Programmazione di Sistema (DIEF, UNIMORE)
+# Learn C
 
-## Software Bash
-* [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-* [EndeavourOS](https://endeavouros.com/) 
-
-[Guida installazione EndeavourOS](EndeavourOS%20Installation/README.md)
-
-## Libri Bash
-* Garrels - Bash Guide for Beginners
-* Ramey, Fox - Bash reference manual
-
-## Video Bash
-* [YouTube Bash](https://www.youtube.com/watch?v=62-hJarauK4&list=PLhlcRDRHVUzR-5TKDC1VPMtyhEyyQ5uwy)
-
-## Tutorial, Esercizi Online Bash
-* https://www.tutorialspoint.com/unix/
-* https://explainshell.com/
-
-## Software C
+## Software
 * [CLion](https://www.jetbrains.com/clion/)
 
-## Libri C
-* Facchinetti, Larizza, Rubini - Programmare in C
+## Libri
+* **Facchinetti, Larizza, Rubini - Programmare in C**
 * Loosemore - The GNU C library reference manual
 
-## Tutorial, Esercizi Online C
+## Tutorial, Esercizi Online
 * https://pythontutor.com/
 * http://en.wikipedia.org/wiki/C_(programming_language)
 * http://en.wikipedia.org/wiki/C_syntax
 * http://en.wikibooks.org/wiki/C_Programming
 
-## Materiale didattico
-Una volta terminata l'installazione di EndeavourOS, aprire un terminale ed inserire i seguenti comandi. 
-
-```
-$ sudo pacman -Syy
-$ sudo pacman -S archlinux-keyring
-$ sudo pacman -Syyu
-$ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply nbicocchi
-$ ./install_scripts/install_script.sh --base-cli --base-gui --flatpak
-$ git clone https://github.com/nbicocchi/operatingsystemsbsc.git
-```
-
-Il materiale puo' essere aggiornato e/o corretto durante lo svolgimento del corso. Per scaricare la versione piu' recente, entrare nella cartella del materiale e digitare il comando seguente:
-
-```
-$ git pull 
-```
-In caso di errori, utilizzare invece i comandi sotto (tutte le modifiche locali al repository andranno perdute) oppure ri-clonare il repository.
-
-```
-$ git fetch --all
-$ git reset --hard origin/master
-```
-
-## Esame
-L'esame consiste in 2 esercizi (1x Bash, 1x C) che gli studenti sono tenuti a svolgere sul loro calcolatore (utilizzando le pagine man, in caso) spiegando al docente lo svolgimento. Esempi di esercizi si trovano nelle cartelle bash/code e c/code suddivisi per livello di difficoltà.
-
-## Moduli Bash
-[M1] Introduzione a Unix
-* Varianti e caratteristiche Unix 
-* Fondamenti per l'utilizzo pratico
-* Utenti e gruppi
-* Filesystem
-* Processi
-* Comandi rilevanti
-
-[M2] Bash Shell
-* Utilizzo interattivo
-* Ridirezione
-* Combinazione di comandi
-* Variabili
-* Espansioni
-
-[M3] Bash Scripting
-* Scrittura ed esecuzione
-* Costrutti condizionali
-* Costrutti iterativi
-* Funzioni
-* Trattamento argomenti avanzato (getopts)
-* Script multi-file
-* Buone pratiche
-
-## Moduli C
+## Moduli
 [M1] Introduzione al linguaggio C
 * Identificatori
 * Variabili
