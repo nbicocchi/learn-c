@@ -352,12 +352,14 @@ int main(void) {
 * Un puntatore è una variabile che contiene un indirizzo di memoria. Dal momento che gli indirizzi di memoria sono interi positivi, in pratica un puntatore è un numero intero senza segno
 * *Un puntatore non contiene il valore di una variabile tradizionale, ma l'indirizzo di una locazione di memoria in cui sono immagazzinati un numero congruo di bit per essere interpretati come il tipo indicato*
 * L'operatore **&** (si legge *l'indirizzo di*) e consente di conoscere l'indirizzo di una variabile
-* L'operatore **\*** (si legge *il valore di*) permette di accedere e/o modificare il valore contenuto all'indirizzo di memoria specificato da un puntatore
+* L'operatore * (si legge *il valore di*) permette di accedere e/o modificare il valore contenuto all'indirizzo di memoria specificato da un puntatore
 
 ```c
 int *p, num = 42;
+
 /* p memorizza indirizzo di num */
 p = &num
+        
 /* p viene utilizzato per modificare il valore di num */
 *p = 3
 ```
@@ -388,7 +390,10 @@ int main(){
     int *p;
 
     printf("%d\n", *p);
-    *p = 5; /* male! scrive in un'area imprecisata della memoria del processo */ 
+    
+    /* male! scrive in un'area imprecisata della memoria del processo */ 
+    *p = 5; 
+    
     printf("%d\n", *p);
 }
 ```
@@ -413,9 +418,8 @@ if (p) {
 
 # Array
 * Gli array permettono di memorizzare *in aree contigue di memoria* un numero fissato di elementi di tipo omogeneo
-(tutti dello stesso tipo)
 * E' possibile identificare univocamente tutti gli oggetti dell’array in modo sistematico tramite l’uso di indici numerici che, in un array di lunghezza N, vanno da 0 ad N-1
-* A seconda del numero di dimensioni dell'array (d), essi vengono chiamati vettori (d=1), matrici (d=2), o array multidimensionali (d>2)
+* A seconda del numero di dimensioni *(d)* dell'array, essi vengono chiamati vettori *(d=1)*, matrici *(d=2)*, o array multidimensionali *(d>2)*
 
 # Vettori
 * I vettori, o array monodimensionali, permettono di allocare un insieme di elementi dello stesso tipo in aree contigue di memoria
@@ -433,8 +437,8 @@ nome-tipo identificatore [ cardinalità ] ;
 int num[5];
 ```
 
-* L'identificatore associato al vettore è num
-* Ciascun elemento del vettore è di tipo int
+* L'identificatore associato al vettore è *num*
+* Ciascun elemento del vettore è di tipo *int*
 * I valori validi dell'indice sono limitati all'intervallo [0, 5-1]
 
 
@@ -442,15 +446,15 @@ int num[5];
 ![Array](./images/puntatore_vettore.avif)
 
 # Vettori
-* Gli elementi di un vettore vengono sempre memorizzati in  aree contigue della memoria. In questo modo l'indirizzo dell'elemento di indice i può essere ricavato con un semplice calcolo
-* Se *base* è l'indirizzo del primo elemento del vettore e *dim* la dimensione in byte di ciascun elemento, allora l'indirizzo *addr* dell'elemento di indice i è pari a: 
+* In virtù del fatto che gli elementi di un vettore vengono sempre memorizzati in  aree contigue di memoria, l'indirizzo dell'elemento di indice *i* può essere ricavato con:
 
 ```c  
 addr = base + i * dim
 ```
 
-* Considerando l'esempio precedente, essendo base uguale a 1024 e dim uguale 4, l'indirizzo dell'elemento di indice 2
-(num[2]) è 1024 + 2 * 4 = 1032
+Dove:
+* *base* è l'indirizzo del primo elemento del vettore
+* *dim* la dimensione di ciascun elemento
   
 # Nome del vettore e indirizzo
 * Il nome di un vettore è un *puntatore costante (non può essere modificato!)* il cui valore corrisponde all'indirizzo del primo elemento del vettore
@@ -537,11 +541,11 @@ i = sizeof(v)/sizeof(*v); /* 10: numero di elementi del vettore v */
 * Nella maggior parte dei casi, puntatori ed array possono essere utilizzati in modo intercambiabile. Esistono però alcune eccezioni:
 
 * Operatore *sizeof*
-  * sizeof(array) ritorna la quantità di memoria usata dall'array nel suo complesso
-  * sizeof(puntatore) ritorna la quantità di memoria usata dal puntatore stesso
+  * *sizeof(array)* ritorna la quantità di memoria usata dall'array nel suo complesso
+  * *sizeof(puntatore)* ritorna la quantità di memoria usata dal puntatore stesso
 * Operatore *&*
-  * &array è un alias di &array[0] e ritorna l'indirizzo del primo elemento dell'array
-  * &pointer ritorna l'indirizzo del puntatore stesso
+  * *&array* è un alias di &array[0] e ritorna l'indirizzo del primo elemento dell'array
+  * *&pointer* ritorna l'indirizzo del puntatore stesso
 
 # Array e puntatori
 
@@ -645,7 +649,7 @@ printf("%d %d %d\n", sizeof(c), sizeof(s), sizeof(v)); // Output: 1 4 2
 
 # printf
 
-* I un programma C, *printf()* è una delle funzioni centrali per gestire l'output su console.
+* In un programma C, *printf()* è una delle funzioni centrali per gestire l'output su console.
 * *printf()* accetta una stringa che specifica il formato delle variabili e le variabili stesse (il numero degli specificatori deve corrispondere al numero delle variabili).
 
 ```c
