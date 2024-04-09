@@ -1,18 +1,6 @@
----
-date: Aprile 2023
-author: Dr. Nicola Bicocchi
-institute: DIEF/UNIMORE
-title: File
-subtitle: Corso di Programmazione di Sistema
-section-titles: true
-theme: Madrid
-colortheme: crane
-fontsize: 10pt
-aspectratio: 1610
-lang: it
----
+# File
 
-# File binari e file di testo
+## File binari e file di testo
 
 File di testo:
 

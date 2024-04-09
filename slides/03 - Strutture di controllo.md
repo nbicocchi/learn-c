@@ -1,17 +1,3 @@
----
-date: Aprile 2023
-author: Dr. Nicola Bicocchi
-institute: DIEF/UNIMORE
-title: Istruzioni e strutture di controllo
-subtitle: Corso di Programmazione di Sistema
-section-titles: true
-theme: Madrid
-colortheme: crane
-fontsize: 10pt
-aspectratio: 1610
-lang: it
----
-
 # Strutture di controllo
 Il paradigma di programmazione strutturata consente di dirigere il flusso delle istruzioni a tempo di esecuzione, in base allo stato del programma.
 

@@ -1,18 +1,6 @@
----
-date: Aprile 2023
-author: Dr. Nicola Bicocchi
-institute: DIEF/UNIMORE
-title: Puntatori
-subtitle: Corso di Programmazione di Sistema
-section-titles: true
-theme: Madrid
-colortheme: crane
-fontsize: 10pt
-aspectratio: 1610
-lang: it
----
+# Puntatori
 
-# Puntatori a void
+## Puntatori a void
 
 * La parola chiave **void** può essere usata per dichiarare dei puntatori che non puntano a nessun tipo di dato in particolare
 * E' sempre consentito l'assegnamento di un puntatore a **void** a qualunque altro tipo di puntatore. Lo è pure l'assegnamento di qualunque puntatore ad un puntatore a **void**

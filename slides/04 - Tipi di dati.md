@@ -1,17 +1,3 @@
----
-date: Aprile 2023
-author: Dr. Nicola Bicocchi
-institute: DIEF/UNIMORE
-title: Tipi di dati
-subtitle: Corso di Programmazione di Sistema
-section-titles: true
-theme: Madrid
-colortheme: crane
-fontsize: 10pt
-aspectratio: 1610
-lang: it
----
-
 # Tipi di dati
 In un linguaggio di programmazione un tipo di dato identifica l'insieme dei valori che possono essere assunti da una variabile e le operazioni che si possono svolgere su di essi. Sfruttando la *tipizzazione*, il compilatore può: *(a)* effettuare controlli sul tipo, e *(b)* gestire allocazione della memoria necessaria (diversa per ogni tipo)
 

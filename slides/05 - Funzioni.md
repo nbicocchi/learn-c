@@ -1,18 +1,3 @@
----
-date: Aprile 2023
-author: Dr. Nicola Bicocchi
-institute: DIEF/UNIMORE
-title: Funzioni
-subtitle: Corso di Programmazione di Sistema
-section-titles: true
-theme: Madrid
-colortheme: crane
-fontsize: 10pt
-aspectratio: 1610
-lang: it
----
-
-
 # Le funzioni
 Una funzione è una sequenza di istruzioni che vengono attivate a seguito di una apposita chiamata.
 
