@@ -131,12 +131,16 @@ Vettori e puntatori sono concetti affini, ma esistono sottili differenze:
   
 ```c
 int main(void) {
-    char s1[] = "nicola";
-    char *s2 = "nicola";
+    char s1[] = "Hello World!";
+    char *s2 = "Hello World!";
 
-    s1 = s2;        /* Errore in compilazione */
+    s1[0] = 'a';    /* OK */
     s2[0] = 'a';    /* Errore a runtime */
-    printf("%lu %lu\n", sizeof(s1), sizeof(s2));    /* Output: 7 8 */
+
+    s2 = s1;        /* OK */
+    s1 = s2;        /* Errore in compilazione */
+
+    printf("%lu %lu\n", sizeof(s1), sizeof(s2));    /* Output: 13 8 */
 }
 ```
 
@@ -215,7 +219,7 @@ int main(void) {
             "Elvira", 
             NULL
     };
-    char **p;
+    char **p = strings;
 
     /* Indirizzo del primo puntatore a carattere */
     printf("%p %p %p\n", strings, &strings[0], p);
@@ -538,7 +542,7 @@ int main(void) {
 ```
 
 ## Allocazione dinamica e strutture
-Nel caso di oggetti relativamente complessi come le matrici, in cui i dati veri e propri (il contenuto della matrice) è sempre abbinato ad informazioni aggiuntive come al esempio il numero di righe e di colonne, l'utilizzo di strutture (aggregazione di aspetti diversi della stessa entità) è consigliabile!
+Nel caso di oggetti relativamente complessi come le matrici, in cui i dati veri e propri (il contenuto della matrice) è sempre abbinato ad informazioni aggiuntive come ad esempio il numero di righe e di colonne, l'utilizzo di strutture (aggregazione di aspetti diversi della stessa entità) è consigliabile!
 
 ```c
 struct matrix {
