@@ -268,6 +268,51 @@ int fgetpos(FILE *stream, fpos_t *pos);
 int fsetpos(FILE *stream, fpos_t *pos);
 ```
 
+### fseek()
+
+```c
+int fseek(FILE *stream, long offset, int whence);
+```
+
+*fseek()* accetta tre parametri:
+* *stream* rappresenta il file da trattare
+* *offset* rappresenta un offset
+* *whence* specifica il punto di riferimento a cui applicare *offset*
+
+Il paramtro *whence* può assumere tre valori:
+* *SEEK_SET* rappresenta l'inizio del file
+* *SEEK_CUR* rappresenta la posizione corrente
+* *SEEK_END* rappresenta la fine del file
+
+*fseek()* restituisce:
+* 0 se l'operazione ha avuto successo
+* -1 in caso di problemi
+
+### ftell()
+
+```c
+int ftell(FILE *stream);
+```
+
+*ftell()* accetta un solo parametro:
+* *stream* rappresenta il file da trattare
+
+*ftell()* restituisce:
+* offset corrente (rispetto all'inizio del file)
+* -1 in caso di problemi
+
+### rewind()
+
+```c
+void rewind(FILE *stream);
+```
+
+*rewind()* accetta un solo parametro:
+* *stream* rappresenta il file da trattare
+
+*rewind()* non restituisce nulla, ma posiziona l'offset all'inizio del file. Equivalente a fseek(stream, 0L, SEEK_SET).
+
+
 ### Esempio: stabilire la dimensione di un file
 
 ```c
