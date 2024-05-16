@@ -151,12 +151,12 @@ La funzione *fflush()* forza la scrittura di tutti i dati non ancora scritti sul
 FILE *fin, *fout;
 if (!(fin = fopen("matrice.dat", "r"))) {
     perror("matrice.dat");
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 if (!(fout = fopen("documenti/info.txt", "w"))) {
     perror("documenti/info.txt");
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 /* ... corpo del programma ... */
@@ -266,6 +266,14 @@ void rewind(FILE *stream);
 /* alternatives to fseek, ftell */
 int fgetpos(FILE *stream, fpos_t *pos);
 int fsetpos(FILE *stream, fpos_t *pos);
+```
+
+### Esempio: stabilire la dimensione di un file
+
+```c
+FILE *source = fopen("/etc/passwd", "r");
+fseek(source, 0, SEEK_END);
+long size = ftell(source);
 ```
 
 ### Esempio: lettura di un file di testo al contrario (carattere per carattere)
