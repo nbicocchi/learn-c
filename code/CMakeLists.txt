@@ -93,6 +93,7 @@ add_executable(example examples/example.c)
 # Basic Programming lab05
 #add_executable(cat lab05/cat.c)
 #add_executable(cmp lab05/cmp.c)
+#add_executable(diff lab05/diff.c)
 #add_executable(cp lab05/cp.c)
 #add_executable(echo lab05/echo.c)
 #add_executable(touch lab05/touch.c)

@@ -51,8 +51,7 @@ $ cmp filename_1 filename_2
 dove:
 
 * **filename_1, filename_2** rappresentano due nomi di file da confrontare;
-* il comando informa l'utente se i 2 file sono uguali o diversi. Se sono diversi, indica byte e linea del primo
-  carattere diverso.
+* il comando informa l'utente se i 2 file sono uguali o diversi. Se sono diversi, indica byte e linea del primo carattere diverso.
 
 ---
 
@@ -106,7 +105,7 @@ dove:
 
 ---
 
-Esercizio 9. Implementare una versione semplificata del comando *wc*.
+Esercizio 9. Implementare una versione semplificata del comando *wc*
 
 ```shell
 $ wc [filename]
@@ -127,3 +126,17 @@ $ grep string [filename]
 dove:
 
 * **filename** rappresenta un nome di file di cui mostrare tutte le linee che contengono string. In caso filename non venga indicato, il comando legge da stdin.
+
+---
+
+Esercizio 11. Implementare una versione semplificata del comando *diff*
+
+```shell
+$ diff filename_1 filename_2
+```
+
+dove:
+
+* **filename_1, filename_2** rappresentano due nomi di file da confrontare; 
+* Il comando confronta il contenuto dei 2 file riga per riga e mostra all'utente le eventuali differenze. In particolare, in caso 2 righe corrispondenti siano diverse (ad esempio, la terza riga di entrambi i file), il comando stampa le due versioni. Infine, in caso i due file abbiano un numero diverso di linee, vanno mostrate in output tutte le linee in più del file più lungo. Il comando esce con 0 se i file sono uguali, 1 se sono diversi, 2 in caso di problemi.
+

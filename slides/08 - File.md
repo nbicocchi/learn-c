@@ -312,6 +312,9 @@ void rewind(FILE *stream);
 
 *rewind()* non restituisce nulla, ma posiziona l'offset all'inizio del file. Equivalente a fseek(stream, 0L, SEEK_SET).
 
+### feof()
+
+TODO
 
 ### Esempio: stabilire la dimensione di un file
 
