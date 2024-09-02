@@ -193,8 +193,7 @@ struct matrix *matrix_product(const struct matrix *m1, const struct matrix *m2);
 
 ---
 
-Esercizio 12. Implementare una funzione *matrix_compare* che accetta come parametri due puntatori a matrice e
-restituisce un numero intero da interpretare come un booleano. La funzione deve rispettare il seguente prototipo:
+Esercizio 12. Implementare una funzione *matrix_compare* che accetta come parametri due puntatori a matrice e restituisce un numero intero da interpretare come un booleano. La funzione deve rispettare il seguente prototipo:
 
 ```c
 struct matrix {
@@ -226,9 +225,76 @@ dove:
 
 ---
 
-Esercizio 14. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni per gestire un array
-dinamico di elementi di tipo *double* simile ad una lista Java o Python. Le funzioni devono rispettare i
-seguenti prototipi:
+Esercizio 14. Il Progetto Galactica è una collaborazione globale che mira a creare una rete interconnessa di stazioni spaziali per agevolare lo scambio di risorse, informazioni e conoscenze tra le colonie umane. Queste stazioni spaziali fungono da centri di ricerca, punti di transito e rifugi per gli esploratori spaziali. Data la seguente struttura, che rappresenta una singola stazione spaziale, è necessario implementare un gruppo di funzioni per gestire e monitorare una rete di stazioni. 
+
+```c
+struct SpaceStation {
+    char *name;
+    int station_id;
+};
+```
+
+**(a)** Scrivere una funzione che allochi dinamicamente una rete di stazioni spaziali, dove ogni stazione spaziale ha un nome e un numero di stazione. La funzione deve restituire un puntatore a un array di puntatori a struct `SpaceStation`. Se l'allocazione fallisce, la funzione deve restituire `NULL`.
+
+La funzione deve rispettare il seguente prototipo:
+
+```c
+struct SpaceStation **create_space_station_network(int num_stations);
+```
+
+dove:
+
+* **num_stations** è il numero di stazioni da creare;
+* la funzione ritorna il puntatore a un array di puntatori a struct `SpaceStation`. Il puntatore vale NULL in caso di errori.
+
+**(b)** Scrivere una funzione che deallochi una rete di stazioni spaziali precedentemente allocata con `create_space_station_network`. La funzione riceve come parametri il puntatore alla rete e il numero totale di stazioni.
+
+La funzione deve rispettare il seguente prototipo:
+
+```c
+void deallocate_space_station_network(struct SpaceStation **network, int num_stations);
+```
+
+dove:
+
+* **network** è il puntatore alla rete;
+* **num_stations** è il numero totale di stazioni;
+
+**(c)** Scrivere una funzione che cerchi una stazione spaziale nella rete dato il suo ID. La funzione deve restituire un puntatore alla stazione spaziale se trovata, altrimenti NULL.
+
+
+La funzione deve rispettare il seguente prototipo:
+
+```c
+struct SpaceStation *find_space_station(struct SpaceStation **network, int num_stations, int station_id);
+```
+
+dove:
+
+* **network** è il puntatore alla rete;
+* **num_stations** è il numero totale di stazioni;
+* **station_id** è l'ID della stazione da cercare.
+
+
+**(d)** Scrivere una funzione che aggiorni i dettagli (nome e ID) di una specifica stazione spaziale in una rete di stazioni spaziali.  La funzione deve restituire un puntatore alla stazione spaziale modificata, altrimenti NULL.
+
+La funzione deve rispettare il seguente prototipo:
+
+```c
+struct SpaceStation *update_space_station(struct SpaceStation **network, unsigned num_stations, int station_id, const char *new_name, int new_id);
+```
+
+dove:
+
+* **network** è il puntatore alla rete;
+* **num_stations** è il numero totale di stazioni;
+* **station_id** è l'ID della stazione da aggiornare;
+* **new_name** è il nuovo nome della stazione;
+* **new_id** è il nuovo ID della stazione.
+
+---
+
+Esercizio 15. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni per gestire un array dinamico di elementi di tipo *double* simile ad una lista Java o Python (https://en.wikipedia.org/wiki/Dynamic_array). Le funzioni devono rispettare i seguenti prototipi:
 
 ```c
 struct arraylist {
@@ -267,10 +333,7 @@ unsigned size(struct arraylist *l);
 
 ---
 
-Esercizio 15. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni analoghe a quelle
-dell'esercizio precedente ma che utilizzano come meccanismo di memorizzazione una linked
-list (https://en.wikipedia.org/wiki/Linked_list) al posto di un array ri-dimensionabile. Per rappresentare la linked
-list, utilizzare le due strutture indicate di seguito.
+Esercizio 16. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni analoghe a quelle dell'esercizio precedente ma che utilizzano come meccanismo di memorizzazione una lista linkata (https://en.wikipedia.org/wiki/Linked_list) al posto di un array dinamico. Per rappresentare la lista, utilizzare le due strutture indicate di seguito.
 
 ```c
 struct node {

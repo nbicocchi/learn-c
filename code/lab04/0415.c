@@ -1,150 +1,103 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <float.h>
 
-struct node {
-    /* the actual data of the node */
-    double data;
+#define DEFAULT_SIZE 16
 
-    /* pointer to the next node */
-    struct node *next;
-};
-
-struct linkedlist {
+struct arraylist {
     /* number of actual elements contained */
     unsigned elements;
 
-    /* pointer to the head of the list */
-    struct node *head;
+    /* size of the underlying array (l->data) */
+    unsigned size;
+
+    /* array containing the actual data */
+    double *data;
 };
 
-/* Service function for allocating a new node */
-struct node *allocate_node(double value) {
-    struct node *node;
+struct arraylist *allocate_list() {
+    struct arraylist *a;
 
-    node = malloc(sizeof(*node));
-    node->data = value;
-    node->next = NULL;
-    return node;
+    a = calloc(1, sizeof(*a));
+    if (a == NULL) return NULL;
+
+    a->elements = 0;
+    a->size = DEFAULT_SIZE;
+    a->data = calloc((unsigned long) (DEFAULT_SIZE), sizeof(*(a->data)));
+    if (a->data == NULL) return NULL;
+
+    return a;
 }
 
-/* Service function for retrieving a node with a given index */
-struct node *get_node(struct linkedlist *l, unsigned index) {
-    struct node *node;
-    unsigned i = 0;
-
-    if (!l->head) {
-        /* the list is empty */
-        return NULL;
-    } else {
-        /* the list contains elements */
-        node = l->head;
-        while (node->next && i < index) {
-            node = node->next;
-            i++;
-        }
-        return node;
-    }
-}
-
-unsigned elements(struct linkedlist *l) {
-    return l->elements;
-}
-
-unsigned size(struct linkedlist *l) {
-    return l->elements;
-}
-
-struct linkedlist *allocate_list() {
-    struct linkedlist *l;
-
-    l = malloc(sizeof(*l));
-    if (l == NULL) return NULL;
-
-    l->elements = 0;
-    l->head = NULL;
-    return l;
-}
-
-void free_list(struct linkedlist *l) {
-    struct node *next, *tmp;
-
-    next = l->head;
-    while (next) {
-        tmp = next;
-        next = next->next;
-        free(tmp);
-    }
+void free_list(struct arraylist *l) {
+    free(l->data);
     free(l);
 }
 
-double get(struct linkedlist *l, unsigned index) {
-    return get_node(l, index)->data;
+double get(struct arraylist *l, unsigned index) {
+    return l->data[index];
 }
 
-double delete(struct linkedlist *l, unsigned index) {
-    struct node *delete, *prev, *next;
-    double value;
+double delete(struct arraylist *l, unsigned index) {
+    double element = l->data[index];
+    unsigned i;
 
-    if (index < 0) return DBL_MAX;
-
-    if (index == 0) {
-        delete = get_node(l, 0);
-        next = delete->next;
-        l->head = next;
-    } else {
-        prev = get_node(l, index - 1);
-        delete = prev->next;
-        next = delete->next;
-        prev->next = next;
+    for (i = index; i < l->elements - 1; i++) {
+        l->data[i] = l->data[i + 1];
     }
 
-    value = delete->data;
-    free(delete);
     l->elements--;
-    return value;
+
+    /* eventually shrink */
+    if (l->elements < l->size / 2) {
+        l->data = realloc(l->data, l->size * sizeof(*(l->data)) / 2);
+        l->size /= 2;
+    }
+
+    return element;
 }
 
-void add(struct linkedlist *l, double value) {
-    struct node *node;
-
-    if (!l->head) {
-        /* the list is empty */
-        l->head = allocate_node(value);
-    } else {
-        /* the list contains elements */
-        node = get_node(l, elements(l) - 1);
-        node->next = allocate_node(value);
+void add(struct arraylist *l, double value) {
+    /* eventually grow */
+    if (l->elements >= l->size) {
+        l->data = realloc(l->data, 2 * l->size * sizeof(*(l->data)));
+        l->size *= 2;
     }
+    l->data[l->elements] = value;
     l->elements++;
 }
 
-void set(struct linkedlist *l, unsigned index, double value) {
-    get_node(l, index)->data = value;
+void set(struct arraylist *l, unsigned index, double value) {
+    l->data[index] = value;
 }
 
+unsigned elements(struct arraylist *l) {
+    return l->elements;
+}
+
+unsigned size(struct arraylist *l) {
+    return l->size;
+}
 
 int main(void) {
-    struct linkedlist *l;
+    struct arraylist *l;
     unsigned index;
 
     /* allocate empty list */
     l = allocate_list();
 
     /* insert elements */
-    for (index = 0; index < 10; index++) {
+    for (index = 0; index < 35; index++) {
         add(l, (double) index);
     }
 
     /* modify existing elements */
-    set(l, 9, 99.0);
-    set(l, 8, 99.0);
+    set(l, 0, 77.0);
 
     /* delete existing elements */
-    delete(l, elements(l) - 1);
-    delete(l, 0);
+    for (index = 30; index > 0; index--) {
+        delete(l, index);
+    }
 
     /* show elements */
     for (index = 0; index < l->elements; index++) {
