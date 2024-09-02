@@ -7,7 +7,7 @@ struct SpaceStation {
     int station_id;
 };
 
-struct SpaceStation **create_space_station_network(unsigned num_stations) {
+struct SpaceStation **create_space_station_network(int num_stations) {
     struct SpaceStation **network = malloc(num_stations * sizeof(struct SpaceStation *));
     if (network == NULL) {
         return NULL;
@@ -37,7 +37,7 @@ struct SpaceStation **create_space_station_network(unsigned num_stations) {
     return network;
 }
 
-void deallocate_space_station_network(struct SpaceStation **network, unsigned num_stations) {
+void deallocate_space_station_network(struct SpaceStation **network, int num_stations) {
     for (int i = 0; i < num_stations; i++) {
         free(network[i]->name);
         free(network[i]);
@@ -45,7 +45,7 @@ void deallocate_space_station_network(struct SpaceStation **network, unsigned nu
     free(network);
 }
 
-struct SpaceStation *find_space_station(struct SpaceStation **network, unsigned num_stations, int station_id) {
+struct SpaceStation *find_space_station(struct SpaceStation **network, int num_stations, int station_id) {
     for (int i = 0; i < num_stations; i++) {
         if (network[i]->station_id == station_id) {
             return network[i];
@@ -54,7 +54,7 @@ struct SpaceStation *find_space_station(struct SpaceStation **network, unsigned 
     return NULL;
 }
 
-struct SpaceStation *update_space_station(struct SpaceStation **network, unsigned num_stations, int station_id, const char *new_name, int new_id) {
+struct SpaceStation *update_space_station(struct SpaceStation **network, int num_stations, int station_id, const char *new_name, int new_id) {
     for (int i = 0; i < num_stations; i++) {
         if (network[i]->station_id == station_id) {
             free(network[i]->name);
