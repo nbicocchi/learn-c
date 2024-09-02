@@ -281,7 +281,7 @@ dove:
 La funzione deve rispettare il seguente prototipo:
 
 ```c
-struct SpaceStation *update_space_station(struct SpaceStation **network, unsigned num_stations, int station_id, const char *new_name, int new_id);
+struct SpaceStation *update_space_station(struct SpaceStation **network, int num_stations, int station_id, const char *new_name, int new_id);
 ```
 
 dove:
