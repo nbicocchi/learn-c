@@ -86,18 +86,23 @@ int main(void) {
     struct SpaceStation **network;
     struct SpaceStation *station;
 
+    // creates a network of 5 space stations numbered from 1 to 5
     network = create_space_station_network(NUM_STATIONS);
     show_space_station_network(network, NUM_STATIONS);
 
+    // it works
     station = find_space_station(network, NUM_STATIONS, 3);
     show_space_station(station);
 
+    // it fails
     station = find_space_station(network, NUM_STATIONS, 17);
     show_space_station(station);
 
+    // update space station number 5
     update_space_station(network, NUM_STATIONS, 5, "Ganimede", 55);
     show_space_station_network(network, NUM_STATIONS);
 
+    // deallocate memory
     deallocate_space_station_network(network, NUM_STATIONS);
 }
 

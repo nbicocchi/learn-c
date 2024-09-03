@@ -245,7 +245,6 @@ struct SpaceStation **create_space_station_network(int num_stations);
 dove:
 
 * **num_stations** è il numero di stazioni da creare;
-* la funzione ritorna il puntatore a un array di puntatori a struct `SpaceStation`. Il puntatore vale NULL in caso di errori.
 
 **(b)** Scrivere una funzione che deallochi una rete di stazioni spaziali precedentemente allocata con `create_space_station_network`. La funzione riceve come parametri il puntatore alla rete e il numero totale di stazioni.
 
