@@ -150,7 +150,7 @@ $ filestats filename
 
 dove:
 
-* filename rappresenta il nome di un file di testo;
+* **filename** rappresenta il nome di un file di testo;
 * Il comando legge il file e mostra all'utente le informazioni sul nome del file, numero di linee, parole, e caratteri contenuti.
 
 Esempio di output:
