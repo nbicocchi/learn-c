@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #define TRUE 1
@@ -28,13 +29,13 @@ void count_stats(FILE *file, int *lines, int *words, int *chars) {
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
     FILE *file = fopen(argv[1], "r");
     if (file == NULL) {
         perror("Error opening file");
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
     int lines = 0, words = 0, chars = 0;
@@ -46,5 +47,5 @@ int main(int argc, char *argv[]) {
     printf("Words: %d\n", words);
     printf("Characters: %d\n", chars);
 
-    return 0;
+    exit(EXIT_SUCCESS);
 }
