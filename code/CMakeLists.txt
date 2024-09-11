@@ -103,6 +103,7 @@ add_executable(example examples/example.c)
 #add_executable(grep lab05/grep.c)
 #add_executable(head lab05/head.c)
 #add_executable(tail lab05/tail.c)
+#add_executable(filestats lab05/filestats.c)
 
 
 # System Programming labs01

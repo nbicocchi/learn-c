@@ -140,3 +140,24 @@ dove:
 * **filename_1, filename_2** rappresentano due nomi di file da confrontare; 
 * Il comando confronta il contenuto dei 2 file riga per riga e mostra all'utente le eventuali differenze. In particolare, in caso 2 righe corrispondenti siano diverse (ad esempio, la terza riga di entrambi i file), il comando stampa le due versioni. Infine, in caso i due file abbiano un numero diverso di linee, vanno mostrate in output tutte le linee in più del file più lungo. Il comando esce con 0 se i file sono uguali, 1 se sono diversi, 2 in caso di problemi.
 
+---
+
+Esercizio 12. Implementare il comando *filestats* che fornisce statistiche di base sul contenuto di un file di testo (vedi funzione di libreria isspace())
+
+```shell
+$ filestats filename
+```
+
+dove:
+
+* filename rappresenta il nome di un file di testo;
+* Il comando legge il file e mostra all'utente le informazioni sul nome del file, numero di linee, parole, e caratteri contenuti.
+
+Esempio di output:
+
+```shell
+File: /etc/passwd
+Lines: 34
+Words: 80
+Characters: 1948
+```
