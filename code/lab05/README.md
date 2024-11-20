@@ -164,7 +164,7 @@ Characters: 1948
 
 ---
 
-Esercizio 13. Implementare un applicativo che permette di cercare una parola all'interno di uno o più file di testo. (vedi funzione di libreria strstr())
+Esercizio 13. Implementare il comando *findword* che permette di cercare una parola all'interno di uno o più file di testo. (vedi funzione di libreria strstr())
 
 ```shell
 $ findword word file1 [file2 ...]
@@ -173,7 +173,7 @@ $ findword word file1 [file2 ...]
 dove:
 * **word** rappresenta la parola da cercare;
 * **file1, file2**, ... rappresentano uno o più nomi di file da analizzare;
-* il comando cerca la parola specificata in ogni file e mostra all'utente in quali righe è stata trovata.
+* il comando cerca la parola specificata in ogni file e mostra all'utente il numero ed il contenuto della riga in cui la parola è stata trovata.
 
 Esempio di output:
 

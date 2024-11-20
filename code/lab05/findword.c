@@ -41,18 +41,15 @@ void search_word(const char *filename, const char *word) {
 }
 
 int main(int argc, char *argv[]) {
-    // Controllo del numero di argomenti
     if (argc < 3) {
         fprintf(stderr, "Usage: %s word file1 [file2 ...]\n", argv[0]);
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 
     const char *word = argv[1];
-
-    // Cerca la parola in ogni file specificato
     for (int i = 2; i < argc; i++) {
         search_word(argv[i], word);
     }
 
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
 }
