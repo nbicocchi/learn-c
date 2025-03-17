@@ -49,9 +49,8 @@ Il linguaggio è pensato per essere **efficiente**: lo sviluppatore ha il contro
 *Gli ambienti di sviluppo integrato – o IDE, Integrated Development Environment – sono strumenti fondamentali per il lavoro di un programmatore. Esistono una varietà di ambienti di sviluppo, dai più complessi ed articolati, fino a semplici editor di testo affiancati ad un compilatore.*
 
 * CLion
+* Visual Studio
 * Eclipse
-* Code::Blocks
-* Visual Studio Code
 * Sublime text
 * Vim
 
