@@ -6,13 +6,13 @@ Il programmatore può predisporre molteplici blocchi di istruzioni da eseguire a
 A parte alcune minime differenze sintattiche, queste istruzioni sono simili a quelle che si possono trovare nella maggior parte dei linguaggi.
 
 Costrutti **condizionali**:
-  * if 
-  * switch-case
+  * **if** 
+  * **switch-case**
 
 Costrutti **iterativi**:
-  * while
-  * do-while
-  * for
+  * **while**
+  * **do-while**
+  * **for**
 
 
 ## Costrutto if
@@ -41,13 +41,14 @@ if (espressione1) {
 }
 ```
 
-Principali operatori di verifica delle condizioni: < , > , == , != , >= , <=
+* Operatori di confronto: < , > , == , != , >= , <=
+* Operatori logici: AND (&&), OR (||), NOT (!)
 
 Le condizioni valutate dal costrutto *if* sono valori *interi* interpretati come *valori di verità* (convenzionalmente, 0 == falso, 1 == vero). Il tipo *bool* è stato introdotto a partire dallo standard C99.
 
 Alcuni esempi di seguito:
 
-```c
+```c++
 #include <stdio.h>
         
 int main() {
@@ -60,7 +61,7 @@ int main() {
 }
 ```
 
-```c
+```c++
 #include <stdio.h>
 
 int main() {
@@ -77,7 +78,7 @@ int main() {
 }
 ```
 
-```c
+```c++
 #include <stdio.h>
 
 int main() {
@@ -90,16 +91,28 @@ int main() {
 }
 ```
 
+```c++
+#include <stdio.h>
+
+int main() {
+    int a = 5, b = -2;
+    if ((a > 0) && (b > 0)) {
+            printf("a>0, b>0\n");
+        }
+    }
+}
+```
+
 ## Operatore \?
 L' operatore *?* (*ternary condition*) e' la forma piu' efficente per esprimere semplici costrutti if. 
 
-```c
+```c++
 espressione1 ? espressione2 : espressione3
 ```
 
 che equivale a:
 
-```c
+```c++
 if (espressione1) {
   espressione2
 } else { 
@@ -109,13 +122,13 @@ if (espressione1) {
 
 Ad esempio:
 
-```c
+```c++
 int max = (a > b) ? a : b;
 ```
 
 equivale alla scrittura (assai più prolissa!) seguente:
 
-```c
+```c++
 int max;
 if (a > b) {
     max = a;
@@ -130,7 +143,7 @@ Lo switch case consente di implementare decisioni multiple e si basa sul confron
 
 Il costrutto è composto da una espressione di controllo e da diversi blocchi di istruzione *case*, ognuno dei quali è associato a un particolare valore dell'espressione di controllo iniziale. Ogni blocco di istruzioni termine con l'istruzione *break*. L'ultimo blocco di istruzioni è detto *default* e' facoltativo e raggruppa tutti gli altri casi.
 
-```c
+```c++
 switch (espressione) { 
     case costante1: istruzioni1; break;
     case costante2: istruzioni2; break;
@@ -142,14 +155,14 @@ switch (espressione) {
 
 Alcuni esempi di seguito:
 
-```c
+```c++
 int a = 7;
 switch(a) {
-    case 0: printf("Eseguo il case 0\n");
+    case 0: printf("Eseguo il caso 0\n");
         break;
-    case 3: printf("Eseguo il case 3\n");
+    case 3: printf("Eseguo il caso 3\n");
         break;
-    case 7: printf("Eseguo il case 7\n");
+    case 7: printf("Eseguo il caso 7\n");
         break;
     default: printf("Caso default\n");
         break;
@@ -161,12 +174,12 @@ Eliminando le istruzioni *break* per separare i casi, cambia la semantica:
 * se a == 3, vengono eseguiti i casi 3, 7
 * se a == 7, viene eseguito il caso 7
 
-```c
+```c++
 int a = 7;
 switch (a) {
-    case 0: printf("Eseguo il case 0\n");
-    case 3: printf("Eseguo il case 3\n");
-    case 7: printf("Eseguo il case 7\n");
+    case 0: printf("Eseguo il caso 0\n");
+    case 3: printf("Eseguo il caso 3\n");
+    case 7: printf("Eseguo il caso 7\n");
         break;
     default: printf("Caso default\n");
         break;
@@ -178,7 +191,7 @@ Il costrutto *while* è un costrutto condizionale dove un blocco di istruzioni v
 
 *Ogni esecuzione del blocco di istruzioni è detta ciclo o iterazione*. In ogni ciclo sono eseguite le stesse istruzioni del blocco:
 
-```c
+```c++
 while ( espressione di controllo ) { 
     // blocco di istruzioni 
 } 
@@ -186,7 +199,7 @@ while ( espressione di controllo ) {
 
 Ad esempio:
 
-```c
+```c++
 int i = 0;
 while (i < 10) {
     printf("Il valore di i è %d\n", i);
@@ -199,7 +212,7 @@ Il costrutto *do-while* è un costrutto post-condizionale dove prima sono esegui
 
 Il costrutto *do-while* può servire in tutti i casi in cui la prima iterazione deve essere eseguita a prescindere dal successo dell’istruzione di controllo.
 
-```c
+```c++
 do {
     // blocco di istruzioni
 } while ( espressione di controllo );
@@ -207,7 +220,7 @@ do {
 
 Ad esempio:
 
-```c
+```c++
 int i = 0;
 do {
     printf("Il valore di i è %d\n", i);
@@ -221,7 +234,7 @@ Il costrutto *for* è utilizzato per la ripetizione di istruzioni per un numero 
 * (2) controllo
 * (3) modifica post-ciclo
 
-```c
+```c++
 for ([<espressione assegnazione>]; [<espressione controllo>];[<espressione post-ciclo>]) {
     // blocco di istruzioni
 }
@@ -229,7 +242,7 @@ for ([<espressione assegnazione>]; [<espressione controllo>];[<espressione post-
 
 Ad esempio:
 
-```c
+```c++
 for (int i = 0; i < 10; i++) {
     printf("Il valore di i è %d\n", i);
 }
@@ -244,7 +257,7 @@ L'istruzione *break* interrompe le iterazioni di costrutto iterativo (*for, whil
 
 Ad esempio:
 
-```c
+```c++
 for (int i = 0; i < 5; i++) {
     if (i == 2) {
         break;
@@ -256,11 +269,11 @@ for (int i = 0; i < 5; i++) {
 ```
 
 ## Istruzione continue
-L'istruzione *continue* interrompe l'iterazione corrente tornando all'espressione di controllo per iniziare l'interazione successiva. Il ciclo non viene interrotto.
+L'istruzione *continue* interrompe l'**iterazione corrente** tornando all'espressione di controllo per iniziare l'interazione successiva. **Il ciclo non viene interrotto**.
 
 Ad esempio:
 
-```c
+```c++
 for (int i = 0; i < 5; i++) {
     if (i == 2) {
         continue;
@@ -274,20 +287,20 @@ for (int i = 0; i < 5; i++) {
 ## Cicli infiniti
 I costrutti iterativi possono essere utilizzati anche per creare *cicli infiniti*. Spesso i cicli infiniti sono interrotti attraverso un'istruzione dedicata (*break*) posizionata all'interno del blocco di istruzioni
 
-```c
+```c++
 for (;;) {
   /* istruzioni */
 }
 ```
 
-```c
+```c++
 #define TRUE 1
 while (TRUE) {
     /* istruzioni */
 }
 ```
 
-```c
+```c++
 #define TRUE 1
 do {
     /* istruzioni */
@@ -300,24 +313,28 @@ do {
 ### Assegnamento e verifica di uguaglianza
 Confondere gli operatori di assegnamento (=) e di verifica di uguaglianza (==) può produrre innumerevoli errori. Considerata la facilità dell'errore (typo), fino a Python 3.8 l'assegnamento all'interno di una condizione *if* non era supportato. Ora è supportato attraverso un operatore dedicato (:=)
 
-```c
+```c++
 int main() {
     int a = 10;
-    if (a == 0) { }
+    if (a == 1) { 
+        // non viene eseguito
+    }
 }
 ```
 
-```c
+```c++
 int main(){
     int a = 10;
-    if (a = 0) { }
+    if (a = 1) { 
+        // viene eseguito
+    }
 }
 ```
 
 
 ### Overflow
 
-```c
+```c++
 // esempio di overflow 
 // char[-128, 127]
 // dovrebbe terminare non NON termina!
@@ -329,7 +346,7 @@ int main() {
 ```
 
 ### Underflow
-```c
+```c++
 // esempio di underflow 
 // unsigned int[0, 4.294.967.295], int[-2.147.483.648, 2.147.483.647]
 // non dovrebbe terminare MA termina!
@@ -344,7 +361,7 @@ int main() {
 
 *Edsger W. Dijkstra - Go To statement considered harmful*
 
-```c
+```c++
 int main(){
     goto end;
     printf("Non eseguito\n");

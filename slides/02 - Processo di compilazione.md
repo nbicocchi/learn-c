@@ -34,7 +34,7 @@ Gli *errori* causano il fallimento della compilazione del programma
 
 I *warnings*, invece, sono segnalazioni di possibili problemi ma non causano il fallimento della fase di compilazione. In linea generale, è bene risolverli tutti prima di procedere con lo sviluppo.
 
-```c
+```c++
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,7 +44,7 @@ int main() {
 }
 ```
 
-```
+```shell
 helloworld.c:6:1: error: expected ';' after return statement
 helloworld.c:2:1: warning: Unused "#include <stdlib.h>"
 ```
@@ -114,7 +114,7 @@ $ gcc -E helloworld.c
 
 Il simbolo *#* (diesis, cancelletto, o hash) precede tutte le operazioni che vengono gestite dal *preprocessore*:
 
-```c
+```c++
 #include <stdio.h>
 
 int main(){
@@ -126,7 +126,7 @@ int main(){
 ## Direttiva #include
 Aggiunge codice sorgente presente in file esterni. Utilizzata di solito con file header con estensione .h
 
-```c
+```c++
 #include <stdio.h>
 #include "mymath.h"
 ```
@@ -139,13 +139,13 @@ $ cat /usr/include/stdio.h
 
 Un utilizzo tipico della direttiva include consiste nell'utilizzare funzioni definite in file esterni. Ad esempio, all'interno del file mymath.h posizioniamo i prototipi delle funzioni:
 
-```c
+```c++
 unsigned mypow(unsigned int base, unsigned int exp);
 ```
 
 All'interno del file mymath.c posizioniamo le implementazioni delle funzioni e includiamo mymath.h in cui potremmo aver definito costanti utili:
 
-```c
+```c++
 #include "mymath.h"
 
 unsigned mypow(unsigned int base, unsigned int exp) {
@@ -159,7 +159,7 @@ unsigned mypow(unsigned int base, unsigned int exp) {
 
 All'interno del file main.c includiamo mymath.h ed utilizziamo le funzioni definite al suo interno:
 
-```c
+```c++
 #include <stdio.h>
 #include "mymath.h"
 
@@ -185,11 +185,11 @@ La direttiva #define INPUT OUTPUT modifica il codice sorgente sostituendo tutte 
 
 *Attenzione: #define non definisce variabili e/o funzioni globali!*
 
-```c
+```c++
 #define INPUT OUTPUT
 ```
 
-```c
+```c++
 #include <stdio.h>
 #define MAX 10
 
@@ -204,7 +204,7 @@ Il valore di sostituzione può anche essere parametrico.
 *Attenzione: N non è una funzione!*
 
 
-```c
+```c++
 #define N(x) (10 * (x))
 int main(){
     int a = N(5);
@@ -216,7 +216,7 @@ E' importante utilizzare in modo opportuno le parentesi per evitare problemi di 
 
 Definizione debole:
 
-```c
+```c++
 #define SQUARE(a) a*a
 
 SQUARE(3);  // Sostituito in 3*3 -> 9
@@ -225,7 +225,7 @@ SQUARE(1+2) // Sostituito in 1+2*1+2 -> Output:5
 
 Definizione robusta:
 
-```c
+```c++
 #define SQUARE(a) ((a)*(a))
 
 SQUARE(3);  // Sostituito in (3)*(3) -> 9
@@ -237,7 +237,7 @@ La direttiva #define non ha scope: legge i sorgenti e opera in modo sequenziale 
 
 Per eliminare una definizione è necessario utilizzare la direttiva #undef in modo esplicito.
 
-```c
+```c++
 int main(void) {
 #define MAX 128
     printf("%d\n", MAX);
@@ -251,7 +251,7 @@ Il preprocessore non può valutare il contenuto di variabili o di codice a runti
 
 Esempio: utilizzando define possiamo definire l'architettura di riferimento.
 
-```c
+```c++
 #define ARCH amd64
 
 int main(void) {
@@ -265,7 +265,7 @@ int main(void) {
 
 Esempio: message(S) stampa il messaggio solo se la MACRO DEBUG è definita.
 
-```c
+```c++
 #define DEBUG
 
 #ifdef DEBUG
@@ -281,7 +281,7 @@ int main(void) {
 
 Esempio: per evitare errori dovuti ad inclusioni multiple dello stesso file header (.h) vengono utilizzate le *include guards*. Il file viene incluso solo se la direttiva *MYMATH_H* non è definita.
 
-```c
+```c++
 /* mymath.h with include guards */
 #ifndef MYMATH_H
 #define MYMATH_H

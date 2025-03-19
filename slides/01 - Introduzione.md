@@ -64,10 +64,10 @@ L'esecuzione di un programma C inizia sempre dalla prima istruzione della funzio
 
 **Linea 5**: *return* istruzione che termina la funzione e ritorna *0* (successo in ambito Unix). 
 
-```c
+```c++
 #include <stdio.h>
 
-int main(){
+int main() {
   printf("Hello, World!\n");
   return 0;
 }
@@ -79,9 +79,10 @@ I commenti sono porzioni di testo che non vengono considerate dal compilatore (i
 
 Come regola generale, è preferibile un commento descrittivo all'inizio di ogni funzione piuttosto che commenti brevi e sparsi.
 
-```c
+```c++
 /*
  * Questo è un commento multi-linea
+ * che descrive la funzione sottostante
  */
 int sum(int a, int b) {
     // Questo è un commento singola-linea
@@ -99,20 +100,26 @@ int sum(int a, int b) {
 
 
 ## Identificatori
-In C un identificatore è un nome che si riferisce a funzioni, variabili, ed oggetti in genere definiti nel codice. Non può essere una parola chive del linguaggio, non può cominciare con un numero ma può contenere qualsiasi combinazione di:
+In C un identificatore è un nome che si riferisce a funzioni, variabili, etc. definiti nel codice. 
+
+* Non può essere una parola chive del linguaggio
+* Non può cominciare con un numero
+* Può contenere qualsiasi combinazione di:
   * lettere maiuscole e minuscole
   * numeri
   * il carattere underscore (_)
 
 Esempi **validi**: prova1, prova_1, media_pesata, _tot
 
-Esempi **invalidi**: 1_prova, totale_%, somma_{
+Esempi **invalidi**: 1_prova, totale_%, typedef
 
 
 ## Variabili
-Una variabile è una porzione di memoria che contiene dei dati che possono essere modificati durante l'esecuzione. Ogni variabile deve essere dichiarata, ovvero associata ad un identificatore ed a un tipo.
+Una variabile è una porzione di memoria che contiene dei dati che possono essere modificati durante l'esecuzione. Ogni variabile deve essere **dichiarata**, ovvero:
+* associata a un identificatore;
+* associata a un tipo.
 
-```c
+```c++
 #include <stdio.h>
 
 int main() {
@@ -128,6 +135,8 @@ int main() {
 
 ![Variabili](images/variabili.avif)
 
+Utilizzare [PythonTutor](https://pythontutor.com/) oppure il debugger integrato per visualizzare lo stato delle variabili.
+
 ## Espressioni
 *Un programma C e' una sequenza di espressioni. Le espressioni sono combinazioni di variabili, costanti, chiamate a funzione, e operatori*.
 
@@ -135,7 +144,7 @@ Non esiste in C una reale delimitazione fra espressioni logiche e aritmetiche in
 
 Ad esempio:
 
-```c
+```c++
 45 * (a + b)
 delta * sqrt(abs(x1 * x2))
 sqrt(a * b - c) <= 10
