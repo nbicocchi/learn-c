@@ -2,17 +2,21 @@
 #include <limits.h>
 #include <stdio.h>
 
-int main() {
-  unsigned int u = UINT_MAX;
-  float f = (float)u;
-  double d = (double)u;
+void stampa_array(const int *v, unsigned size) {
+  unsigned i;
 
-  printf("u=%u\n", u);  /* u=4294967295 */
-  printf("f=%f\n", f);  /* f=4294967296.000000 */
-  printf("d=%lf\n", d); /* d=4294967295.000000 */
+  for (i = 0; i < size; i++) {
+    printf("%d\n", v[i]);
+  }
+}
 
-  d = DBL_MAX;
-  u = (unsigned int)d;
-  printf("u=%u\n", u);  /* u=0 */
-  printf("d=%lf\n", d); /* d=179769313486231570814527... */
+int main(void) {
+  int v[16];
+  int *v2 = v;
+
+  printf("%ld\n", sizeof(v));     /* 64 */
+  printf("%ld\n", sizeof(v2));    /* 8 */
+  printf("%p\n", &v[0]);          /* 0x7ffee0d7c8a0 */
+  printf("%p\n", v);              /* 0x7ffee0d7c8a0 */
+  printf("%p\n", &v2);            /* 0x7ffee0d7c898 */
 }

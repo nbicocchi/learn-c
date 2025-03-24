@@ -32,6 +32,13 @@ int i;
 long l; 
 long long ll;
 
+// numeri interi senza segno
+unsigned char c;
+unsigned short s;
+unsigned int i;
+unsigned long l; 
+unsigned long long ll;
+
 // numeri in virgola mobile
 float f;
 double d;
@@ -167,9 +174,7 @@ I tipi *float* e *double* sono i cosiddetti numeri in virgola mobile che rappres
 | double | 8 byte | numero in virgola mobile 64 bit |
 | long double | 16 byte | numero in virgola mobile 128 bit |
 
-Lo standard **IEEE 754** è il formato più utilizzato per la rappresentazione dei numeri in virgola mobile nei computer. Esso definisce vari formati, tra cui il **formato a 32 bit (single precision)** e il **formato a 64 bit (double precision)**.
-
-Un numero in virgola mobile secondo IEEE 754 è rappresentato dalla seguente formula:
+Lo standard **IEEE 754** è il formato più utilizzato per la rappresentazione dei numeri in virgola mobile nei computer. Esso definisce vari formati, tra cui il **formato a 32 bit (single precision)** e il **formato a 64 bit (double precision)**. Un numero in virgola mobile secondo IEEE 754 è rappresentato dalla seguente formula:
 
 $$V = (-1)^S \times (1 + M) \times 2^{E}$$
 
@@ -469,7 +474,7 @@ Nella maggior parte dei casi, puntatori ed array possono essere utilizzati in mo
 
 Operatore *sizeof*
   * *sizeof(array)* ritorna la quantità di memoria usata dall'array nel suo complesso
-  * *sizeof(puntatore)* ritorna la quantità di memoria usata dal puntatore stesso
+  * *sizeof(puntatore)* ritorna la quantità di memoria usata dal puntatore stesso (8 byte)
 
 Operatore *&*
   * *&array* è un alias di &array[0] e ritorna l'indirizzo del primo elemento dell'array
@@ -491,6 +496,7 @@ int main(void) {
     printf("%ld\n", sizeof(v));     /* 64 */
     printf("%ld\n", sizeof(v2));    /* 8 */
     printf("%p\n", &v[0]);          /* 0x7ffee0d7c8a0 */
+    printf("%p\n", v);              /* 0x7ffee0d7c8a0 */
     printf("%p\n", &v2);            /* 0x7ffee0d7c898 */
 }
 ```
@@ -501,7 +507,7 @@ I vettori di caratteri non differiscono dagli altri vettori.
 Esempi di dichiarazione:
 * *vet* è un vettore di 4 caratteri non inizializzato
 * *vet1* è un vettore di 4 caratteri inizializzato
-* *vet2* è ancora di 4 caratteri (il primo 'a', poi riempito di zero)
+* *vet2* è ancora di 4 caratteri (il primo è 'a', poi riempito di zeri)
 * *vet3* memorizza 2 valori: il codice del carattere 0, il valore numerico 0 (sono due costanti diverse)
 
 ```c++
@@ -511,6 +517,7 @@ char vet2[4] = { 'a' };
 char vet3[] = { '0', 0 };
 ```
 
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ASCII-Table-wide.svg/1600px-ASCII-Table-wide.svg.png?20221024154539)
 
 
 ## Le stringhe
