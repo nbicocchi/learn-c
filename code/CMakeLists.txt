@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 99)
 
 # Examples
 add_executable(example examples/example.c)
+#add_executable(sizeof examples/sizeof.c)
 #add_executable(file_copy_binary examples/file_copy_binary.c)
 #add_executable(file_copy_text examples/file_copy_text.c)
 #add_executable(file_position examples/file_position.c)

@@ -18,13 +18,13 @@ Con *dichiarazione di variabile* si intende il modo con cui in un file che segue
 
 Nel linguaggio C è obbligatorio dichiarare l’utilizzo di una variabile, ovvero dichiarare il *nome* e il *tipo* della variabile.
 
-```c
+```c++
 <tipo variabile> <nome variabile> ;
 ```
 
 Ad esempio:
 
-```c
+```c++
 // numeri interi
 char c;
 short s;
@@ -42,7 +42,7 @@ Dopo la dichiarazione le variabili non hanno un valore predefinito. E' necessari
 
 Negli esempi sotto vengono utilizzate solo espressioni composte da *letterali numeriche* per definire i valori delle variabili:
 
-```c
+```c++
 // numeri interi
 char c = 64;
 short s = (short)1024;
@@ -61,7 +61,7 @@ Le sequenze che iniziano con un numero (non possono essere identificatori!) sono
   * ottali: cominciano con 0 e proseguono con altre cifre da 0 a 7
   * esadecimali: cominciano con *0x* o *0X* e proseguono con altre cifre da 0 a 9 o con lettere (maiuscole o minuscole) da *A* a *F*
 
-```c
+```c++
 int n1 = 127  // 1 * 10^2 + 2 * 10^1 + 7 * 10^0
 int n2 = 0177 // 1 * 8^2  + 7 * 8^1  + 7 * 8^0 
 int n3 = 0x7f // 7 * 16^1 + 15 * 16^0
@@ -73,18 +73,18 @@ Ogni letterale può essere inoltre seguita un postfisso (L=long, U=unsigned, F=f
 
 
 ## Variabili costanti (di sola lettura)
-È possibile specificare che la variabile in memoria potrà essere solo letta, ovvero che è una variabile read-only, tramite la parola riservata *const*. Questa variabile è identica alle altre (ha un tipo, una locazione di memoria e viene definita), se non per il fatto che nessun comando successivo potrà modificarne il valore.
+È possibile specificare che la variabile in memoria potrà essere solo letta, ovvero che è una variabile read-only, tramite la parola riservata *const*. Questa variabile è identica alle altre (ha una locazione di memoria e un tipo), se non per il fatto che nessun comando successivo potrà modificarne il valore.
 
 *Attenzione!* Nel caso di variabili *const* dobbiamo definirne il valore nel momento della dichiarazione
 
-```c
+```c++
 const <tipo> <nome-varibile> = <espressione> ;
 const double pi_greco = 3.1415926535897932384;
 ```
 
 Ad esempio:
 
-```c
+```c++
 /* compila */
 int main() {
     const int a=2, b=3;
@@ -93,7 +93,7 @@ int main() {
 }
 ```
 
-```c
+```c++
 /* non compila */
 int main(){
     const int a=2, b=3;
@@ -132,7 +132,7 @@ I limiti degli intervalli delle variabili intere sono disponibili nella forma di
   * LONG_MIN, LONG_MAX
   * LLONG_MIN, LLONG_MAX
 
-```c
+```c++
 /* Minimum and maximum values a `signed short int' can hold.  */
 #  define SHRT_MIN        (-32768)
 #  define SHRT_MAX        32767
@@ -158,9 +158,7 @@ In alcuni contesti si può preferire utilizzare tipi non nativi (i.e., definiti 
 
 
 ## I tipi di dati in virgola mobile (IEEE 754)
-I tipi *float* e *double* sono i cosiddetti numeri in virgola mobile che rappresentano l’insieme dei numeri reali: con essi possiamo rappresentare numeri molto piccoli o numeri molto grandi, positivi e negativi, con e senza decimali
-
-La differenza tra i due sta nel numero di bit riservati alla rappresentazione dei numeri, che si riflette sul range di numeri rappresentabili e sul numero di cifre dopo la virgola. Se abbiamo bisogno di particolare accuratezza, utilizziamo il tipo *double*.
+I tipi *float* e *double* sono i cosiddetti numeri in virgola mobile che rappresentano l’insieme dei numeri reali: con essi possiamo rappresentare numeri molto piccoli o numeri molto grandi, positivi e negativi, con e senza decimali La differenza tra i due sta nel numero di bit riservati alla rappresentazione dei numeri, che si riflette sul range di numeri rappresentabili e sul numero di cifre dopo la virgola.
 
 
 | **Nome** | **Dimensione Tipica** | **Descrizione** |
@@ -169,12 +167,27 @@ La differenza tra i due sta nel numero di bit riservati alla rappresentazione de
 | double | 8 byte | numero in virgola mobile 64 bit |
 | long double | 16 byte | numero in virgola mobile 128 bit |
 
-Lo **standard IEEE per il calcolo in virgola mobile** (**IEEE 754**) (ufficialmente: **IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985)** o anche **IEC 60559:1989, Binary floating-point arithmetic for microprocessor systems**) è lo standard più diffuso nel campo del calcolo automatico. Questo standard definisce il formato per la rappresentazione dei numeri in [virgola mobile](https://it.wikipedia.org/wiki/Virgola_mobile "Virgola mobile") (compreso ±0 e i [numeri denormalizzati](https://it.wikipedia.org/wiki/Numeri_denormalizzati "Numeri denormalizzati"); gli infiniti e i [NaN](https://it.wikipedia.org/wiki/NaN "NaN"), "*not a number*"), ed un set di operazioni effettuabili su questi. Specifica inoltre quattro metodi di arrotondamento e ne descrive cinque eccezioni.
+Lo standard **IEEE 754** è il formato più utilizzato per la rappresentazione dei numeri in virgola mobile nei computer. Esso definisce vari formati, tra cui il **formato a 32 bit (single precision)** e il **formato a 64 bit (double precision)**.
+
+Un numero in virgola mobile secondo IEEE 754 è rappresentato dalla seguente formula:
+
+$$V = (-1)^S \times (1 + M) \times 2^{E}$$
+
+Dove:
+- **S** è il bit di **segno** (0 per positivo, 1 per negativo).
+- **M** è la **mantissa** (o significando), che rappresenta la parte frazionaria del numero.
+- **E** è l'**esponente**, che determina la scala del numero attraverso la base 2.
+
+Lo standard prevede alcuni casi particolari:
+- **Zero**: tutti i bit dell'esponente e della mantissa sono 0.
+- **Numeri denormalizzati**: esponente a 0, ma la mantissa non è 0.
+- **Infinito**: esponente tutto a 1 e mantissa a 0.
+- **NaN (Not a Number)**: esponente tutto a 1 e mantissa diversa da 0.
+
 ![double](./images/rappresentazione_double_float.avif)
 
-Ad esempio:
 
-https://www.h-schmidt.net/FloatConverter/IEEE754.html
+Per esempi concreti, vedi: https://www.h-schmidt.net/FloatConverter/IEEE754.html
 
 | **Numero**    | **Esponente** | **Mantissa**       | **Errore**          |
 |---------------|---------------|--------------------|---------------------|
@@ -198,7 +211,7 @@ L'operatore *sizeof* si applica ad un tipo, ad un nome di variabile o ad un'espr
 
 *sizeof* ritorna una variabile di tipo *unsigned long*
 
-```c
+```c++
 printf("char=%lu\n", sizeof(char));
 printf("short=%lu\n", sizeof(short));
 printf("int=%lu\n", sizeof(int));
@@ -209,7 +222,10 @@ printf("double=%lu\n", sizeof(double));
 ```
 
 ## Casting implicito
-```c
+
+In C, il casting implicito (o type promotion) si verifica automaticamente quando un valore di un tipo di dati viene convertito in un altro tipo più "capiente" senza necessità di un cast esplicito da parte del programmatore. 
+
+```c++
 int main(void) {
     int  i = 17;
 
@@ -232,7 +248,10 @@ Warning: Implicit conversion from 'int' to 'float' may lose precision
 ```
 
 ## Casting esplicito
-```c
+
+Il casting esplicito in C consente di convertire manualmente un valore da un tipo di dato a un altro, utilizzando la sintassi (<tipo>) <espressione>. Questo avviene per evitare la perdita di precisione o overflow e garantire la correttezza delle operazioni aritmetiche.
+
+```c++
 int main(void) {
     int  i = 17;
 
@@ -249,7 +268,7 @@ int main(void) {
 }
 ```
 
-```c
+```c++
 int main(void) {
     unsigned int u = UINT_MAX;
     float f = (float)u;
@@ -275,7 +294,7 @@ Un puntatore non contiene il valore di una variabile tradizionale, ma l'indirizz
 * L'operatore *&* (si legge *l'indirizzo di*) e consente di conoscere l'indirizzo di una variabile
 * L'operatore * (si legge *il valore di*) permette di accedere e/o modificare il valore contenuto all'indirizzo di memoria specificato da un puntatore
 
-```c
+```c++
 int *p;
 int num = 42;
 
@@ -290,7 +309,7 @@ p = &num
 
 Un assegnamento come il seguente:
 
-```c
+```c++
 int num2 = *p;
 ```
 
@@ -299,7 +318,7 @@ Accede in lettura al valore memorizzato all'indirizzo puntato da *p* e lo assegn
 Come ogni altra variabile, anche un puntatore, finché non viene inizializzato, contiene una sequenza di bit casuali che
 difficilmente corrisponde a un indirizzo di memoria valido. *Tale situazione può essere causa di errori difficilmente identificabili*.
 
-```c
+```c++
 int main(){
     int *p;
 
@@ -316,14 +335,14 @@ int main(){
 Il *puntatore nullo* vale zero e non è un puntatore valido; nelle funzioni che ritornano un puntatore è spesso ritornato come segnalazione di errore.
 La macro *NULL* vale 0, e 0 è confrontabile con un puntatore.
 
-```c
+```c++
 char *p;
 if (p != NULL) {
   /* istruzioni */
 }
 ```
 
-```c
+```c++
 char *p;
 if (p) {
   /* istruzioni */
@@ -341,7 +360,7 @@ A seconda del numero di dimensioni *(d)* dell'array, essi vengono chiamati vetto
 
 La sintassi per la dichiarazione di un array monodimensionale è la seguente:
 
-```c
+```c++
 nome-tipo identificatore [ cardinalità ] ;
 ```
 
@@ -351,27 +370,26 @@ nome-tipo identificatore [ cardinalità ] ;
 
 Ad esempio:
 
-```c
-int num[5];
-...
-double primes[1000];
+```c++
+double numbers[50];
+unsigned long primes[1000];
 ```
 
 ## Definizione di un array
-* L'inizializzazione di un array può essere effettuata senza specificarne la dimensione, ma semplicemente elencandone gli elementi. Non viene specificata la cardinalità dell'array, ma si racchiude tra parentesi graffe una lista di elementi separati da virgola. Il compilatore dimensiona l'array sulla base del numero di valori utilizzati per l'inizializzazione.
+L'inizializzazione di un array può essere effettuata senza specificarne la dimensione, ma semplicemente elencandone gli elementi. Non viene specificata la cardinalità dell'array, ma si racchiude tra parentesi graffe una lista di elementi separati da virgola. Il compilatore dimensiona l'array sulla base del numero di valori utilizzati per l'inizializzazione.
 
-```c
-int dxm[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+```c++
+int dxm[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 ```
 
 È possibile dichiarare un array di una determinata dimensione e inizializzarne esplicitamente solo i primi elementi, mentre i rimanenti elementi verranno inizializzati a 0
-```c
+```c++
 int n[10] = {1, 5, 3};
 ```
 
 Un modo semplice per inizializzare a 0 tutti gli elementi di un array è:
 
-```c
+```c++
 int n[10] = {};
 ```
 
@@ -379,15 +397,15 @@ int n[10] = {};
 ## Array in memoria
 Il nome di un array è un *puntatore costante (non può essere modificato!)* il cui valore corrisponde all'indirizzo del primo elemento del'array
 
-```c
+```c++
 num == &num[0]
 ```
 
-```c
+```c++
 *num == num[0]
 ```
 
-```c
+```c++
 int main() {
     int n[16] = {};
 
@@ -401,7 +419,7 @@ int main() {
 
 In virtù del fatto che gli elementi di un array vengono sempre memorizzati in  aree contigue di memoria, l'indirizzo dell'elemento di indice *i* può essere ricavato con:
 
-```c  
+```c++  
 addr = base + i * dim
 ```
 
@@ -424,7 +442,7 @@ In altri casi l'accesso errato va a leggere/scrivere una porzione di memoria che
 ## Uso di macro con array e cicli
 In ogni punto del programma viene usata la macro MAX per fare riferimento alla dimensione dell'array. Il valore della macro MAX è definito in un unico punto e quindi esiste un unico punto di aggiornamento. Dopo la ricompilazione, il valore corretto viene utilizzato sia per dimensionare l'array e che per controllare il ciclo.
 
-```c
+```c++
 #define MAX 10
 int vet[MAX];
 for (i = 0; i < MAX; i++) {
@@ -434,12 +452,12 @@ for (i = 0; i < MAX; i++) {
 
 Una macro utile per essere utilizzata con gli array e che restituisce il numero di elementi:
 
-```c
+```c++
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
 ```
 Ad esempio:
 
-```c
+```c++
 int v[10];
 int dim = ARRAY_SIZE(v);
 ```
@@ -457,7 +475,7 @@ Operatore *&*
   * *&array* è un alias di &array[0] e ritorna l'indirizzo del primo elemento dell'array
   * *&pointer* ritorna l'indirizzo del puntatore stesso
 
-```c
+```c++
 void stampa_array(const int *v, unsigned size) {
     unsigned i;
 
@@ -486,7 +504,7 @@ Esempi di dichiarazione:
 * *vet2* è ancora di 4 caratteri (il primo 'a', poi riempito di zero)
 * *vet3* memorizza 2 valori: il codice del carattere 0, il valore numerico 0 (sono due costanti diverse)
 
-```c
+```c++
 char vet[4];
 char vet1[] = { 'a', 'b', 'c', '\n' };
 char vet2[4] = { 'a' };
@@ -498,7 +516,7 @@ char vet3[] = { '0', 0 };
 ## Le stringhe
 Una stringa costante è rappresentata da una sequenza di 0 o più caratteri racchiusi fra doppi apici, per esempio:
 
-```c
+```c++
 char str[] = "Hello World!\n";
 ```
 
@@ -507,7 +525,7 @@ La memorizzazione di una stringa comprende i caratteri che effettivamente la com
 La dimensione di una variabile stringa deve prevedere lo spazio sufficiente per includere anche il carattere zero di
   terminazione, oltre ai caratteri "effettivi" che compongono la stringa. La stringa vuota è rappresentata da "" (due doppi apici consecutivi), occupa 1 byte, che memorizza il carattere di terminazione.
 
-```c
+```c++
 #include <stdio.h>
 
 int main() {
@@ -533,7 +551,7 @@ Caratteri e stringhe sono diversi e non vanno confusi:
 * un carattere è in realtà un numero intero (per denotare una costante di tipo carattere: 'x')
 * una stringa è un array di caratteri che termina con il carattere '\0'. Detto in altro modo: una variabile di tipo stringa è un puntatore al primo carattere di un array di caratteri
 
-```c
+```c++
 char c = 'a';  // carattere
 char *s = "a"; // puntatore alla stringa costante "a"
 char v[] = "a"; // array di 2 caratteri inizializzato a {'a', '\0'}
@@ -547,7 +565,7 @@ In un programma C, *printf()* è una delle funzioni centrali per gestire l'outpu
 
 *printf()* con tipi interi con segno:
 
-```c
+```c++
 int main() {
     /* interi con segno */
     char c = 'a';
@@ -564,7 +582,7 @@ int main() {
 
 *printf()* con tipi interi senza segno:
 
-```c
+```c++
 int main() {
     /* interi senza segno */
     unsigned char cu = 'a';
@@ -581,7 +599,7 @@ int main() {
 
 *printf()* con tipi in virgola mobile:
 
-```c
+```c++
 int main() {
     /* virgola mobile */
     float f = 1.0;
@@ -597,7 +615,7 @@ int main() {
 ## scanf()
 In un programma C, *scanf()* è una delle funzioni centrali per gestire l'input da console. *scanf()* legge input formattato da tastiera.
 
-```c
+```c++
 #include <stdio.h>
 int main() {
     char c;
@@ -616,7 +634,7 @@ int main() {
 ## Funzioni di libreria
 La libreria standard del C (LibC) contiene un'ampia varietà di funzioni per manipolare tutti gli aspetti di un sistema operativo. Sotto sono riportare quelle principali che riguardano il trattatamento dei caratteri:
 
-```c
+```c++
 #include <stdio.h>
 #include <ctype.h>
 
@@ -631,7 +649,7 @@ int isspace(int ch);
 
 Funzioni principali che riguardano il trattamento delle stringhe:
 
-```c
+```c++
 #include <stdlib.h>
 #include <string.h>
 
@@ -649,7 +667,7 @@ size_t strlen(const char *str);
 
 Funzioni principali che riguardano le funzioni matematiche:
 
-```c
+```c++
 #include <math.h>
 
 /* funzioni trigonometriche */
@@ -673,7 +691,7 @@ Funzioni principali che riguardano i numeri pseudo-casuali:
 * *srand()* inizializza il seme (seed) per la generazione
 * *rand()* ritorna un numero intero pseudo casuale compreso fra 0 e RAND_MAX
 
-```c
+```c++
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
