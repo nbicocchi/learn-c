@@ -187,25 +187,6 @@ int main() {
 }
 ```
 
-## Array di puntatori (a carattere)
-Gli elementi di un array possono essere di qualunque tipo, ad esempio char *\*settimana[]* è un array che memorizza 7 puntatori a carattere. Si tratta di un tipo in genere utilizzato per gestire gruppi di stringhe di caratteri.
-
-```c
-char *settimana[] = {
-    "lunedì", 
-    "martedì", 
-    "mercoledì",
-    "giovedì", 
-    "venerdì",
-    "sabato", 
-    "domenica" 
-};
-
-printf("%s\n", settimana[0]); /* Output: lunedi */
-```
-
-![Puntatore a puntatore a carattere](./images/puntatore_puntatore_char.avif)
-
 ## Passaggio di parametri al programma principale
 E' possibile passare parametri *dalla shell* ad *un programma C* utilizzando parametri opzionali della funzione main():
 * *argc* è un numero intero e rappresenta il numero dei parametri ricevuti (considerando anche il comando stesso)
@@ -252,11 +233,22 @@ Una funzione è definita in modo ricorsivo se è definita in termini di se stess
 * I *casi ricorsivi* permettono di calcolare la funzione mediante altre valutazioni della funzione
 
 ```c
+// caso base e casi ricorsivi per il calcolo del fattoriale
+
 n! = 1 x 2 x ... x (n-2) x (n-1) x n
 
 n! = 1            (if n == 0) // caso base
 n! = n x (n-1)!   (if n > 0)  // caso ricorsivo
 ```
+
+**Tuttavia, la ricorsione ha alcuni svantaggi:**
+
+1. **Consumo di memoria** – Ogni chiamata ricorsiva aggiunge un nuovo frame allo stack, e se la profondità della ricorsione è troppo grande, si può esaurire lo spazio disponibile, causando un errore di "stack overflow".
+2. **Prestazioni inferiori rispetto agli approcci iterativi** – Le chiamate di funzione hanno un overhead non trascurabile, e il costo di mantenere lo stack delle chiamate può rendere la ricorsione più lenta rispetto a un approccio iterativo equivalente.
+3. **Rischio di ridondanza nei calcoli** – Senza ottimizzazioni come la **memoization** o la **ricorsione di coda**, la ricorsione può ricalcolare gli stessi valori più volte, riducendo l'efficienza (ad esempio, nel calcolo ingenuo dei numeri di Fibonacci).
+
+In molti casi, un approccio iterativo può essere più efficiente, evitando il rischio di stack overflow e riducendo l'overhead delle chiamate di funzione. 
+
 
 ### Ricorsione (fattoriale)
 ```c

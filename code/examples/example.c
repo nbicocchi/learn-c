@@ -1,22 +1,32 @@
-#include <float.h>
-#include <limits.h>
 #include <stdio.h>
+#include <string.h>
 
-void stampa_array(const int *v, unsigned size) {
-  unsigned i;
+int main() {
+  int n;
+  printf("How many strings ? ");
+  scanf("%d", &n);
 
-  for (i = 0; i < size; i++) {
-    printf("%d\n", v[i]);
+  char *strings[n];
+  char content[n][128];
+
+  // fill char array with actual strings
+  for (int i = 0; i < n; i++) {
+    printf("Enter string %d: ", i + 1);
+    scanf("%s", content[i]);
   }
-}
 
-int main(void) {
-  int v[16];
-  int *v2 = v;
+  // build index with pointers
+  for (int i = 0; i < n; i++) {
+    strings[i] = content[i];
+  }
 
-  printf("%ld\n", sizeof(v));     /* 64 */
-  printf("%ld\n", sizeof(v2));    /* 8 */
-  printf("%p\n", &v[0]);          /* 0x7ffee0d7c8a0 */
-  printf("%p\n", v);              /* 0x7ffee0d7c8a0 */
-  printf("%p\n", &v2);            /* 0x7ffee0d7c898 */
+  // print content
+  for (int i = 0; i < n; i++) {
+    printf("%s\n", content[i]);
+  }
+
+  // print content using the index
+  for (int i = 0; i < n; i++) {
+    printf("%s\n", strings[i]);
+  }
 }

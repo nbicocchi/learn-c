@@ -495,20 +495,23 @@ int main(void) {
 
     printf("%ld\n", sizeof(v));     /* 64 */
     printf("%ld\n", sizeof(v2));    /* 8 */
-    printf("%p\n", &v[0]);          /* 0x7ffee0d7c8a0 */
+    
     printf("%p\n", v);              /* 0x7ffee0d7c8a0 */
+    printf("%p\n", &v);             /* 0x7ffee0d7c8a0 */
+    printf("%p\n", &v[0]);          /* 0x7ffee0d7c8a0 */
+    
     printf("%p\n", &v2);            /* 0x7ffee0d7c898 */
 }
 ```
 
-## Vettori di caratteri
+## Array di caratteri
 I vettori di caratteri non differiscono dagli altri vettori. 
 
 Esempi di dichiarazione:
 * *vet* è un vettore di 4 caratteri non inizializzato
 * *vet1* è un vettore di 4 caratteri inizializzato
-* *vet2* è ancora di 4 caratteri (il primo è 'a', poi riempito di zeri)
-* *vet3* memorizza 2 valori: il codice del carattere 0, il valore numerico 0 (sono due costanti diverse)
+* *vet2* è un vettore di 4 caratteri inizializzato (il primo è 'a', poi riempito di zeri)
+* *vet3* è un vettore di 2 caratteri inizializzato (il primo è il valore numerico del carattere 0, il secondo è il valore numerico 0)
 
 ```c++
 char vet[4];
@@ -519,9 +522,18 @@ char vet3[] = { '0', 0 };
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ASCII-Table-wide.svg/1600px-ASCII-Table-wide.svg.png?20221024154539)
 
+Il seguente programma riproduce la tabella ASCII:
+
+```c++
+int main(void) {
+  for (unsigned char c = 0; c < 128; c++) {
+    printf("[%d] [%x] %c\n", c, c, c);
+  }
+}
+```
 
 ## Le stringhe
-Una stringa costante è rappresentata da una sequenza di 0 o più caratteri racchiusi fra doppi apici, per esempio:
+Una stringa è rappresentata da una sequenza di 0 o più caratteri racchiusi fra doppi apici, per esempio:
 
 ```c++
 char str[] = "Hello World!\n";
@@ -529,8 +541,7 @@ char str[] = "Hello World!\n";
 
 La memorizzazione di una stringa comprende i caratteri che effettivamente la compongono, più un carattere di terminazione che delimita l'ultimo carattere della stringa (delimitatore). Il carattere di terminazione è il byte di valore numerico 0 (zero). Esso non corrisponde ad un carattere ASCII stampabile.
 
-La dimensione di una variabile stringa deve prevedere lo spazio sufficiente per includere anche il carattere zero di
-  terminazione, oltre ai caratteri "effettivi" che compongono la stringa. La stringa vuota è rappresentata da "" (due doppi apici consecutivi), occupa 1 byte, che memorizza il carattere di terminazione.
+La dimensione di una variabile stringa deve prevedere lo spazio sufficiente per includere anche il carattere zero di terminazione, oltre ai caratteri "effettivi" che compongono la stringa. La stringa vuota è rappresentata da "" (due doppi apici consecutivi), occupa 1 byte, che memorizza il carattere di terminazione.
 
 ```c++
 #include <stdio.h>
@@ -554,10 +565,6 @@ int main() {
 }
 ```
 
-Caratteri e stringhe sono diversi e non vanno confusi:
-* un carattere è in realtà un numero intero (per denotare una costante di tipo carattere: 'x')
-* una stringa è un array di caratteri che termina con il carattere '\0'. Detto in altro modo: una variabile di tipo stringa è un puntatore al primo carattere di un array di caratteri
-
 ```c++
 char c = 'a';  // carattere
 char *s = "a"; // puntatore alla stringa costante "a"
@@ -567,7 +574,22 @@ char v[] = "a"; // array di 2 caratteri inizializzato a {'a', '\0'}
 printf("%d %d %d\n", sizeof(c), sizeof(s), sizeof(v));
 ```
 
-## printf()
+Caratteri e stringhe sono diversi e non vanno confusi:
+* un carattere è in realtà un numero intero (usato per rappresentare un carattere secondo il codice ASCII)
+* una stringa è un array di caratteri che termina con un byte aggiuntivo di valore 0 (da non confondere con lo '0' carattere che ha invece valore 48). Detto in altro modo: una variabile di tipo stringa è un puntatore al primo carattere di un array di caratteri
+
+```c++
+// stampa carattere per carattere la stringa "Hello world"
+// mostrando sia la rapppresentazione del carattere che il valore numerico
+int main(void) {
+  char str[] = "Hello World";
+  for (int i = 0; i < strlen(str) + 1; i++) {
+    printf("%c %d\n", str[i], str[i]);
+  }
+}
+```
+
+### printf()
 In un programma C, *printf()* è una delle funzioni centrali per gestire l'output su console. *printf()* accetta una stringa che specifica il formato delle variabili e le variabili stesse (il numero degli specificatori deve corrispondere al numero delle variabili).
 
 *printf()* con tipi interi con segno:
@@ -619,7 +641,7 @@ int main() {
 }
 ```
 
-## scanf()
+### scanf()
 In un programma C, *scanf()* è una delle funzioni centrali per gestire l'input da console. *scanf()* legge input formattato da tastiera.
 
 ```c++
@@ -638,8 +660,67 @@ int main() {
 }
 ```
 
+## Array di puntatori (a carattere)
+Gli elementi di un array possono essere di qualunque tipo, ad esempio char *\*settimana[]* è un array che memorizza 7 puntatori a carattere. Si tratta di un tipo in genere utilizzato per gestire gruppi di stringhe di caratteri.
+
+```c
+char *settimana[] = {
+    "lunedì", 
+    "martedì", 
+    "mercoledì",
+    "giovedì", 
+    "venerdì",
+    "sabato", 
+    "domenica" 
+};
+
+printf("%s\n", settimana[0]); /* Output: lunedi */
+```
+
+![Puntatore a puntatore a carattere](./images/puntatore_puntatore_char.avif)
+
+Nell'esempio seguente un array di puntatori a carattere è utilizzato per costruire un indice per un gruppo di strighe memorizzate di un array di caratteri separato.
+
+```c++
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+  int n;
+  printf("How many strings ? ");
+  scanf("%d", &n);
+
+  char *strings[n];
+  char content[n][128];
+
+  // fill char array with actual strings
+  for (int i = 0; i < n; i++) {
+    printf("Enter string %d: ", i + 1);
+    scanf("%s", content[i]);
+  }
+
+  // build index with pointers
+  for (int i = 0; i < n; i++) {
+    strings[i] = content[i];
+  }
+
+  // print content
+  for (int i = 0; i < n; i++) {
+    printf("%s\n", content[i]);
+  }
+
+  // print content using the index
+  for (int i = 0; i < n; i++) {
+    printf("%s\n", strings[i]);
+  }
+}
+```
+
 ## Funzioni di libreria
-La libreria standard del C (LibC) contiene un'ampia varietà di funzioni per manipolare tutti gli aspetti di un sistema operativo. Sotto sono riportare quelle principali che riguardano il trattatamento dei caratteri:
+
+La [libreria standard del C](https://www.gnu.org/software/libc/) contiene un'ampia varietà di funzioni per manipolare tutti gli aspetti di un sistema operativo.
+
+### Caratteri
 
 ```c++
 #include <stdio.h>
@@ -654,7 +735,113 @@ int isdigit(int ch);
 int isspace(int ch);
 ```
 
-Funzioni principali che riguardano il trattamento delle stringhe:
+**toupper (Converte un carattere in maiuscolo, se possibile)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = 'a';
+    char upper = toupper(ch);
+    printf("toupper: %c -> %c\n", ch, upper);
+    return 0;
+}
+```
+
+**tolower (Converte un carattere in minuscolo, se possibile)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = 'A';
+    char lower = tolower(ch);
+    printf("tolower: %c -> %c\n", ch, lower);
+    return 0;
+}
+```
+
+**isupper (Verifica se un carattere è una lettera maiuscola)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = 'G';
+    if (isupper(ch)) {
+        printf("isupper: %c è una lettera maiuscola\n", ch);
+    } else {
+        printf("isupper: %c non è una lettera maiuscola\n", ch);
+    }
+    return 0;
+}
+```
+
+**islower (Verifica se un carattere è una lettera minuscola)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = 'g';
+    if (islower(ch)) {
+        printf("islower: %c è una lettera minuscola\n", ch);
+    } else {
+        printf("islower: %c non è una lettera minuscola\n", ch);
+    }
+    return 0;
+}
+```
+
+**isalpha (Verifica se un carattere è una lettera dell'alfabeto)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = 'X';
+    if (isalpha(ch)) {
+        printf("isalpha: %c è una lettera dell'alfabeto\n", ch);
+    } else {
+        printf("isalpha: %c non è una lettera dell'alfabeto\n", ch);
+    }
+    return 0;
+}
+```
+
+**isdigit (Verifica se un carattere è una cifra numerica)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = '5';
+    if (isdigit(ch)) {
+        printf("isdigit: %c è una cifra numerica\n", ch);
+    } else {
+        printf("isdigit: %c non è una cifra numerica\n", ch);
+    }
+    return 0;
+}
+```
+
+**isspace (Verifica se un carattere è uno spazio o un carattere di spaziatura)**
+```c
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char ch = ' ';
+    if (isspace(ch)) {
+        printf("isspace: Il carattere è uno spazio o un carattere di spaziatura\n");
+    } else {
+        printf("isspace: Il carattere non è uno spazio o un carattere di spaziatura\n");
+    }
+    return 0;
+}
+```
+
+### Stringhe
 
 ```c++
 #include <stdlib.h>
@@ -671,8 +858,130 @@ char *strcat(char *dest, const char *src);
 char *strdup(const char *s1);
 size_t strlen(const char *str);
 ```
+**atoi (Converte una stringa in un intero)**
+```c
+#include <stdio.h>
+#include <stdlib.h>
 
-Funzioni principali che riguardano le funzioni matematiche:
+int main() {
+    char str[] = "123";
+    int num = atoi(str);
+    printf("atoi: %d\n", num);
+    return 0;
+}
+```
+
+**atol (Converte una stringa in un long)**
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char str[] = "123456789";
+    long num = atol(str);
+    printf("atol: %ld\n", num);
+    return 0;
+}
+```
+
+**atof (Converte una stringa in un double)**
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char str[] = "3.14159";
+    double num = atof(str);
+    printf("atof: %f\n", num);
+    return 0;
+}
+```
+
+**strcmp (Confronta due stringhe, case-sensitive)**
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str1[] = "apple";
+    char str2[] = "banana";
+    int result = strcmp(str1, str2);
+    printf("strcmp: %d\n", result);
+    return 0;
+}
+```
+
+**strcasecmp (Confronta due stringhe, case-insensitive)**
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str1[] = "Hello";
+    char str2[] = "hello";
+    int result = strcasecmp(str1, str2);
+    printf("strcasecmp: %d\n", result);
+    return 0;
+}
+```
+
+**strcpy (Copia una stringa in un'altra)**
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char src[] = "Hello, world!";
+    char dest[50];  
+    strcpy(dest, src);
+    printf("strcpy: %s\n", dest);
+    return 0;
+}
+```
+
+**strcat (Concatena due stringhe)**
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str1[50] = "Hello, ";
+    char str2[] = "world!";
+    strcat(str1, str2);
+    printf("strcat: %s\n", str1);
+    return 0;
+}
+```
+
+**strdup (Duplica una stringa, allocando memoria dinamicamente)**
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main() {
+    char str[] = "Memory duplication";
+    char *copy = strdup(str);
+    printf("strdup: %s\n", copy);
+    free(copy);  // Importante liberare la memoria allocata
+    return 0;
+}
+```
+
+**strlen (Restituisce la lunghezza di una stringa)**
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str[] = "Measure this!";
+    size_t length = strlen(str);
+    printf("strlen: %zu\n", length);
+    return 0;
+}
+```
+
+### Matematica
 
 ```c++
 #include <math.h>
@@ -694,7 +1003,7 @@ double floor(double x)
 double round(double x)
 ```
 
-Funzioni principali che riguardano i numeri pseudo-casuali:
+### Numeri casuali
 * *srand()* inizializza il seme (seed) per la generazione
 * *rand()* ritorna un numero intero pseudo casuale compreso fra 0 e RAND_MAX
 
