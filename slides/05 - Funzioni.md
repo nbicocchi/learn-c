@@ -207,6 +207,9 @@ int main(int argc, char *argv[]) {
 Ad esempio:
 
 ```c
+#include <stdlib.h>
+#include <string.h>
+
 int main(int argc, char *argv[]) {
     int a;
     double b;
