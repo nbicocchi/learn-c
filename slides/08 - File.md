@@ -18,7 +18,7 @@ File di binario (in base alla endianness): 0x00 0x00 0x00 0x06  (4 byte)
 
 Un file di testo è un caso particolare di file binario che utilizza un sottoinsieme dei caratteri ASCII (i caratteri stampabili). 
 
-```c
+```c++
 /* Prints the full ASCII table */
 int main(void) {
     int i;
@@ -42,7 +42,7 @@ In sintesi:
 
 * Contengono caratteri ASCII stampabili e di controllo (e.g., *newline*, *tabulazione*)
 * Sono letti e scritti per caratteri o per righe (ogni riga delimitata da *newline*)
-* Sono visualizzabili e manipolabili usando semplici editor di testo
+* Sono visualizzabili e manipolabili usando editor di testo
 * Esempi di file di testo: sorgenti C, file di configurazione Unix (/etc)
 
 **File binari**
@@ -55,11 +55,11 @@ In sintesi:
 ## Il tipo FILE (user-space)
 Le funzioni per l'accesso a file sono dichiarate nel file di intestazione *stdio.h*
 
-Il riferimento al file desiderato viene mantenuto per mezzo di un puntatore (*FILE* *). FILE è una struttura che contiene tutte le informazioni utili a permettere l'interazione di un programma con i file gestiti dal sistema operativo. Tipicamente il programmatore non ha alcuna necessità di conoscere il contenuto dei campi delle variabili di tipo FILE. Il programma opera su un file chiamando le funzioni messe a disposizione dalla libreria standard che usano le variabili di tipo FILE per identificare e manipolare il file fisico.
+Il riferimento al file desiderato viene mantenuto per mezzo di un puntatore (*FILE* *). FILE è una struttura che contiene tutte le informazioni utili a permettere l'interazione di un programma con i file. Tipicamente il programmatore non ha alcuna necessità di conoscere il contenuto dei campi delle variabili di tipo FILE. Il programma opera su un file chiamando le funzioni messe a disposizione dalla libreria standard che usano le variabili di tipo FILE per identificare e manipolare il file fisico.
 
 ## struct file (kernel-space)
 
-```c
+```c++
 struct file {
     ...
 	struct path		        f_path;
@@ -82,14 +82,14 @@ Per utilizzare un file è necessario sia *aprirlo* che *chiuderlo*. Le funzioni 
 * Aprire un file significa comunicare al sistema operativo che si intende accedere al contenuto del file attravero l'utilizzo della funzione *fopen* (File OPEN)
 * Quando il file non è più utilizzato il file deve essere chiuso utilizzando la funzione *fclose* (File CLOSE)
 
-```c
+```c++
 FILE *fopen(char *path, char *mode);
 int fclose(FILE *fp);
 ```
 
 ### fopen()
 
-```c
+```c++
 FILE *fopen(char *path, char *mode);
 ```
 
@@ -117,8 +117,8 @@ E' anche possibile aggiungere il carattere *b* alla fine o in mezzo alla combina
 * NULL in caso di errore
 
 Tipiche fonti di errore:
-* aprire in lettura un file che non esiste
-* aprire un file per il quale non si dispongono dei necessari permessi
+* aprire un file che non esiste
+* aprire un file senza i permessi necessari
     
 
 ### fclose()
@@ -147,7 +147,7 @@ La funzione *fflush()* forza la scrittura di tutti i dati non ancora scritti sul
 
 ### Esempio: apertura di un file
 
-```c
+```c++
 FILE *fin, *fout;
 if (!(fin = fopen("matrice.dat", "r"))) {
     perror("matrice.dat");
@@ -176,7 +176,7 @@ Nel codice sopra:
 
 ## Lettura e scrittura di file binari
 
-```c
+```c++
 #include <stdio.h>
 size_t fread(void *ptr, size_t size, size_t nelem, FILE *f);
 size_t fwrite(void *ptr, size_t size, size_t nelem, FILE *f);
@@ -192,7 +192,7 @@ Ritornano una variabile di tipo *size_t* che rappresenta il numero degli element
 
 ### Esempio: copia di un file binario
 
-```c
+```c++
 int copy_by_byte_blocks(FILE *source, FILE *target) {
     size_t nread, nwrite;
     unsigned char buffer[BUFFER_SIZE];
@@ -212,7 +212,7 @@ int copy_by_byte_blocks(FILE *source, FILE *target) {
 ## Lettura e scrittura di file di testo
 
 
-```c
+```c++
 #include <stdio.h>
 int fgetc(FILE *stream)
 int fputc(int char, FILE *stream)
@@ -226,7 +226,7 @@ Le funzioni *fgetc()* ed *fputc()* vengono utilizzate per leggere e scrivere sin
 
 ### Esempio: copia di un file di testo
 
-```c
+```c++
 void copy_by_char(FILE *source, FILE *target) {
     int ch;
     while ((ch = fgetc(source)) != EOF) {
@@ -254,9 +254,9 @@ int main() {
 
 Dal punto di vista logico, un file è una sequenza di byte [0, size - 1]. Quando un programma accede ad un file, in lettura o in scrittura, il sistema ricorda la sua posizione corrente (all'interno della struttura FILE). 
 
-**La posizione corrente è relativa ad un singola apertura**. Un file può essere aperto contemporaneamente più volte ed avere di conseguenza molteplici posizioni correnti (ognuna annotata all'interno della variabile FILE dedicata)
+**La posizione corrente è relativa ad un singola apertura**. Un file può essere apertilo contemporaneamente più volte ed avere di conseguenza molteplici posizioni correnti (ognuna annotata all'interno della variabile FILE dedicata)
 
-```c
+```c++
 #include <stdio.h>
 /* whence [SEEK_SET, SEEK_CUR, SEEK_END] */
 int fseek(FILE *stream, long offset, int whence);
@@ -270,7 +270,7 @@ int fsetpos(FILE *stream, fpos_t *pos);
 
 ### fseek()
 
-```c
+```c++
 int fseek(FILE *stream, long offset, int whence);
 ```
 
@@ -290,7 +290,7 @@ Il paramtro *whence* può assumere tre valori:
 
 ### ftell()
 
-```c
+```c++
 int ftell(FILE *stream);
 ```
 
@@ -303,7 +303,7 @@ int ftell(FILE *stream);
 
 ### rewind()
 
-```c
+```c++
 void rewind(FILE *stream);
 ```
 
@@ -314,7 +314,17 @@ void rewind(FILE *stream);
 
 ### feof()
 
-TODO
+```c
+int feof(FILE *stream);
+```
+
+`feof()` accetta un solo parametro:
+* **stream** rappresenta il file da controllare
+
+`feof()` restituisce un valore diverso da zero (true) se è stato raggiunto l'**end-of-file** (EOF) per il file indicato, altrimenti restituisce **0**.  
+Viene comunemente usata per verificare la fine di un file durante la lettura ciclica.
+
+**Nota:** `feof()` non prevede il futuro — restituisce true **solo dopo** che un tentativo di lettura ha fallito perché il file è finito.
 
 ### Esempio: stabilire la dimensione di un file
 
@@ -329,7 +339,7 @@ long size = ftell(source);
 echo -n "0123456789" > test.txt
 ```
 
-```c
+```c++
 int main(void) {
     FILE *src;
     long i, length;
@@ -360,14 +370,14 @@ int main(void) {
 * Invocando l'esecuzione da linea di comando, è possibile utilizzare gli operatori di ridirezione
 
 ## Lettura e scrittura formattata
-```c
+```c++
 int printf(const char *format, ...);
 int fprintf(FILE *stream, const char *format, ...);
 int sprintf(char *str, const char *format, ...);
 int snprintf(char *str, size_t size, const char *format, ...);
 ```
 
-```c
+```c++
 int scanf(const char *format, ...);
 int fscanf(FILE *stream, const char *format, ...);
 int sscanf(const char *str, const char *format, ...);
@@ -379,7 +389,7 @@ Ne esistono diverse versioni, caratterizzate dalla lettera iniziale, che utilizz
   
 ## Argomenti a linea di comando
 
-```c
+```c++
 int main(void) { /* ... */ }
 int main (int argc, char *argv[]) { /* ... */ }
 ```
@@ -388,7 +398,7 @@ La funzione *main()* può essere invocata utilizzando due interfacce distinte in
 * **int argc**: contiene il numero di stringhe inserite dall’utente a linea di comando
 * **char *argv[]**: l’array che contiene le stringhe inserite dall’utente a linea di comando (ogni elemento dell’array è un puntatore a carattere). argv[argc] contiene un puntatore NULL (per terminare la lista di stringhe)
 
-```c
+```c++
 int main(int argc, char **argv) {
     int i;
     printf("argc=%d\n", argc);
@@ -402,7 +412,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-```
+```bash
 ./example a b c 
 argc=4
 argv[0] = ./example

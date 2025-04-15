@@ -465,7 +465,7 @@ void free(void *ptr);
 
 *free* libera il blocco di memoria di indirizzo precedentemente allocato tramite *malloc*, *calloc* o *realloc*. La memoria liberata dall'invocazione di *free* diventa disponibile per altre applicazioni
 
-La memoria allocata dinamicamente deve essere rilasciata quando non è più necessaria, per evitare di occupare inutilmente memoria
+La memoria allocata dinamicamente deve essere rilasciata quando non è più necessaria, per evitare di occupare inutilmente memoria. Con *memory leak* si intende il mancato utilizzo della funzione *free*. Come conseguenza, il sistema perde memoria disponibile.
 
 ```c++
 int *p;
@@ -477,8 +477,6 @@ if (!p) {
 
 free(p);
 ```
-
-Con *memory leak* si intende il mancato utilizzo della funzione *free*. Come conseguenza, il sistema perde memoria disponibile.
 
 ### strdup()
 
@@ -518,19 +516,24 @@ int main(void) {
 Un puntatore *dangling* è puntatore che punta a un'area di memoria non valida.
 
 ```c++
-int *p;                         /* puntatore a intero (definizione) */
-  
-p = malloc(sizeof(*p));        /* allocazione della memoria */
-  
-*p = 57;                        /* impiego dell'area allocata */
+int main(void) {
+  /* allocazione della memoria */
+  int *p = malloc(sizeof(*p));
 
-free(p);                        /* deallocazione memoria */
-  
-*p = 20;                        /* Errore! Dangling Reference */
-                                /* L'area di memoria puntata da p non e' piu' disponibile !!!! */
+  /* impiego dell'area allocata */
+  *p = 57;
 
-p = NULL;                       /* Non accedo alla memoria puntata da p */
-                                /* Accedo a p e lo faccio puntare a NULL */
+  /* deallocazione memoria */
+  free(p);
+
+  /* Errore! Dangling Reference
+   * L'area di memoria puntata da p non e' piu' disponibile !!!! */
+  *p = 20;
+
+  /* Non accedo alla memoria puntata da p
+   * Accedo a p e lo faccio puntare a NULL */
+  p = NULL;
+}
 ```
 
 Nell'esempio seguente, viene ritornato l'indirizzo di una variabile memorizzata nella porzione di stack riservata alla funzione *func*. Sfortunatamente, quella porzione di memoria viene resa disponibile non appena la funzione *func* termina. Questa circostanza genera un warning in compilazione.
@@ -705,7 +708,7 @@ void free_matrix(struct matrix *m) {
 }
 
 int main(void) {
-    struct matrix *m, *m_trans;
+    struct matrix *m;
 
     m = allocate_matrix(3, 2);
     if (m == NULL) {
@@ -814,7 +817,7 @@ void free_matrix(struct matrix *m) {
 }
 
 int main(void) {
-    struct matrix *m, *m_trans;
+    struct matrix *m;
 
     m = allocate_matrix(3, 2);
     if (m == NULL) {
