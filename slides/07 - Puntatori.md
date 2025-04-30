@@ -285,7 +285,7 @@ int main(void) {
     }
 
     i = 0;
-    for (p = strings; *p; p++) {
+    for (p = nomi; *p; p++) {
         printf("[%d] %s\n", i++, *p);
     }
 }
