@@ -2,20 +2,17 @@
 #include <stdlib.h>
 
 int main(void) {
-  /* allocazione della memoria */
-  int *p = malloc(sizeof(*p));
+  printf("Hello World!\n");
+  fprintf(stdout, "Hello World!\n"); // the same as normal printf
 
-  /* impiego dell'area allocata */
-  *p = 57;
+  char buffer[1024];
+  sprintf(buffer, "Hello World!\n");
+  printf("%s", buffer); // prints Hello World!
 
-  /* deallocazione memoria */
-  free(p);
+  char buffer_short[10];
+  sprintf(buffer_short, "Hello World!\n");
+  printf("%s", buffer_short); // prints Hello World! Potential stack overflow
 
-  /* Errore! Dangling Reference
-   * L'area di memoria puntata da p non e' piu' disponibile !!!! */
-  *p = 20;
-
-  /* Non accedo alla memoria puntata da p
-   * Accedo a p e lo faccio puntare a NULL */
-  p = NULL;
+  snprintf(buffer_short, 10,"Hello World!\n");
+  printf("%s", buffer_short); // prints Hello Wor Avoids potential stack overflow
 }

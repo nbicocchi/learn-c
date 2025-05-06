@@ -57,6 +57,16 @@ Le funzioni per l'accesso a file sono dichiarate nel file di intestazione *stdio
 
 Il riferimento al file desiderato viene mantenuto per mezzo di un puntatore (*FILE* *). FILE è una struttura che contiene tutte le informazioni utili a permettere l'interazione di un programma con i file. Tipicamente il programmatore non ha alcuna necessità di conoscere il contenuto dei campi delle variabili di tipo FILE. Il programma opera su un file chiamando le funzioni messe a disposizione dalla libreria standard che usano le variabili di tipo FILE per identificare e manipolare il file fisico.
 
+```c++
+int main(int argc, char *argv[]) {
+    FILE *source;
+    
+    // do stuff
+    
+    exit(EXIT_SUCCESS);
+}
+```
+
 ## struct file (kernel-space)
 
 ```c++
@@ -107,8 +117,8 @@ La stringa *mode* può quindi valere:
   * **r+** (lettura e scrittura) -> se il file esiste, esso viene sovrascritto, altrimenti un nuovo file viene creato
   * **w** (scrittura)  
   * **w+** (lettura e scrittura) 
-  * **a** (append) -> la scrittura avviene a partire dalla fine del file
-  * **a+** (lettura e append) 
+  * **a** (scrittura in append) -> la scrittura avviene a partire dalla fine del file
+  * **a+** (lettura e strittura in append) 
 
 E' anche possibile aggiungere il carattere *b* alla fine o in mezzo alla combinazione di caratteri che rappresentano *mode* (es., ottenendo wb o ab+) per indicare che il file va trattato come binario. **Molti sistemi trattano i file binari e i file di testo allo stesso modo, quindi il fatto di specificare la b risulta superfluo**. Altri sistemi operativi potrebbero operare delle distinzioni, e quindi potrebbe essere necessario specificare esplicitamente il tipo di file trattato.
 
@@ -123,7 +133,7 @@ Tipiche fonti di errore:
 
 ### fclose()
 
-```c
+```c++
 int fclose(FILE *f);
 ```
 
@@ -135,7 +145,7 @@ I file devono essere chiusi utilizzando la funzione *fclose()*. La chiusura del 
 
 ### fflush()
 
-```c
+```c++
 int fflush(FILE *f);
 ```
 
@@ -149,13 +159,13 @@ La funzione *fflush()* forza la scrittura di tutti i dati non ancora scritti sul
 
 ```c++
 FILE *fin, *fout;
-if (!(fin = fopen("matrice.dat", "r"))) {
-    perror("matrice.dat");
+if (!(fin = fopen("song.mp3", "r"))) {
+    perror("song.mp3");
     exit(EXIT_FAILURE);
 }
 
-if (!(fout = fopen("documenti/info.txt", "w"))) {
-    perror("documenti/info.txt");
+if (!(fout = fopen("music/song2.mp3", "w"))) {
+    perror("music/song2.mp3");
     exit(EXIT_FAILURE);
 }
 
@@ -166,11 +176,11 @@ fclose(fout);
 ```
 
 Nel codice sopra:
-* Il file *matrice.dat* viene aperto in lettura
-* Il file *documenti/info.txt* viene aperto in scrittura
+* Il file *song.mp3* viene aperto in lettura
+* Il file *music/song2.mp3* viene aperto in scrittura
 * I test verificano che i puntatori restituiti siano non nulli, cioè che i file siano stati aperti correttamente
 * La funzione *perror()* (print error) viene usata per visualizzare un eventuale messaggio
-  * Il messaggio descrive l'ultimo errore che si è verificato durante la chiamata ad una funzione di libreria, memorizzato all'interno della variabile *errno*
+  * Il messaggio descrive l'ultimo errore che si è verificato durante la chiamata a una funzione di libreria, memorizzato all'interno della variabile *errno*
   * Se il parametro della perror è diverso da NULL, la funzione prima visualizza la stringa passatale come parametro, seguita dai due punti e dal messaggio di errore
 * I file vengono chiusi con la chiamata a *fclose()*
 
@@ -252,9 +262,9 @@ int main() {
 
 ## Posizione corrente all'interno del file
 
-Dal punto di vista logico, un file è una sequenza di byte [0, size - 1]. Quando un programma accede ad un file, in lettura o in scrittura, il sistema ricorda la sua posizione corrente (all'interno della struttura FILE). 
+Dal punto di vista logico, un file è una sequenza di byte [0, size - 1]. Quando un programma accede a un file, in lettura o in scrittura, il sistema ricorda la sua posizione corrente (all'interno della struttura FILE). 
 
-**La posizione corrente è relativa ad un singola apertura**. Un file può essere apertilo contemporaneamente più volte ed avere di conseguenza molteplici posizioni correnti (ognuna annotata all'interno della variabile FILE dedicata)
+**La posizione corrente è relativa a un singola apertura**. Un file può essere aperto contemporaneamente più volte e avere di conseguenza molteplici posizioni correnti (ognuna annotata all'interno della variabile FILE dedicata)
 
 ```c++
 #include <stdio.h>
@@ -264,8 +274,8 @@ long ftell(FILE *stream);
 void rewind(FILE *stream);
 
 /* alternatives to fseek, ftell */
-int fgetpos(FILE *stream, fpos_t *pos);
 int fsetpos(FILE *stream, fpos_t *pos);
+int fgetpos(FILE *stream, fpos_t *pos);
 ```
 
 ### fseek()
@@ -291,7 +301,7 @@ Il paramtro *whence* può assumere tre valori:
 ### ftell()
 
 ```c++
-int ftell(FILE *stream);
+long ftell(FILE *stream);
 ```
 
 *ftell()* accetta un solo parametro:
@@ -314,7 +324,7 @@ void rewind(FILE *stream);
 
 ### feof()
 
-```c
+```c++
 int feof(FILE *stream);
 ```
 
@@ -324,17 +334,18 @@ int feof(FILE *stream);
 `feof()` restituisce un valore diverso da zero (true) se è stato raggiunto l'**end-of-file** (EOF) per il file indicato, altrimenti restituisce **0**.  
 Viene comunemente usata per verificare la fine di un file durante la lettura ciclica.
 
-**Nota:** `feof()` non prevede il futuro — restituisce true **solo dopo** che un tentativo di lettura ha fallito perché il file è finito.
+**Nota:** `feof()` non prevede il futuro — restituisce true **solo dopo** che un tentativo di lettura è fallito (perché il file è finito).
 
 ### Esempio: stabilire la dimensione di un file
 
-```c
+```c++
 FILE *source = fopen("/etc/passwd", "r");
 fseek(source, 0, SEEK_END);
 long size = ftell(source);
 ```
 
 ### Esempio: lettura di un file di testo al contrario (carattere per carattere)
+
 ```bash
 echo -n "0123456789" > test.txt
 ```
@@ -359,7 +370,7 @@ int main(void) {
 ```
 
 ## Flussi standard
-* In C, le azioni di scrivere su video o leggere un dato da tastiera sono assimilate rispettivamente alla scrittura del  dato su file e della sua lettura da file. I file standard sono utilizzati a questo scopo
+* In C, le azioni di scrivere su video o leggere un dato da tastiera sono assimilate rispettivamente alla scrittura del  dato su file e della sua lettura da file. I file standard sono utilizzati a questo scopo.
 * In stdio.h sono definite tre variabili di tipo puntatore a FILE: 
   * *stdin*: standard input (normalmente la tastiera) 
   * *stdout*: standard output (normalmente il video)
@@ -383,9 +394,30 @@ int fscanf(FILE *stream, const char *format, ...);
 int sscanf(const char *str, const char *format, ...);
 ```
 
-*printf()* e *scanf()* offrono funzionità di input (lettura) ed output (scrittura) formattate. In particolare è possibile specificare un formato all'interno del quale posizionare delle variabili.
+*scanf()* e *printf()* offrono funzionità di input (lettura) ed output (scrittura) formattate. In particolare è possibile specificare un formato all'interno del quale posizionare delle variabili.
 
 Ne esistono diverse versioni, caratterizzate dalla lettera iniziale, che utilizzano canali di input o di output diversi. Ad esempio, *fprintf()* stampa stringhe formattate su un file, mentre *sprintf()* su una stringa di caratteri.
+
+```c++
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  printf("Hello World!\n");
+  fprintf(stdout, "Hello World!\n"); // the same as normal printf
+
+  char buffer[1024];
+  sprintf(buffer, "Hello World!\n");
+  printf("%s", buffer); // prints Hello World!
+
+  char buffer_short[10];
+  sprintf(buffer_short, "Hello World!\n");
+  printf("%s", buffer_short); // prints Hello World! Potential stack overflow
+
+  snprintf(buffer_short, 10, "Hello World!\n");
+  printf("%s", buffer_short); // prints Hello Wor Avoids potential stack overflow
+}
+```
   
 ## Argomenti a linea di comando
 
