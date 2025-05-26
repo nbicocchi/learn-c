@@ -188,3 +188,26 @@ File: test2.txt
 
 No occurrences found in: test3.txt
 ```
+
+---
+
+Esercizio 14. Implementare una versione semplificata del comando *tee***
+
+```shell
+$ tee <output_file>
+```
+
+dove:
+
+* `<output_file>` rappresenta il percorso di un file di output;
+* il comando legge da **stdin**, scrive il contenuto sia su **stdout** (schermo) che nel file specificato;
+* il file di destinazione viene **sovrascritto** se esiste già (modalità "write").
+
+Esempio d’uso:
+
+```shell
+$ echo "Hello, world!" | ./tee output.txt
+Hello, world!
+$ cat output.txt
+Hello, world!
+```
