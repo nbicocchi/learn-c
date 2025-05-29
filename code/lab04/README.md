@@ -293,7 +293,49 @@ dove:
 
 ---
 
-Esercizio 15. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni per gestire un array dinamico di elementi di tipo *double* simile ad una lista Java o Python (https://en.wikipedia.org/wiki/Dynamic_array). Le funzioni devono rispettare i seguenti prototipi:
+Esercizio 15. Implementare una funzione `filter_even` che, dato un array di interi, restituisce un nuovo array allocato dinamicamente contenente solo i valori pari, mantenendo l'ordine originale. La dimensione del nuovo array viene restituita tramite un parametro passato per riferimento.
+
+La funzione deve rispettare il seguente prototipo:
+
+```C
+int *filter_even(const int *arr, unsigned size, unsigned *out_size);
+```
+
+dove:
+
+- **arr** è il puntatore all'array di input;
+- **size** è numero di elementi nell’array originale;
+- **out_size** è un puntatore a intero dove salvare la dimensione dell'array che viene restituito;
+- Se non ci sono numeri pari o in caso di errore, la funzione restituisce NULL.
+
+---
+
+Esercizio 16. Implementare una funzione `matrix_diagonal_sum` che, data una matrice quadrata rappresentata con un array bidimensionale, restituisce la somma degli elementi della diagonale principale e della diagonale secondaria. Restituire i due valori in una struttura allocata dinamicamente.
+
+La funzione deve rispettare il seguente prototipo:
+
+```C
+struct diag_sums {
+    double main_diag;
+    double sec_diag;
+};
+
+struct matrix {
+    size_t rows, cols;
+    double **data;
+};
+
+struct diag_sums *matrix_diagonal_sum(const struct matrix *m);
+```
+
+dove:
+
+- **m** è il puntatore alla struttura che rappresenta la matrice;
+- la funzione ritorna il puntatore alla struttura con i risultati, allocata dinamicamente. Il puntatore vale NULL in caso di errori.
+
+---
+
+Esercizio 30. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni per gestire un array dinamico di elementi di tipo *double* simile ad una lista Java o Python (https://en.wikipedia.org/wiki/Dynamic_array). Le funzioni devono rispettare i seguenti prototipi:
 
 ```c
 struct arraylist {
@@ -332,7 +374,7 @@ unsigned size(struct arraylist *l);
 
 ---
 
-Esercizio 16. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni analoghe a quelle dell'esercizio precedente ma che utilizzano come meccanismo di memorizzazione una lista linkata (https://en.wikipedia.org/wiki/Linked_list) al posto di un array dinamico. Per rappresentare la lista, utilizzare le due strutture indicate di seguito.
+Esercizio 31. *(Approfondimento, non richiesto all'esame)*. Implementare un gruppo di funzioni analoghe a quelle dell'esercizio precedente ma che utilizzano come meccanismo di memorizzazione una lista linkata (https://en.wikipedia.org/wiki/Linked_list) al posto di un array dinamico. Per rappresentare la lista, utilizzare le due strutture indicate di seguito.
 
 ```c
 struct node {

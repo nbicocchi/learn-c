@@ -1,159 +1,93 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <float.h>
+#include <stdio.h>
 
-struct node {
-    /* the actual data of the node */
-    double data;
-
-    /* pointer to the next node */
-    struct node *next;
+struct diag_sums {
+    double main_diag;
+    double sec_diag;
 };
 
-struct linkedlist {
-    /* number of actual elements contained */
-    unsigned elements;
-
-    /* pointer to the head of the list */
-    struct node *head;
+struct matrix {
+    size_t rows, cols;
+    double **data;
 };
 
-/* Service function for allocating a new node */
-struct node *allocate_node(double value) {
-    struct node *node;
-
-    node = malloc(sizeof(*node));
-    node->data = value;
-    node->next = NULL;
-    return node;
-}
-
-/* Service function for retrieving a node with a given index */
-struct node *get_node(struct linkedlist *l, unsigned index) {
-    struct node *node;
-    unsigned i = 0;
-
-    if (!l->head) {
-        /* the list is empty */
+struct diag_sums *matrix_diagonal_sum(const struct matrix *m) {
+    if (!m || m->rows != m->cols)
         return NULL;
-    } else {
-        /* the list contains elements */
-        node = l->head;
-        while (node->next && i < index) {
-            node = node->next;
-            i++;
+
+    size_t n = m->rows;
+    struct diag_sums *result = malloc(sizeof(struct diag_sums));
+    if (!result) return NULL;
+
+    result->main_diag = 0;
+    result->sec_diag = 0;
+
+    for (size_t i = 0; i < n; ++i) {
+        result->main_diag += m->data[i][i];
+        result->sec_diag += m->data[i][n - 1 - i];
+    }
+
+    return result;
+}
+
+struct matrix *allocate_matrix(size_t rows, size_t cols) {
+    struct matrix *m;
+    int i;
+
+    m = malloc(sizeof(*m));
+    m->rows = rows;
+    m->cols = cols;
+    m->data = malloc((unsigned long) (rows) * sizeof(*m));
+    if (m == NULL) return NULL;
+
+    for (i = 0; i < rows; i++) {
+        m->data[i] = malloc((unsigned long) (cols) * sizeof(**(m->data)));
+        if (m->data[i] == NULL) return NULL;
+    }
+
+    return m;
+}
+
+void fill_matrix(struct matrix *m) {
+    size_t i, j;
+    double value = 0.0;
+
+    for (i = 0; i < m->rows; i++) {
+        for (j = 0; j < m->cols; j++) {
+            m->data[i][j] = value++;
         }
-        return node;
     }
 }
 
-unsigned elements(struct linkedlist *l) {
-    return l->elements;
+void free_matrix(struct matrix *m) {
+    for (size_t i = 0; i < m->rows; ++i)
+        free(m->data[i]);
+    free(m->data);
+    free(m);
 }
-
-unsigned size(struct linkedlist *l) {
-    return l->elements;
-}
-
-struct linkedlist *allocate_list() {
-    struct linkedlist *l;
-
-    l = malloc(sizeof(*l));
-    if (l == NULL) return NULL;
-
-    l->elements = 0;
-    l->head = NULL;
-    return l;
-}
-
-void free_list(struct linkedlist *l) {
-    struct node *next, *tmp;
-
-    next = l->head;
-    while (next) {
-        tmp = next;
-        next = next->next;
-        free(tmp);
-    }
-    free(l);
-}
-
-double get(struct linkedlist *l, unsigned index) {
-    return get_node(l, index)->data;
-}
-
-double delete(struct linkedlist *l, unsigned index) {
-    struct node *delete, *prev, *next;
-    double value;
-
-    if (index < 0) return DBL_MAX;
-
-    if (index == 0) {
-        delete = get_node(l, 0);
-        next = delete->next;
-        l->head = next;
-    } else {
-        prev = get_node(l, index - 1);
-        delete = prev->next;
-        next = delete->next;
-        prev->next = next;
-    }
-
-    value = delete->data;
-    free(delete);
-    l->elements--;
-    return value;
-}
-
-void add(struct linkedlist *l, double value) {
-    struct node *node;
-
-    if (!l->head) {
-        /* the list is empty */
-        l->head = allocate_node(value);
-    } else {
-        /* the list contains elements */
-        node = get_node(l, elements(l) - 1);
-        node->next = allocate_node(value);
-    }
-    l->elements++;
-}
-
-void set(struct linkedlist *l, unsigned index, double value) {
-    get_node(l, index)->data = value;
-}
-
 
 int main(void) {
-    struct linkedlist *l;
-    unsigned index;
+    struct matrix *m;
 
-    /* allocate empty list */
-    l = allocate_list();
-
-    /* insert elements */
-    for (index = 0; index < 10; index++) {
-        add(l, (double) index);
+    m = allocate_matrix(3, 3);
+    if (!m) {
+      perror("allocate_matrix");
+      exit(EXIT_FAILURE);
     }
 
-    /* modify existing elements */
-    set(l, 9, 99.0);
-    set(l, 8, 99.0);
+    fill_matrix(m);
 
-    /* delete existing elements */
-    delete(l, elements(l) - 1);
-    delete(l, 0);
+    struct diag_sums *sums = matrix_diagonal_sum(m);
 
-    /* show elements */
-    for (index = 0; index < l->elements; index++) {
-        printf("[%d] %.3f\n", index, get(l, index));
+    if (!sums) {
+      perror("matrix_diagonal_sum");
+      exit(EXIT_FAILURE);
     }
 
-    /* show size */
-    printf("elements=%d\n", elements(l));
-    printf("size=%d\n", size(l));
+    printf("main diagonal: %f\n", sums->main_diag);
+    printf("secondary diagonal: %f\n", sums->sec_diag);
 
-    /* free memory */
-    free_list(l);
+    free(sums);
+    free_matrix(m);
+    exit(EXIT_SUCCESS);
 }

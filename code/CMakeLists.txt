@@ -91,8 +91,10 @@ add_executable(example examples/example.c)
 #add_executable(0412 lab04/0412.c)
 #add_executable(0413 lab04/0413.c)
 #add_executable(0414 lab04/0414.c)
-#add_executable(0415 lab04/0415.c)
-#add_executable(0416 lab04/0416.c)
+#add_executable(0413 lab04/0415.c)
+#add_executable(0414 lab04/0416.c)
+#add_executable(0415 lab04/0430.c)
+#add_executable(0416 lab04/0431.c)
 
 # Basic Programming lab05
 #add_executable(cat lab05/cat.c)
@@ -108,6 +110,7 @@ add_executable(example examples/example.c)
 #add_executable(tail lab05/tail.c)
 #add_executable(filestats lab05/filestats.c)
 #add_executable(findword lab05/findword.c)
+#add_executable(tee lab05/tee.c)
 
 
 # System Programming labs01

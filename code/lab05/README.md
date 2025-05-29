@@ -191,7 +191,7 @@ No occurrences found in: test3.txt
 
 ---
 
-Esercizio 14. Implementare una versione semplificata del comando *tee***
+Esercizio 14. Implementare una versione semplificata del comando *tee*
 
 ```shell
 $ tee <output_file>
@@ -210,4 +210,36 @@ $ echo "Hello, world!" | ./tee output.txt
 Hello, world!
 $ cat output.txt
 Hello, world!
+```
+
+---
+
+Esercizio 15. Implementare una versione semplificata del comando *uniq*
+
+```shell
+$ uniq [file]
+```
+
+dove:
+
+* il comando legge da **stdin** oppure da file;
+* stampa su **stdout** solo le righe che compaiono **almeno una volta** nell’input;
+* l’ordine delle righe nell’output è lo stesso del primo incontro nell’input.
+
+Esempio d’uso:
+
+```shell
+$ cat input.txt
+apple
+banana
+apple
+orange
+banana
+grape
+
+$ cat input.txt | ./uniq
+apple
+banana
+orange
+grape
 ```
