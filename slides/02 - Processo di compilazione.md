@@ -290,3 +290,165 @@ unsigned mypow(unsigned, unsigned);
 
 #endif // MYMATH_H
 ```
+
+
+## Compilazione Multi-File
+
+Nei progetti reali, il codice viene suddiviso in più file per:
+
+* **Organizzazione**: separare la logica in moduli (es. matematica, I/O, grafica)
+* **Riutilizzo**: un modulo può essere usato in più programmi
+* **Compilazione più veloce**: se modifichi solo un file, puoi ricompilarlo senza rifare tutto
+
+```
+progetto/
+│
+├─ main.c       # contiene la funzione main()
+├─ mymath.c     # implementazione delle funzioni matematiche
+├─ mymath.h     # prototipi delle funzioni e costanti
+```
+
+---
+
+### File Header `mymath.h`
+
+I file `.h` contengono **dichiarazioni** e prototipi di funzioni.
+
+```c
+#ifndef MYMATH_H
+#define MYMATH_H
+
+unsigned int mypow(unsigned int base, unsigned int exp);
+
+#endif // MYMATH_H
+```
+
+**Spiegazione:**
+
+* `#ifndef / #define / #endif` → **include guard**, evita inclusioni multiple
+* Solo dichiarazione della funzione, **nessuna implementazione**
+
+
+### File sorgente `mymath.c`
+
+```c
+#include "mymath.h"
+
+unsigned int mypow(unsigned int base, unsigned int exp) {
+    unsigned int result = 1;
+    for (unsigned int i = 0; i < exp; i++) {
+        result *= base;
+    }
+    return result;
+}
+```
+
+**Spiegazione:**
+
+* Include il file header con `#include "mymath.h"`
+* Contiene l’**implementazione** della funzione `mypow`
+* Questo file verrà compilato in un file oggetto `.o`
+
+---
+
+### `main.c`
+
+```c
+#include <stdio.h>
+#include "mymath.h"
+
+int main() {
+    unsigned int base = 3, exp = 5;
+    unsigned int result = mypow(base, exp);
+    printf("%u^%u = %u\n", base, exp, result);
+    return 0;
+}
+```
+
+**Spiegazione:**
+
+* Include il file header per conoscere i prototipi delle funzioni
+* Contiene la funzione `main()`
+* Chiama `mypow` definita in `mymath.c`
+
+---
+
+### Compilazione multi-file con GCC
+
+```shell
+# Compilazione separata in file oggetto (.o)
+$ gcc -c main.c      # genera main.o
+$ gcc -c mymath.c    # genera mymath.o
+
+# Linking dei file oggetto in un eseguibile
+$ gcc main.o mymath.o -o main
+
+# Esecuzione
+$ ./main
+3^5 = 243
+```
+
+```mermaid
+flowchart TD
+    A[main.c] --> B[main.o]
+    C[mymath.c] --> D[mymath.o]
+    B --> E[Linker]
+    D --> E
+    E --> F[main]
+```
+
+**Spiegazione:**
+
+1. `-c` → produce **file oggetto** senza linking
+2. `main.o` e `mymath.o` → contengono codice macchina parziale
+3. `gcc main.o mymath.o -o main` → **linking**: unisce i file oggetto in un eseguibile
+4. Se modifichi solo `mymath.c`, puoi ricompilarlo senza ricompilare `main.c`
+
+---
+
+### Makefile per progetto multi-file
+
+```make
+CC=gcc
+CFLAGS=-Wall -g
+
+all: main
+
+main: main.o mymath.o
+    $(CC) $(CFLAGS) -o $@ $^
+
+main.o: main.c mymath.h
+    $(CC) $(CFLAGS) -c main.c
+
+mymath.o: mymath.c mymath.h
+    $(CC) $(CFLAGS) -c mymath.c
+
+clean:
+    rm -f *.o main
+```
+
+**Spiegazione:**
+
+* `all: main` → target predefinito
+* Le **dipendenze** indicano quando ricompilare i file
+* `$@` → target (main), `$^` → dipendenze (main.o mymath.o)
+* `clean` → elimina file oggetto ed eseguibile
+
+---
+
+### CMake con più file sorgente
+
+```cmake
+cmake_minimum_required(VERSION 3.15)
+project(mymath C)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_FLAGS "-Wall -Wconversion -Wformat")
+
+add_executable(main main.c mymath.c)
+```
+
+**Spiegazione:**
+
+* CMake gestisce automaticamente le dipendenze e il linking
+* Basta specificare tutti i file sorgente con `add_executable`
+
