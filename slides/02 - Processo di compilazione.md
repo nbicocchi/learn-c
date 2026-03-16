@@ -406,7 +406,7 @@ flowchart TD
 
 ---
 
-### Makefile per progetto multi-file
+### Compilazione multi-file con make
 
 ```make
 CC=gcc
@@ -436,7 +436,7 @@ clean:
 
 ---
 
-### CMake con più file sorgente
+### Compilazione multi-file con CMake
 
 ```cmake
 cmake_minimum_required(VERSION 3.15)
