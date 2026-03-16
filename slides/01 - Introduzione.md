@@ -159,8 +159,6 @@ frame3 --> frame2
 frame2 --> frame1
 ```
 
-Perfetto! Possiamo espandere la sezione sul **heap** con spiegazioni dettagliate, esempi pratici e relazione con CPU, RAM e stack, così gli studenti capiscono bene come funziona la memoria dinamica in C.
-
 ---
 
 ## Heap – Memoria dinamica
