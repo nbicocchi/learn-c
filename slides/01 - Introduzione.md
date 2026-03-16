@@ -173,7 +173,7 @@ frame2 --> frame1
 
 --- 
 
-```c
+```c++
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -285,7 +285,7 @@ I linguaggi sono creature vive e vengono migliorati periodicamente. La possibili
 
 E' la lingua franca per gli sviluppatori. Implementazioni di nuovi algoritmi, ad esempio, sono spesso divulgate inizialmente solo in C. E' anche il linguaggio in cui si descrive spesso il comportamento della macchina. **Evita superstizione!**
 
-Il linguaggio è pensato per essere **efficiente**: lo sviluppatore ha il controllo completo su quello che succede. Tuttavia: commettere errori è facile e subdolo: il compilatore non rileva gli errori con la completezza delle alternative più recenti (Java o Python). Inoltre, gli errori possono produrre conseguenze gravi in termini di sicurezza e integrità del sistema non esistendo una virtual machine (*sandbox*).
+Il linguaggio è pensato per essere **efficiente**: lo sviluppatore ha il controllo completo su quello che succede. Tuttavia: commettere errori è facile e subdolo: il compilatore non rileva gli errori con la completezza delle alternative più recenti (e.g., Java). Inoltre, gli errori possono produrre conseguenze gravi in termini di sicurezza e integrità del sistema non esistendo una virtual machine (*sandbox*).
 
 * **Procedurale**: il programma è un insieme di *procedure* (funzioni). Non esiste supporto a strutture modulari più complesse come classi ed oggetti.
 * **Compilato**: il codice sorgente deve essere trasformato in linguaggio macchina da un compilatore (e.g., gcc) *prima di essere eseguito*.
@@ -319,12 +319,6 @@ Il linguaggio è pensato per essere **efficiente**: lo sviluppatore ha il contro
 ## Funzione *main()*
 L'esecuzione di un programma C inizia sempre dalla prima istruzione della funzione *main*. La funzione *main* accetta argomenti (per ora ignorati) e ritorna un numero intero. Il programma termina quando la funzione *main* termina.
 
-**Linea 3**: *int* tipo del valore di ritorno della funzione, *main* nome della funzione, *{* inizio del corpo della funzione. La funzione termina a linea 6 *}*.
-
-**Linea 4**: *printf* invocazione della funzione di libreria printf(), che riceve come argomento la stringa costante *Hello, World!* terminata con carattere a capo *\\n*.
-
-**Linea 5**: *return* istruzione che termina la funzione e ritorna *0* (successo in ambito Unix). 
-
 ```c++
 #include <stdio.h>
 
@@ -336,7 +330,7 @@ int main() {
 
 ## Commenti
 
-I commenti sono porzioni di testo che non vengono considerate dal compilatore (i.e., vengono eliminati dal preprocessore). Sono fondamentali per rendere leggibile il codice e promuovere la collaborazione fra più sviluppatori.
+I commenti sono porzioni di testo che non vengono considerate dal compilatore (i.e., vengono eliminati dal preprocessore). Sono utili per rendere leggibile il codice e promuovere la collaborazione fra più sviluppatori.
 
 Come regola generale, è preferibile un commento descrittivo all'inizio di ogni funzione piuttosto che commenti brevi e sparsi.
 
@@ -351,14 +345,14 @@ int sum(int a, int b) {
 ```
 
 ## Parole chiave
-| **Parole chiave** | **Utilizzo** |
-| ----------------- | ------------ |
-| break case continue default do else for goto if return switch while | costrutti di controllo |
-| char double enum float int long short signed struct union unsigned void | tipi di dato semplice |
-| auto const extern register static volatile | modificatori di volatività e persistenza |
-| sizeof | operatore che ritorna la dimensione di una varibile |
-| typedef | definizione di tipi definiti dall'utente |
 
+| **Parole chiave**                                                                  | **Utilizzo**                                                      |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| break, case, continue, default, do, else, for, goto, if, return, switch, while     | costrutti di controllo                                            |
+| char, double, enum, float, int, long, short, signed, struct, union, unsigned, void | tipi di dato semplici / strutturati                               |
+| auto, const, extern, register, static, volatile                                    | modificatori di storage e qualificatori                           |
+| sizeof                                                                             | operatore che ritorna la dimensione di un tipo o di una variabile |
+| typedef                                                                            | definizione di tipi definiti dall'utente                          |
 
 ## Identificatori
 In C un identificatore è un nome che si riferisce a funzioni, variabili, etc. definiti nel codice. 
@@ -399,11 +393,7 @@ int main() {
 Utilizzare [PythonTutor](https://pythontutor.com/) oppure il debugger integrato per visualizzare lo stato delle variabili.
 
 ## Espressioni
-*Un programma C e' una sequenza di espressioni. Le espressioni sono combinazioni di variabili, costanti, chiamate a funzione, e operatori*.
-
-Non esiste in C una reale delimitazione fra espressioni logiche e aritmetiche in quanto *0* è considerato equivalente al valore logico *falso*, mentre *1* è considerato equivalente al valore logico *vero*.
-
-Ad esempio:
+*Un programma C e' una sequenza di espressioni. Le espressioni sono combinazioni di variabili, costanti, chiamate a funzione, e operatori*. Ad esempio:
 
 ```c++
 45 * (a + b)
@@ -413,3 +403,4 @@ sqrt(a * b - c) <= 10
 max = a > b ? a : b
 a % b
 ```
+Non esiste in C una reale delimitazione fra espressioni logiche e aritmetiche in quanto *0* è considerato equivalente al valore logico *falso*, mentre *1* è considerato equivalente al valore logico *vero*.
