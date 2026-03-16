@@ -12,6 +12,22 @@
 
 ---
 
+## Registri CPU
+
+* I registri sono **memoria velocissima dentro la CPU**, molto più rapida della RAM
+* Funzioni principali:
+
+  * Contengono dati temporanei per operazioni
+  * Memorizzano risultati intermedi
+* Tipi principali:
+
+  * **Registri generali:** EAX, EBX, RAX, RBX… (usati per calcoli)
+  * **Stack pointer (SP):** indica la cima dello stack
+  * **Base pointer (BP / EBP / RBP):** punto di riferimento per variabili locali e parametri
+  * **Instruction pointer (IP / RIP):** indica la prossima istruzione da eseguire
+
+---
+
 ## Dal codice C all’istruzione macchina
 
 ```c
@@ -57,43 +73,39 @@ add eax, ebx  ; somma EAX + EBX → risultato in EAX
 
 ## Memoria
 
+```text
++---------------------------+  <- Indirizzi alti
+| Stack                     |
+|  - Record di attivazione  |
+|  - Variabili locali       |
+|  - Indirizzo di ritorno   |
++---------------------------+
+| Heap                      |  
+|  - Memoria dinamica       |
+|  - malloc/free            |
++---------------------------+
+| Dati statici / globali    |
+|  - Variabili globali      |
+|  - Variabili statiche     |
++---------------------------+
+| Codice / text             |
+|  - Istruzioni macchina    |
++---------------------------+  <- Indirizzi bassi
+
 ```
-+-------------------+
-| Registri CPU      |  <- velocissimi, temporanei
-+-------------------+
-| Stack             |  <- record di attivazione, variabili locali
-+-------------------+
-| Heap              |  <- memoria dinamica, malloc/free
-+-------------------+
-| Globali / Statiche|  <- durata del programma, visibili ovunque
-+-------------------+
-| Codice / Programma|  <- istruzioni macchina del programma
-+-------------------+
-```
 
 
-### Registri
-
-* I registri sono **memoria velocissima dentro la CPU**, molto più rapida della RAM
-* Funzioni principali:
-
-  * Contengono dati temporanei per operazioni
-  * Memorizzano risultati intermedi
-* Tipi principali:
-
-  * **Registri generali:** EAX, EBX, RAX, RBX… (usati per calcoli)
-  * **Stack pointer (SP):** indica la cima dello stack
-  * **Base pointer (BP / EBP / RBP):** punto di riferimento per variabili locali e parametri
-  * **Instruction pointer (IP / RIP):** indica la prossima istruzione da eseguire
-
-
-### Stack
+## Stack
 
 * Memoria **automatica e temporanea**
-* Contiene:
-  * Record di attivazione (stack frame) per ogni funzione
-* Funziona a **pila (LIFO)**
-* Accesso molto veloce
+* Contiene **stack** di record di attivazione
+
+* Contenuto di un record di attivazione:
+
+  1. **Parametri della funzione**
+  2. **Indirizzo di ritorno:** dove tornare al termine della funzione
+  3. **Variabili locali**
+  4. (Opzionale) salvataggio dei registri usati
 
 ```c++
 #include <stdio.h>
@@ -147,108 +159,107 @@ frame3 --> frame2
 frame2 --> frame1
 ```
 
-### Heap
-
-* Memoria **dinamica**, gestita dal programmatore (`malloc`, `free`)
-* Adatta a dati di grande dimensione o durata variabile
-* Non viene liberata automaticamente alla fine della funzione
-
-### Variabili globali / statiche
-
-* Memoria **statica**, esistente per tutta la durata del programma
-* Visibili da tutte le funzioni (se dichiarate globali)
-* Vengono allocate in una sezione separata della RAM
+Perfetto! Possiamo espandere la sezione sul **heap** con spiegazioni dettagliate, esempi pratici e relazione con CPU, RAM e stack, così gli studenti capiscono bene come funziona la memoria dinamica in C.
 
 ---
 
-## Record di attivazione
+## Heap – Memoria dinamica
 
-* Contenuto di un record di attivazione:
+* L’heap è una **zona della RAM** dove il programmatore può allocare memoria **durante l’esecuzione del programma**.
+* A differenza dello **stack**, la memoria allocata nell’heap **non viene rimossa automaticamente** quando una funzione termina.
+* Viene utilizzata per:
 
-  1. **Parametri della funzione**
-  2. **Indirizzo di ritorno:** dove tornare al termine della funzione
-  3. **Variabili locali**
-  4. (Opzionale) salvataggio dei registri usati
-* Esempio:
+  * Dati di **grande dimensione**
+  * Strutture con **durata variabile**
+  * Strutture che devono sopravvivere alla funzione che le ha create (es. array dinamici, liste collegate, oggetti complessi)
+
+--- 
 
 ```c
-int sum(int x, int y) {
-    int z = x + y;
-    return z;
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int* array = (int*) malloc(5 * sizeof(int));  // allocazione di 5 interi
+    if (array == NULL) {
+        printf("Errore allocazione memoria\n");
+        return 1;
+    }
+
+    for(int i=0; i<5; i++) {
+        array[i] = i * 2;  // scrive direttamente in heap
+    }
+
+    free(array);  // libera la memoria
+    return 0;
 }
 ```
 
-**Cosa succede nello stack quando chiamiamo `sum(2,3)`**
+* `malloc` chiede alla RAM uno spazio di 5 interi
+* La CPU riceve un **indirizzo di partenza** nello heap e lo salva nel puntatore `array` nello stack
+* Accesso: `array[i]` → la CPU calcola l’indirizzo relativo all’inizio dell’heap e legge/scrive i valori
+* `free(array)` libera la memoria per riutilizzo futuro
 
-1. CPU salva l’indirizzo di ritorno → dove continuare dopo `sum()`
-2. Parametri `x=2`, `y=3` copiati nello stack
-3. Variabile locale `z` allocata nello stack
-4. ALU calcola `z = x + y = 5`
-5. Risultato viene copiato in registro per il return
+---
 
-* Al termine della funzione: il record di attivazione viene rimosso → stack pointer torna alla posizione precedente
+```
+Stack:
++-----------------+
+| Record main()   |
+| array (puntatore) --> indirizzo heap
++-----------------+
+
+Heap:
++-------------------------+
+| array[0]                |
+| array[1]                |
+| array[2]                |
+| array[3]                |
+| array[4]                |
++-------------------------+
+```
+
+* Lo **stack** contiene il puntatore `array` (indirizzo iniziale dello heap)
+* Lo **heap** contiene i dati reali (array di 5 interi)
+* La CPU accede alla memoria **usando il puntatore nello stack** come base
 
 ---
 
 ## Puntatori e indirizzi
 
-* In C possiamo usare **indirizzi di memoria direttamente**
+* Un puntatore è una **variabile che contiene un indirizzo di memoria**.
+* Invece di contenere direttamente un valore (come `int a = 5`), contiene **l’indirizzo di un’altra variabile**.
+* Permette di leggere o scrivere **direttamente in memoria**, come farebbe la CPU.
 
 ```c
-int a = 5;
-int* p = &a;
-*p = 10;
+int a = 5;      // variabile normale
+int* p = &a;    // p contiene l'indirizzo di a
+*p = 10;        // scrive direttamente a quell'indirizzo
 ```
 
-* La CPU legge l’indirizzo contenuto in `p` → scrive in RAM → `a` diventa 10
-* Accesso diretto alla memoria → molto vicino all’hardware
+1. La CPU alloca `a` nello **stack**.
+2. La CPU alloca `p` nello stack, e vi scrive **l’indirizzo di `a`**.
+3. Quando esegue `*p = 10;`:
 
----
+  * La CPU legge l’indirizzo memorizzato in `p`.
+  * Va alla RAM nello **stack** all’indirizzo di `a`.
+  * Scrive il valore `10` in quella cella.
 
-## Branch e controllo del flusso
+Dopo questa operazione, la variabile `a` vale `10`.
 
-* Istruzioni condizionali (`if`, `for`) cambiano il flusso di esecuzione
-
-```c
-if(a > b)
-    c = a;
-else
-    c = b;
 ```
+Stack:
++-------+
+| a = 10|  <- indirizzo: 0x7ffee...
++-------+
+| p     |  <- contiene: 0x7ffee... (indirizzo di a)
++-------+
 
-* La CPU valuta la condizione → aggiorna l’Instruction Pointer
-
----
-
-## Loop e performance
-
-* Loop = serie di istruzioni ripetute
-
-```c
-for(int i = 0; i < 3; i++)
-    sum += i;
+Operazione *p = 10:
+1. CPU legge p → ottiene 0x7ffee...
+2. Scrive 10 nell'indirizzo 0x7ffee...
+3. a vale ora 10
 ```
-
-* Passo passo:
-
-  1. Inizializzazione: `i = 0` (stack/register)
-  2. Confronto: `i < 3` → decide se entrare nel loop
-  3. Somma: `sum = sum + i` (ALU)
-  4. Incremento: `i = i + 1`
-  5. Ripeti fino a condizione falsa
-* Ogni iterazione → istruzioni macchina → ALU, registri, stack
-
----
-
-## Cache e memoria veloce
-
-* CPU più veloce della RAM → cache L1, L2, L3
-* Accesso dati:
-
-  * **Hit:** dati già in cache → veloce
-  * **Miss:** dati da RAM → più lento
-* Il C permette di scrivere codice **cache-friendly** (es. accesso sequenziale ad array)
-
 
 ---
 
