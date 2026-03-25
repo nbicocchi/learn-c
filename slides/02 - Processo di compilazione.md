@@ -173,9 +173,11 @@ int main(){
 Configuriamo CMake per costruire un unico file eseguibile (i.e., main) a partire da due file sorgenti (i.e., main.c mymath.c)
 
 ```cmake
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.17)
 project(mymath C)
+
 set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_FLAGS "-Wall -Wconversion -Wformat")
 
 add_executable(main main.c mymath.c)
 ```
