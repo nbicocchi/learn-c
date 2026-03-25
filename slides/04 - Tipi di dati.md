@@ -131,6 +131,247 @@ I numeri positivi sono rappresentati alla stesso modo sia nei tipi signed che un
 
 ![Complemento a 2](./images/rappresentazione_int.avif)
 
+---
+
+## Endianness (ordine dei byte)
+
+Quando un numero occupa **più di 1 byte**, i suoi byte devono essere disposti in memoria.
+Esistono due convenzioni principali:
+
+* **Big-endian**: il byte più significativo (MSB) viene memorizzato all’indirizzo più basso
+* **Little-endian**: il byte meno significativo (LSB) viene memorizzato all’indirizzo più basso
+
+### Esempio
+
+Consideriamo il numero esadecimale:
+
+```
+0x12345678
+```
+
+(4 byte → 32 bit)
+
+| Byte | Valore |
+| ---- | ------ |
+| 1    | 0x12   |
+| 2    | 0x34   |
+| 3    | 0x56   |
+| 4    | 0x78   |
+
+#### Big-endian (ordine “naturale”)
+
+```
+Indirizzo →   +0     +1     +2     +3
+              0x12   0x34   0x56   0x78
+```
+
+#### Little-endian (ordine invertito)
+
+```
+Indirizzo →   +0     +1     +2     +3
+              0x78   0x56   0x34   0x12
+```
+
+---
+
+## Relazione con signed/unsigned e complemento a 2
+
+È importante chiarire che:
+
+* **Endianness NON cambia il valore del numero**
+* **Endianness NON cambia la rappresentazione in complemento a 2**
+* Influisce solo su **come i byte sono salvati in memoria**
+
+In altre parole:
+
+* Il **complemento a 2** definisce *come rappresento il numero in binario*
+* L’**endianness** definisce *come distribuisco quei bit nei byte in memoria*
+
+---
+
+## Nota pratica
+
+* Le architetture moderne (es. x86) sono **little-endian**
+* In rete (protocolli TCP/IP) si usa **big-endian** (detto anche *network byte order*)
+
+---
+
+# 📦 `char` (1 byte)
+
+### Positivo
+
+```c
+char x = 5;
+```
+
+```
+Binario:
+00000101
+
+Big-endian:
++0
+00000101
+
+Little-endian:
++0
+00000101
+```
+
+---
+
+### Negativo
+
+```c
+char x = -5;
+```
+
+```
++5  = 00000101
+-5  = 11111011
+
+Big-endian:
++0
+11111011
+
+Little-endian:
++0
+11111011
+```
+
+---
+
+# 📦 `short` (2 byte)
+
+## Positivo
+
+```c
+short x = 0x1234;
+```
+
+```
+Binario:
+00010010 00110100
+
+Big-endian:
++0      +1
+00010010 00110100
+
+Little-endian:
++0      +1
+00110100 00010010
+```
+
+---
+
+## Negativo
+
+```c
+short x = -2;
+```
+
+```
++2  = 00000000 00000010
+-2  = 11111111 11111110
+
+Big-endian:
++0      +1
+11111111 11111110
+
+Little-endian:
++0      +1
+11111110 11111111
+```
+
+---
+
+# 📦 `int` (4 byte)
+
+## Positivo
+
+```c
+int x = 0x12345678;
+```
+
+```
+Binario:
+00010010 00110100 01010110 01111000
+
+Big-endian:
++0      +1      +2      +3
+00010010 00110100 01010110 01111000
+
+Little-endian:
++0      +1      +2      +3
+01111000 01010110 00110100 00010010
+```
+
+---
+
+## Negativo (più interessante)
+
+```c
+int x = -42;
+```
+
+```
++42 = 00000000 00000000 00000000 00101010
+-42 = 11111111 11111111 11111111 11010110
+
+Big-endian:
++0      +1      +2      +3
+11111111 11111111 11111111 11010110
+
+Little-endian:
++0      +1      +2      +3
+11010110 11111111 11111111 11111111
+```
+
+---
+
+# 📦 `long` (8 byte)
+
+## Positivo
+
+```c
+long x = 1;
+```
+
+```
+Binario:
+00000000 00000000 00000000 00000000
+00000000 00000000 00000000 00000001
+
+Big-endian:
++0      +1      +2      +3      +4      +5      +6      +7
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000001
+
+Little-endian:
++0      +1      +2      +3      +4      +5      +6      +7
+00000001 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+```
+
+---
+
+## Negativo
+
+```c
+long x = -1;
+```
+
+```
+Tutti bit a 1
+
+Big-endian:
++0      +1      +2      +3      +4      +5      +6      +7
+11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111
+
+Little-endian:
++0      +1      +2      +3      +4      +5      +6      +7
+11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111
+```
+
+---
+
 I limiti degli intervalli delle variabili intere sono disponibili nella forma di macro (*limits.h*)
 
   * CHAR_MIN, CHAR_MAX
@@ -192,7 +433,65 @@ Lo standard prevede alcuni casi particolari:
 ![double](./images/rappresentazione_double_float.avif)
 
 
-Per esempi concreti, vedi: https://www.h-schmidt.net/FloatConverter/IEEE754.html
+### Esempio
+
+Numero decimale: 55.327
+
+- Parte intera: 55 → in binario: 110111
+- Parte frazionaria: 0.327
+
+---
+
+**Determinare l’esponente e normalizzazione**
+
+Per IEEE 754 dobbiamo avere un numero normalizzato nella forma:  
+`1.xxx * 2^E`
+
+- In binario, 55 = 110111 → spostiamo il punto binario 5 posizioni a sinistra:  
+  `55.327 = 1.10111… * 2^5`
+
+- Esponente: E = 5 + 127 = 132 → binario: 10000100
+- Primo bit “1” della mantissa → bit implicito (non memorizzato)
+
+> Ora dobbiamo ottenere i restanti 23 bit della mantissa dalla frazione.
+
+---
+
+**Parte frazionaria normalizzata**
+
+Calcolo della frazione normalizzata:
+
+`frac_normalizzata = (55.327 / 2^5) - 1 ≈ 0.72959375`
+
+> Questa è la frazione che diventerà la mantissa.
+
+---
+
+**Calcolo della mantissa con una sola moltiplicazione**
+
+Per ottenere i 23 bit della mantissa in un colpo solo:
+
+`mantissa_intera = int(0.72959375 * 2^23)`
+
+`0.72959375 * 8388608 ≈ 6118331`
+
+Convertito in binario a 23 bit:
+
+`mantissa = 1011101010011100101011`
+
+> Questi sono i 23 bit della mantissa da memorizzare.
+
+---
+
+**Assemblare il float (32 bit)**
+
+| Segno | Esponente | Mantissa               |
+| ----- | --------- | ---------------------- |
+| 0     | 10000100  | 1011101010011100101011 |
+
+---
+
+Per altri esempi, vedi: https://www.h-schmidt.net/FloatConverter/IEEE754.html
 
 | **Numero**    | **Esponente** | **Mantissa**       | **Errore**          |
 |---------------|---------------|--------------------|---------------------|

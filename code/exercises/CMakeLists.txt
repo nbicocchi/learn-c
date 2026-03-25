@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 99)
 
 # Examples
 add_executable(example examples/example.c)
+add_executable(float_precision examples/float_precision.c)
 #add_executable(matrix_sum examples/process_dna_data.c)
 #add_executable(fibonacci examples/recursion_fibonacci.c)
 #add_executable(sizeof examples/sizeof.c)
