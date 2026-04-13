@@ -142,6 +142,7 @@ Esistono due convenzioni principali:
 * **Little-endian**: il byte meno significativo (LSB) viene memorizzato all’indirizzo più basso
 
 > Le architetture moderne (es. x86) sono **little-endian**
+>
 > In rete (protocolli TCP/IP) si usa **big-endian** (detto anche *network byte order*)
 
 
@@ -209,50 +210,6 @@ Big-endian:
 Little-endian:
 +0
 11111011
-```
-
----
-
-### `short` (2 byte)
-
-**Positivo**
-
-```c
-short x = 0x1234;
-```
-
-```
-Binario:
-00010010 00110100
-
-Big-endian:
-+0      +1
-00010010 00110100
-
-Little-endian:
-+0      +1
-00110100 00010010
-```
-
----
-
-**Negativo**
-
-```c
-short x = -2;
-```
-
-```
-+2  = 00000000 00000010
--2  = 11111111 11111110
-
-Big-endian:
-+0      +1
-11111111 11111110
-
-Little-endian:
-+0      +1
-11111110 11111111
 ```
 
 ---
@@ -419,7 +376,8 @@ Per IEEE 754 dobbiamo avere un numero normalizzato nella forma:
 
 Calcolo della frazione normalizzata:
 
-`frac_normalizzata = (55.327 / 2^5) - 1 ≈ 0.72959375`
+`55.327 / 2^5 ≈ 1.72959375`
+`1.72959375 - 1 = 0.72959375`
 
 > Questa è la frazione che diventerà la mantissa.
 
@@ -427,11 +385,7 @@ Calcolo della frazione normalizzata:
 
 **Calcolo della mantissa con una sola moltiplicazione**
 
-Per ottenere i 23 bit della mantissa in un colpo solo:
-
-`mantissa_intera = int(0.72959375 * 2^23)`
-
-`0.72959375 * 8388608 ≈ 6118331`
+`mantissa_intera = int(0.72959375 * 2^23) ≈ 6118331`
 
 Convertito in binario a 23 bit:
 
@@ -496,17 +450,18 @@ int main(void) {
 
     float f = 3.14F;
 
+    // Warning: Implicit conversion turns floating-point number into integer: 'float' to 'int'
     i = f + c;
+    
+    // Warning: Implicit conversion from 'int' to 'float' may lose precision
     f = (i + c);
 
-    printf("i=%d\n", i); /* i=102 */
-    printf("f=%f\n", f); /* f=201.000000 */
+    // i = 102
+    printf("i=%d\n", i);
+    
+    // f = 201.000000 
+    printf("f=%f\n", f); 
 }
-```
-
-```
-Warning: Implicit conversion turns floating-point number into integer: 'float' to 'int'
-Warning: Implicit conversion from 'int' to 'float' may lose precision
 ```
 
 ## Casting esplicito
@@ -542,7 +497,7 @@ int main(void) {
 
     d = DBL_MAX;
     u = (unsigned int)d;
-    printf("u=%u\n", u);  /* u=0 */
+    printf("u=%u\n", u);  /* u=0 (comportamento indefinito) */
     printf("d=%lf\n", d); /* d=179769313486231570814527... */
 }
 ```
