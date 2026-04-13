@@ -1,18 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define true 1
+#define false 0
 
-int main(void) {
-  printf("Hello World!\n");
-  fprintf(stdout, "Hello World!\n"); // the same as normal printf
+int f(int n)
+{
+    return n;
+}
 
-  char buffer[1024];
-  sprintf(buffer, "Hello World!\n");
-  printf("%s", buffer); // prints Hello World!
+int main(void)
+{
+    int i = 0;
 
-  char buffer_short[10];
-  sprintf(buffer_short, "Hello World!\n");
-  printf("%s", buffer_short); // prints Hello World! Potential stack overflow
+    while (true) {
+        i++;
+        if (i == 9998) {
+            continue;
+        }
+        printf("%d\n", i);
 
-  snprintf(buffer_short, 10,"Hello World!\n");
-  printf("%s", buffer_short); // prints Hello Wor Avoids potential stack overflow
+        if (i > 10000) {
+            break;
+        }
+    }
 }

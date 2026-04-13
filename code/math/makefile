@@ -3,6 +3,7 @@ CFLAGS=-Wall -g
 
 all: main
 
+
 main: main.o mymath.o
 	$(CC) $(CFLAGS) -o $@ $^
 

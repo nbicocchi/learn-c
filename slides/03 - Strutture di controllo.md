@@ -307,55 +307,6 @@ do {
 } while (TRUE);
 ```
 
-
-## Errori comuni
-
-### Assegnamento e verifica di uguaglianza
-Confondere gli operatori di assegnamento (=) e di verifica di uguaglianza (==) può produrre innumerevoli errori. Considerata la facilità dell'errore (typo), fino a Python 3.8 l'assegnamento all'interno di una condizione *if* non era supportato. Ora è supportato attraverso un operatore dedicato (:=)
-
-```c++
-int main() {
-    int a = 10;
-    if (a == 1) { 
-        // non viene eseguito
-    }
-}
-```
-
-```c++
-int main(){
-    int a = 10;
-    if (a = 1) { 
-        // viene eseguito
-    }
-}
-```
-
-
-### Overflow
-
-```c++
-// esempio di overflow 
-// char[-128, 127]
-// dovrebbe terminare non NON termina!
-int main() {
-  char a;
-  for (a = 0; a < 200; a++) { }
-  return 0;
-}
-```
-
-### Underflow
-```c++
-// esempio di underflow 
-// unsigned int[0, 4.294.967.295], int[-2.147.483.648, 2.147.483.647]
-// non dovrebbe terminare MA termina!
-int main() {
-    int a;
-    for (a = 9; a >= 0; a++) { }
-    return 0;
-}
-```
 ## Istruzione goto
 *goto* è un costrutto di *salto incondizionato* che rappresenta l'istruzione assembly *jump*. A volte si utilizza nella gestione degli errori, ma in generale è sconsigliato utilizzarlo se non si ha piena coscienza di ciò che si sta facendo
 

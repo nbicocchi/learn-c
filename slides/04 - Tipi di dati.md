@@ -141,7 +141,9 @@ Esistono due convenzioni principali:
 * **Big-endian**: il byte più significativo (MSB) viene memorizzato all’indirizzo più basso
 * **Little-endian**: il byte meno significativo (LSB) viene memorizzato all’indirizzo più basso
 
-### Esempio
+> Le architetture moderne (es. x86) sono **little-endian**
+> In rete (protocolli TCP/IP) si usa **big-endian** (detto anche *network byte order*)
+
 
 Consideriamo il numero esadecimale:
 
@@ -149,23 +151,14 @@ Consideriamo il numero esadecimale:
 0x12345678
 ```
 
-(4 byte → 32 bit)
-
-| Byte | Valore |
-| ---- | ------ |
-| 1    | 0x12   |
-| 2    | 0x34   |
-| 3    | 0x56   |
-| 4    | 0x78   |
-
-#### Big-endian (ordine “naturale”)
+**Big-endian (ordine “naturale”)**
 
 ```
 Indirizzo →   +0     +1     +2     +3
               0x12   0x34   0x56   0x78
 ```
 
-#### Little-endian (ordine invertito)
+**Little-endian (ordine invertito)**
 
 ```
 Indirizzo →   +0     +1     +2     +3
@@ -174,31 +167,11 @@ Indirizzo →   +0     +1     +2     +3
 
 ---
 
-## Relazione con signed/unsigned e complemento a 2
+## Esempi
 
-È importante chiarire che:
+### `char` (1 byte)
 
-* **Endianness NON cambia il valore del numero**
-* **Endianness NON cambia la rappresentazione in complemento a 2**
-* Influisce solo su **come i byte sono salvati in memoria**
-
-In altre parole:
-
-* Il **complemento a 2** definisce *come rappresento il numero in binario*
-* L’**endianness** definisce *come distribuisco quei bit nei byte in memoria*
-
----
-
-## Nota pratica
-
-* Le architetture moderne (es. x86) sono **little-endian**
-* In rete (protocolli TCP/IP) si usa **big-endian** (detto anche *network byte order*)
-
----
-
-# 📦 `char` (1 byte)
-
-### Positivo
+**Positivo**
 
 ```c
 char x = 5;
@@ -219,7 +192,7 @@ Little-endian:
 
 ---
 
-### Negativo
+**Negativo**
 
 ```c
 char x = -5;
@@ -240,9 +213,9 @@ Little-endian:
 
 ---
 
-# 📦 `short` (2 byte)
+### `short` (2 byte)
 
-## Positivo
+**Positivo**
 
 ```c
 short x = 0x1234;
@@ -263,7 +236,7 @@ Little-endian:
 
 ---
 
-## Negativo
+**Negativo**
 
 ```c
 short x = -2;
@@ -284,9 +257,9 @@ Little-endian:
 
 ---
 
-# 📦 `int` (4 byte)
+### `int` (4 byte)
 
-## Positivo
+**Positivo**
 
 ```c
 int x = 0x12345678;
@@ -307,7 +280,7 @@ Little-endian:
 
 ---
 
-## Negativo (più interessante)
+**Negativo**
 
 ```c
 int x = -42;
@@ -326,51 +299,36 @@ Little-endian:
 11010110 11111111 11111111 11111111
 ```
 
----
+## Errori comuni
 
-# 📦 `long` (8 byte)
+### Overflow
 
-## Positivo
-
-```c
-long x = 1;
+```c++
+// esempio di overflow 
+// char[-128, 127]
+// dovrebbe terminare non NON termina!
+int main() {
+  char a;
+  for (a = 0; a < 200; a++) { }
+  return 0;
+}
 ```
 
-```
-Binario:
-00000000 00000000 00000000 00000000
-00000000 00000000 00000000 00000001
-
-Big-endian:
-+0      +1      +2      +3      +4      +5      +6      +7
-00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000001
-
-Little-endian:
-+0      +1      +2      +3      +4      +5      +6      +7
-00000001 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-```
-
----
-
-## Negativo
-
-```c
-long x = -1;
-```
-
-```
-Tutti bit a 1
-
-Big-endian:
-+0      +1      +2      +3      +4      +5      +6      +7
-11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111
-
-Little-endian:
-+0      +1      +2      +3      +4      +5      +6      +7
-11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111
+### Underflow
+```c++
+// esempio di underflow 
+// unsigned int[0, 4.294.967.295], int[-2.147.483.648, 2.147.483.647]
+// non dovrebbe terminare MA termina!
+int main() {
+    int a;
+    for (a = 9; a >= 0; a++) { }
+    return 0;
+}
 ```
 
 ---
+
+## Limiti
 
 I limiti degli intervalli delle variabili intere sono disponibili nella forma di macro (*limits.h*)
 
