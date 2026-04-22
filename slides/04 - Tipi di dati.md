@@ -524,6 +524,7 @@ p = &num
 /* p viene utilizzato per modificare il valore di num */
 *p = 3
 
+/* stampa il contenuto di p (indirizzo di num) */
 printf("p (indirizzo di num) = %p\n", p);
 ```
 
@@ -597,7 +598,7 @@ double numbers[50];
 unsigned long primes[1000];
 ```
 
-## Definizione di un array
+## Inizializzazione di un array
 L'inizializzazione di un array può essere effettuata senza specificarne la dimensione, ma semplicemente elencandone gli elementi. Non viene specificata la cardinalità dell'array, ma si racchiude tra parentesi graffe una lista di elementi separati da virgola. Il compilatore dimensiona l'array sulla base del numero di valori utilizzati per l'inizializzazione.
 
 ```c++
@@ -659,6 +660,96 @@ Nel caso si tenti di accedere ad un elemento di un array utilizzando un indice c
 
 In altri casi l'accesso errato va a leggere/scrivere una porzione di memoria che appartiene al programma corrente,
   allocata nella memoria presente oltre la dimensione dell'array. Questa situazione è molto pericolosa per il funzionamento del programma, in quanto possono verificarsi comportamenti indesiderati, imprevedibili, e spesso difficili da diagnosticare.
+
+## Array bidimensionali
+
+Un array bidimensionale può essere visto come un *array di array*, cioè una struttura dati organizzata in righe e colonne (una matrice).
+
+```c++
+int m[3][4];
+```
+
+In questo caso:
+
+* 3 = numero di righe
+* 4 = numero di colonne
+
+È possibile inizializzarlo direttamente:
+
+```c++
+int m[2][3] = {
+    {1, 2, 3},
+    {4, 5, 6}
+};
+```
+
+Oppure parzialmente:
+
+```c++
+int m[2][3] = {
+    {1, 2},
+    {4}
+};
+```
+
+In questo caso i valori mancanti vengono inizializzati a 0.
+
+## Accesso agli elementi
+
+Si accede agli elementi tramite due indici:
+
+```c++
+m[i][j]
+```
+
+dove:
+
+* *i* = riga
+* *j* = colonna
+
+Esempio:
+
+```c++
+int x = m[1][2];  // elemento riga 1, colonna 2
+```
+
+## Array bidimensionali in memoria
+
+Anche gli array bidimensionali sono memorizzati in modo **contiguo** in memoria, in ordine per righe (row-major order):
+
+```text
+m[0][0] m[0][1] m[0][2] ...
+m[1][0] m[1][1] m[1][2] ...
+```
+
+L’indirizzo di un elemento si può calcolare come:
+
+```c++
+addr = base + (i * COL + j) * dim
+```
+
+Dove:
+
+* *base* è l’indirizzo di m[0][0]
+* *COL* è il numero di colonne
+* *dim* è la dimensione di ogni elemento
+
+## Esempio completo
+
+```c++
+#include <stdio.h>
+
+int main() {
+    int m[2][3] = {
+        {1, 2, 3},
+        {4, 5, 6}
+    };
+
+    printf("%d\n", m[1][2]);  // stampa 6
+}
+```
+
+**Nota:** Come per gli array monodimensionali, anche qui l’accesso fuori dai limiti (indice errato di riga o colonna) può causare **comportamenti indefiniti** o *segmentation fault*.
 
 
 ## Uso di macro con array e cicli
@@ -722,7 +813,6 @@ int main(void) {
 ```
 
 ## Array di caratteri
-I vettori di caratteri non differiscono dagli altri vettori. 
 
 Esempi di dichiarazione:
 * *vet* è un vettore di 4 caratteri non inizializzato
@@ -738,6 +828,24 @@ char vet3[] = { '0', 0 };
 ```
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ASCII-Table-wide.svg/1600px-ASCII-Table-wide.svg.png?20221024154539)
+
+## Tabella ASCII
+
+La **tabella ASCII** (ASCII) è uno standard che associa a ogni carattere (lettere, numeri, simboli e codici di controllo) un numero intero.
+
+In pratica:
+
+* Ogni carattere è rappresentato da un codice numerico (da 0 a 127 nella versione originale).
+* Ad esempio:
+
+  * `'A'` → 65
+  * `'a'` → 97
+  * `'0'` → 48
+
+Include:
+
+* caratteri stampabili (lettere, cifre, simboli)
+* caratteri di controllo (es. newline, tab)
 
 Il seguente programma riproduce la tabella ASCII:
 
