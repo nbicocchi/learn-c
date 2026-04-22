@@ -1,13 +1,14 @@
 # Tipi di dati
-In un linguaggio di programmazione un tipo di dato identifica l'insieme dei valori che possono essere assunti da una variabile e le operazioni che si possono svolgere su di essi. Sfruttando la *tipizzazione*, il compilatore può: *(a)* effettuare controlli sul tipo, e *(b)* gestire allocazione della memoria necessaria (diversa per ogni tipo)
+In un linguaggio di programmazione un tipo di dato identifica l'insieme dei valori che possono essere assunti da una variabile e le operazioni che si possono svolgere su di essi. 
+
+Sfruttando la *tipizzazione*, il compilatore può: *(a)* effettuare controlli sul tipo, e *(b)* gestire allocazione della memoria necessaria (diversa per ogni tipo)
 
 Per gestire correttamente un qualunque dato in memoria sono necessarie due informazioni:
 * l'indirizzo in cui il dato è memorizzato
 * il tipo di dato rappresentato 
+  * quantità di memoria occupata
+  * modalità di rappresentazione
 
-Il tipo di dato specifica:
-* la modalità di rappresentazione della variabile in memoria
-* la quantità di memoria occupata da quella variabile
 
 ![Variabili memoria](./images/variabile_memoria.avif)
 
@@ -47,8 +48,6 @@ double d;
 ## Definizione di variabili
 Dopo la dichiarazione le variabili non hanno un valore predefinito. E' necessario eseguire un'operazione di *assegnamento* per definirne un valore. In questo modo la memoria allocata per la variabile viene anche riempita con un valore specifico.
 
-Negli esempi sotto vengono utilizzate solo espressioni composte da *letterali numeriche* per definire i valori delle variabili:
-
 ```c++
 // numeri interi
 char c = 64;
@@ -80,9 +79,9 @@ Ogni letterale può essere inoltre seguita un postfisso (L=long, U=unsigned, F=f
 
 
 ## Variabili costanti (di sola lettura)
-È possibile specificare che la variabile in memoria potrà essere solo letta, ovvero che è una variabile read-only, tramite la parola riservata *const*. Questa variabile è identica alle altre (ha una locazione di memoria e un tipo), se non per il fatto che nessun comando successivo potrà modificarne il valore.
+È possibile specificare che la variabile in memoria potrà essere solo letta, ovvero che è una variabile *read-only*, tramite la parola riservata *const*. Questa variabile è identica alle altre (ha una locazione di memoria e un tipo), se non per il fatto che nessun comando successivo potrà modificarne il valore.
 
-*Attenzione!* Nel caso di variabili *const* dobbiamo definirne il valore nel momento della dichiarazione
+*Attenzione!* Nel caso di variabili *const* dobbiamo definirne il valore nel momento della dichiarazione.
 
 ```c++
 const <tipo> <nome-varibile> = <espressione> ;
@@ -219,21 +218,22 @@ Little-endian:
 **Positivo**
 
 ```c
-int x = 0x12345678;
+int x = 1027;
 ```
 
 ```
 Binario:
-00010010 00110100 01010110 01111000
+00000000 00000000 00000100 00000011
 
 Big-endian:
 +0      +1      +2      +3
-00010010 00110100 01010110 01111000
+00000000 00000000 00000100 00000011
 
 Little-endian:
 +0      +1      +2      +3
-01111000 01010110 00110100 00010010
+00000011 00000100 00000000 00000000
 ```
+
 
 ---
 
@@ -314,14 +314,26 @@ I limiti degli intervalli delle variabili intere sono disponibili nella forma di
 #  endif
 #  define LONG_MIN        (-LONG_MAX - 1L)
 ```
-  
-In alcuni contesti si può preferire utilizzare tipi non nativi (i.e., definiti nell'ambito di una libreria), ma che ci danno indicazioni precise sulle dimensioni a prescindere dall’architettura impiegata. L'utilizzo di questi tipi standard richiede dipendenze aggiuntive come ad esempio *stdint.h* della [GNU C Library](https://www.gnu.org/softwae/libc/manual/html_node/Integers.html)
-  * **signed**: int8_t, int16_t, int32_t, int64_t
-  * **unsigned**: uint8_t, uint16_t, uint32_t, uint64_t
 
+In alcuni casi è preferibile usare tipi standard a dimensione fissa invece dei tipi nativi del C, perché questi ultimi non garantiscono la stessa dimensione su architetture diverse.
+
+Per questo si usa la libreria `stdint.h` (C99 e successivi, disponibile anche nella GNU C Library):
+
+```c id="std0"
+#include <stdint.h>
+```
+
+**Tipi signed**: `int8_t`, `int16_t`, `int32_t`, `int64_t`
+
+**Tipi unsigned**: `uint8_t`, `uint16_t`, `uint32_t`, `uint64_t`
+
+---
 
 ## I tipi di dati in virgola mobile (IEEE 754)
-I tipi *float* e *double* sono i cosiddetti numeri in virgola mobile che rappresentano l’insieme dei numeri reali: con essi possiamo rappresentare numeri molto piccoli o numeri molto grandi, positivi e negativi, con e senza decimali La differenza tra i due sta nel numero di bit riservati alla rappresentazione dei numeri, che si riflette sul range di numeri rappresentabili e sul numero di cifre dopo la virgola.
+
+I tipi `float` e `double` sono tipi a **virgola mobile** e servono a rappresentare numeri reali, cioè valori positivi e negativi con parte decimale, anche molto grandi o molto piccoli.
+
+La differenza principale tra i due riguarda il numero di bit utilizzati per la rappresentazione: il `double` usa più bit rispetto al `float`, e quindi permette un **range più ampio** e una **maggiore precisione**, cioè più cifre significative dopo la virgola.
 
 
 | **Nome** | **Dimensione Tipica** | **Descrizione** |
@@ -330,7 +342,8 @@ I tipi *float* e *double* sono i cosiddetti numeri in virgola mobile che rappres
 | double | 8 byte | numero in virgola mobile 64 bit |
 | long double | 16 byte | numero in virgola mobile 128 bit |
 
-Lo standard **IEEE 754** è il formato più utilizzato per la rappresentazione dei numeri in virgola mobile nei computer. Esso definisce vari formati, tra cui il **formato a 32 bit (single precision)** e il **formato a 64 bit (double precision)**. Un numero in virgola mobile secondo IEEE 754 è rappresentato dalla seguente formula:
+Lo standard **IEEE 754** è il formato più utilizzato per la rappresentazione dei numeri in virgola mobile nei computer.
+Un numero in virgola mobile secondo IEEE 754 è rappresentato dalla seguente formula:
 
 $$V = (-1)^S \times (1 + M) \times 2^{E}$$
 
@@ -366,7 +379,6 @@ Per IEEE 754 dobbiamo avere un numero normalizzato nella forma:
   `55.327 = 1.10111… * 2^5`
 
 - Esponente: E = 5 + 127 = 132 → binario: 10000100
-- Primo bit “1” della mantissa → bit implicito (non memorizzato)
 
 > Ora dobbiamo ottenere i restanti 23 bit della mantissa dalla frazione.
 
@@ -444,10 +456,8 @@ In C, il casting implicito (o type promotion) si verifica automaticamente quando
 ```c++
 int main(void) {
     int  i = 17;
-
     /* ascii value is 99 */
     char c = 'c';
-
     float f = 3.14F;
 
     // Warning: Implicit conversion turns floating-point number into integer: 'float' to 'int'
@@ -456,11 +466,8 @@ int main(void) {
     // Warning: Implicit conversion from 'int' to 'float' may lose precision
     f = (i + c);
 
-    // i = 102
-    printf("i=%d\n", i);
-    
-    // f = 201.000000 
-    printf("f=%f\n", f); 
+    printf("i=%d\n", i); /* i=102 */
+    printf("f=%f\n", f); /* f=201.000000 */
 }
 ```
 
@@ -471,10 +478,8 @@ Il casting esplicito in C consente di convertire manualmente un valore da un tip
 ```c++
 int main(void) {
     int  i = 17;
-
     /* ascii value is 99 */
     char c = 'c';
-
     float f = 3.14F;
 
     i = (int)f + c;
@@ -505,8 +510,6 @@ int main(void) {
 ## Puntatori
 Un puntatore è una variabile che contiene un indirizzo di memoria. Dal momento che gli indirizzi di memoria sono interi positivi, in pratica un puntatore è un numero intero senza segno.
 
-Come tutte le variabili, i puntatori sono caratterizzati da un proprio indirizzo e da una dimensione. I puntatori sulla stessa macchina sono tutti della stessa dimensione. 16, 32 o 64 bit a seconda del processore (o sistema operativo) su cui si lavora.
-
 Un puntatore non contiene il valore di una variabile tradizionale, ma l'indirizzo di una locazione di memoria in cui sono immagazzinati un numero congruo di bit per essere interpretati come il tipo indicato. 
 * L'operatore *&* (si legge *l'indirizzo di*) e consente di conoscere l'indirizzo di una variabile
 * L'operatore * (si legge *il valore di*) permette di accedere e/o modificare il valore contenuto all'indirizzo di memoria specificato da un puntatore
@@ -520,6 +523,8 @@ p = &num
         
 /* p viene utilizzato per modificare il valore di num */
 *p = 3
+
+printf("p (indirizzo di num) = %p\n", p);
 ```
 
 ![Puntatore](./images/puntatore.avif)

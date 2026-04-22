@@ -8,19 +8,8 @@ int f(int n)
     return n;
 }
 
-int main(void)
-{
-    int i = 0;
+int main(void) {
+    unsigned int i = 42U;
+    long j = 42L;
 
-    while (true) {
-        i++;
-        if (i == 9998) {
-            continue;
-        }
-        printf("%d\n", i);
-
-        if (i > 10000) {
-            break;
-        }
-    }
 }
