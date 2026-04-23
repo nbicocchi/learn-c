@@ -482,7 +482,7 @@ int main(void) {
     char c = 'c';
     float f = 3.14F;
 
-    i = (int)f + c;
+    i = (int)(f + c);
     f = (float)(i + c);
 
     printf("i=%d\n", i); /* i=102 */
