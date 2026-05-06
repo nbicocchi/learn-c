@@ -183,28 +183,6 @@ int main(void) {
 }
 ```
 
-
-### Recap
-Gli operatori fondamentali per usare i puntatori sono elencati di seguito:
-
-* \* (da leggere *il valore puntato da*)
-* & (da leggere *l'indirizzo di*)
-* [] accedo a un elemento particolare di un array
-* Si noti che \*p == p[0], \*(p+i) == p[i]
-
-```c
-int i;
-int v[10];
-int *p;
-
-p = v;      /* p punta ad indice 0 di v */
-p = &v[0];  /* p punta ad elemento con indice 0 di v */
-p = &v[4];  /* p punta ad elemento con indice 4 di v */
-p = v + 4;  /* p punta ad elemento con indice 4 di v */
-p++;        /* p punta ad elemento con indice 5 di v */
-i = p - v;  /* i == 5 */
-```
-
 ## Puntatori e stringhe
 Vettori e puntatori sono concetti affini, ma esistono sottili differenze:
   * *sizeof* si comporta in modo diverso. Ritorna la dimensione dell'array o la dimensione del puntatore

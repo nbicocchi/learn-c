@@ -96,6 +96,11 @@ Per comprendere come una matrice deve essere passata a una funzione è utile ric
 *Quando un array multi-dimensionale viene passato a una funzione, questa riceve l'indirizzo del suo primo elemento. Non una copia dell'array!* Per dichiarare il tipo del parametro corrispondente, si devono indicare tutte le cardinalità dell'array, eccetto la prima. Nel caso di una matrice, il tipo del parametro che viene passato è quello di un array in cui non viene indicato il numero di righe, ma solo quello delle colonne
 
 ```c++
+#include <stdio.h>
+
+#define ROWS 2
+#define COLS 3
+
 void do_stuff(int rows, int cols, int v[][cols]) {
     int i, j;
 
@@ -106,13 +111,30 @@ void do_stuff(int rows, int cols, int v[][cols]) {
     }
 }
 
+void print_matrix(int rows, int cols, int v[][cols]) {
+    int i, j;
+
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            printf("%d ", v[i][j]);
+        }
+        printf("\n");
+    }
+}
+
 int main(void) {
-    int v[ROWS][COLS] = { 
-            {1, 2, 3}, 
-            {4, 5, 6},
+    int v[ROWS][COLS] = {
+        {1, 2, 3},
+        {4, 5, 6},
     };
 
+    printf("Before:\n");
+    print_matrix(ROWS, COLS, v);
+
     do_stuff(ROWS, COLS, v);
+
+    printf("\nAfter:\n");
+    print_matrix(ROWS, COLS, v);
 }
 ```
 
@@ -212,7 +234,6 @@ struct punto *pt_ptr;  /* dichiara un puntatore a struct punto */
 
 ```c++
 pt_ptr = &pt;
-*pt_ptr = pt;
 ```
 
 A *pt_ptr* posso assegnare l'indirizzo di una variabile di tipo *struct punto*. 
@@ -249,25 +270,48 @@ Il passaggio dei parametri per valore richiede l'allocazione di una copia locale
 
 
 ```c++
+struct punto {
+    double x;
+    double y;
+};
+```
+
+```c++
 // copia della variabile
 double distanza(struct punto p1, struct punto p2) {
      return hypot(p1.x - p2.x, p1.y - p2.y);
 }
+
+int main(void) {
+    struct punto a = {0.0, 0.0}; // 16 bytes
+    struct punto b = {3.0, 4.0}; // 16 bytes
+
+    printf("Distanza: %.2f\n", distanza(a, b));
+}
 ```
 
+```c++
 ```c++
 // copia del riferimento
 double distanza(struct punto *p1, struct punto *p2) {
     return hypot((*p1).x - (*p2).x, (*p1).y - (*p2).y);
 }
-```
 
-```c++
 // copia del riferimento
 double distanza(struct punto *p1, struct punto *p2) {
     return hypot(p1->x - p2->x, p1->y - p2->y);
 }
+
+int main(void) {
+    struct punto a = {0.0, 0.0}; // 16 bytes
+    struct punto b = {3.0, 4.0}; // 16 bytes
+
+    printf("Distanza: %.2f\n", distanza(&a, &b));
+}
 ```
+
+
+
 
 L'esempio sotto confronta due strutture che rappresentano una data. Le strutture sono passate per riferimento e la keyword *const* è utilizzata per impedire la modifica alle variabili del chiamante.
 
@@ -406,4 +450,44 @@ enum direzioni { nord, sud, ovest = 10, est };
 enum direzioni dir;
 
 dir = est;
+```
+
+Un altro esempio:
+
+```c++
+#include <stdio.h>
+
+enum Giorno {
+    LUNEDI,
+    MARTEDI,
+    MERCOLEDI,
+    GIOVEDI,
+    VENERDI,
+    SABATO,
+    DOMENICA
+};
+
+int main(void) {
+    enum Giorno oggi = SABATO;
+
+    switch (oggi) {
+        case LUNEDI:
+        case MARTEDI:
+        case MERCOLEDI:
+        case GIOVEDI:
+        case VENERDI:
+            printf("Giorno infrasettimanale\n");
+            break;
+
+        case SABATO:
+        case DOMENICA:
+            printf("Weekend\n");
+            break;
+
+        default:
+            printf("Giorno non valido\n");
+    }
+
+    return 0;
+}
 ```
