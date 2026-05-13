@@ -3,20 +3,28 @@
 #define true 1
 #define false 0
 
-int f(int n)
-{
-    return n;
-}
-
 int main(void) {
-    char s1[] = "Hello World!";
-    char *s2 = "Hello World!";
+    int i;
+    char *nomi[] = {
+        "Sara",
+        "Sebastiano",
+        "Paolo",
+        "Agostino",
+        "Elvira",
+        NULL
+};
+    char **p;
 
-    s1[0] = 'a';    /* OK */
-    s2[0] = 'a';    /* Errore a runtime */
+    for (i = 0; i < 5; i++) {
+        printf("[%d] %s\n", i, nomi[i]);
+    }
 
-    s2 = s1;        /* OK */
-    s1 = s2;        /* Errore in compilazione */
+    for (i = 0; i < 5; i++) {
+        printf("[%d] %s\n", i, *(nomi + i));
+    }
 
-    printf("%lu %lu\n", sizeof(s1), sizeof(s2));    /* Output: 13 8 */
+    i = 0;
+    for (p = nomi; *p; p++) {
+        printf("[%d] %s\n", i++, *p);
+    }
 }

@@ -239,7 +239,38 @@ int main(void) {
 
 L'esempio seguente mostra come manipolare un array di puntatori a carattere (i.e., un array di stringhe) utilizzando un *puntatore a puntatore a carattere*. Si tratta di una variabile puntatore che contiene l'indirizzo di una seconda variabile puntatore.
 
-![](./images/vettore_stringhe.avif)
+```mermaid
+flowchart LR
+
+    subgraph Stack
+        NOMI["nomi : char **"]
+        P["p : char **"]
+    end
+
+    subgraph Array["Array di puntatori char*"]
+        N0["nomi[0]"]
+        N1["nomi[1]"]
+        N2["nomi[2]"]
+        N3["nomi[3]"]
+        N4["nomi[4]"]
+        N5["nomi[5] = NULL"]
+    end
+
+    S0["\"Sara\""]
+    S1["\"Sebastiano\""]
+    S2["\"Paolo\""]
+    S3["\"Agostino\""]
+    S4["\"Elvira\""]
+
+    NOMI --> N0
+    P --> N0
+
+    N0 --> S0
+    N1 --> S1
+    N2 --> S2
+    N3 --> S3
+    N4 --> S4
+```
 
 ```c++
 int main(void) {
@@ -423,11 +454,6 @@ for(i = 0; i < 10; i++) {
     p[i] = 0;
 }
 
-/* inizializza un vettore 0 */
-for (i = 0; i < 10; i++, p++) {
-    *p = 0;
-}
-
 /* inizializza un vettore 0 (memset) */
 memset(p, 0, 10 * sizeof(*p));
 
@@ -443,7 +469,9 @@ void free(void *ptr);
 
 *free* libera il blocco di memoria di indirizzo precedentemente allocato tramite *malloc*, *calloc* o *realloc*. La memoria liberata dall'invocazione di *free* diventa disponibile per altre applicazioni
 
-La memoria allocata dinamicamente deve essere rilasciata quando non è più necessaria, per evitare di occupare inutilmente memoria. Con *memory leak* si intende il mancato utilizzo della funzione *free*. Come conseguenza, il sistema perde memoria disponibile.
+La memoria allocata dinamicamente deve essere rilasciata quando non è più necessaria, per evitare di occupare inutilmente memoria. 
+
+> Con *memory leak* si intende il mancato utilizzo della funzione *free*. Come conseguenza, il sistema perde memoria disponibile.
 
 ```c++
 int *p;
@@ -486,6 +514,19 @@ int main(void) {
     
     /* error: pointer being freed was not allocated */
     free(str);
+}
+```
+
+```c++
+int main(void) {
+    char *str = "hello world!";
+    char *str_copy = malloc(strlen(str) + 1);
+    
+    strcpy(str_copy, str);
+
+    printf("%s %s\n", str, str_copy);
+
+    free(str_copy);
 }
 ```
 
