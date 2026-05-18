@@ -227,6 +227,7 @@ L'esempio seguente mostra un possibile utilizzo dell'aritmetica dei puntatori al
 unsigned str_len(char *ptr) {
     unsigned size = 0;
 
+    // for (; *ptr != 0; ptr++) size++;
     for (; *ptr; ptr++) size++;
     return size;
 }
@@ -256,11 +257,11 @@ flowchart LR
         N5["nomi[5] = NULL"]
     end
 
-    S0["\"Sara\""]
-    S1["\"Sebastiano\""]
-    S2["\"Paolo\""]
-    S3["\"Agostino\""]
-    S4["\"Elvira\""]
+    S0["Sara\0"]
+    S1["Sebastiano\0"]
+    S2["Paolo\0"]
+    S3["Agostino\0"]
+    S4["Elvira\0"]
 
     NOMI --> N0
     P --> N0
@@ -685,7 +686,8 @@ Nel caso di oggetti relativamente complessi come le matrici, in cui i dati veri 
 
 ```c++
 struct matrix {
-    size_t rows, cols;
+    size_t rows;
+    size_t cols;
     double **data;
 };
 

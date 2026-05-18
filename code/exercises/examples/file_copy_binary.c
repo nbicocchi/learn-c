@@ -5,7 +5,7 @@
 
 #define TRUE 1
 #define FALSE 0
-#define BUFFER_SIZE 16
+#define BUFFER_SIZE 1024
 
 int copy_by_byte_blocks(FILE *source, FILE *target) {
     size_t nread, nwrite;
@@ -13,7 +13,7 @@ int copy_by_byte_blocks(FILE *source, FILE *target) {
     do {
         nread = fread(buffer, 1, sizeof(buffer), source);
         nwrite = 0;
-        if (nread) {
+        if (nread > 0) {
             nwrite = fwrite(buffer, 1, nread, target);
         }
     } while ((nread > 0) && (nread == nwrite));

@@ -209,7 +209,7 @@ int copy_by_byte_blocks(FILE *source, FILE *target) {
     do {
         nread = fread(buffer, 1, sizeof(buffer), source);
         nwrite = 0;
-        if (nread) {
+        if (nread > 0) {
             nwrite = fwrite(buffer, 1, nread, target);
         }
     } while ((nread > 0) && (nread == nwrite));
@@ -329,7 +329,7 @@ int feof(FILE *stream);
 ```
 
 `feof()` accetta un solo parametro:
-* **stream** rappresenta il file da controllare
+* *stream* rappresenta il file da controllare
 
 `feof()` restituisce un valore diverso da zero (true) se è stato raggiunto l'**end-of-file** (EOF) per il file indicato, altrimenti restituisce **0**.  
 Viene comunemente usata per verificare la fine di un file durante la lettura ciclica.
