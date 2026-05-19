@@ -1,455 +1,875 @@
-# File
+# File in C
 
 ## File binari e file di testo
-Uno stesso dato può sempre essere memorizzato sia in file di testo che in file binari utilizzando un'opportuna rappresentazione. La scelta del tipo di rappresentazione dipende da considerazioni legate al tipo di utilizzo che viene fatto dei dati 
 
-In un file di testo il contenuto si presenta come una stringa di caratteri mentre in un file binario si usa la codifica binaria. Ad esempio, per memorizzare un intero a 32bit in un file binario sono sempre necessari 4 byte indipendentemente dal valore memorizzato. Al contrario, la memorizzazione in un file di testo richiede un numero di byte che dipende dal valore da memorizzare
+Uno stesso dato può sempre essere memorizzato sia in file di testo che in file binari utilizzando un'opportuna rappresentazione. La scelta del tipo di rappresentazione dipende da considerazioni legate al tipo di utilizzo che viene fatto dei dati.
 
-```
+In un file di testo il contenuto si presenta come una stringa di caratteri mentre in un file binario si usa la codifica binaria. Ad esempio, per memorizzare un intero a 32 bit in un file binario sono sempre necessari 4 byte indipendentemente dal valore memorizzato. Al contrario, la memorizzazione in un file di testo richiede un numero di byte che dipende dal valore da memorizzare.
+
+```text
 Esempio: memorizzazione del numero decimale 214439
-File di testo: '2' '1' '4' '4' '3' '9'                          (6 byte)
-File di binario (in base alla endianness): 0x00 0x03 0x45 0xa7  (4 byte)
+
+File di testo:
+'2' '1' '4' '4' '3' '9'                         (6 byte)
+
+File binario (dipende dalla endianness):
+0x00 0x03 0x45 0xa7                             (4 byte)
 ```
-```
+
+```text
 Esempio: memorizzazione del numero decimale 6
-File di testo: '6'                                              (1 byte)
-File di binario (in base alla endianness): 0x00 0x00 0x00 0x06  (4 byte)
+
+File di testo:
+'6'                                             (1 byte)
+
+File binario:
+0x00 0x00 0x00 0x06                             (4 byte)
 ```
 
-Un file di testo è un caso particolare di file binario che utilizza un sottoinsieme dei caratteri ASCII (i caratteri stampabili). 
+Un file di testo è un caso particolare di file binario che utilizza principalmente caratteri ASCII stampabili e caratteri di controllo (`\n`, `\t`, ecc.).
 
-```c++
+```c
 /* Prints the full ASCII table */
+#include <stdio.h>
+
 int main(void) {
     int i;
+
     for (i = 0; i < 255; i++) {
         printf("[%3d] -> %c\n", i, i);
     }
+
+    return 0;
 }
 ```
 
-Può essere manipolato con le funzioni dedicate ai file binari; è infatti possibile leggerli a blocchi di byte come per i file binari. Operare su file binari con le funzioni usate per i file di testo non è invece agevole.
+Un file di testo può essere manipolato anche usando funzioni orientate ai file binari, poiché un file è sempre una sequenza di byte. Operare su file binari con funzioni orientate al testo è invece più difficile.
 
-```
-$ yay vim
+```bash
 $ xxd /etc/passwd
 $ xxd /bin/ls
 ```
 
-In sintesi:
+## Differenze tra file di testo e file binari
 
-**File di testo**
+### File di testo
 
-* Contengono caratteri ASCII stampabili e di controllo (e.g., *newline*, *tabulazione*)
-* Sono letti e scritti per caratteri o per righe (ogni riga delimitata da *newline*)
-* Sono visualizzabili e manipolabili usando editor di testo
-* Esempi di file di testo: sorgenti C, file di configurazione Unix (/etc)
+* Contengono caratteri ASCII stampabili e caratteri di controllo
+* Sono letti e scritti per caratteri o linee
+* Le linee terminano normalmente con `\n`
+* Sono facilmente visualizzabili con editor di testo
+* Sono generalmente più portabili tra sistemi diversi
+* Esempi:
 
-**File binari**
+  * sorgenti C
+  * file JSON
+  * file CSV
+  * file di configurazione
 
-* Non contengono solo caratteri ASCII stampabili, ma qualunque carattere
-* Vengono letti e scritti in byte o blocchi di byte
-* Se visualizzati con un editor di testo risultano incomprensibili
-* Esempi di file binari: file eseguibili, file compressi, immagini, audio, video
-  
-## Il tipo FILE (user-space)
-Le funzioni per l'accesso a file sono dichiarate nel file di intestazione *stdio.h*
+### File binari
 
-Il riferimento al file desiderato viene mantenuto per mezzo di un puntatore (*FILE* *). FILE è una struttura che contiene tutte le informazioni utili a permettere l'interazione di un programma con i file. Tipicamente il programmatore non ha alcuna necessità di conoscere il contenuto dei campi delle variabili di tipo FILE. Il programma opera su un file chiamando le funzioni messe a disposizione dalla libreria standard che usano le variabili di tipo FILE per identificare e manipolare il file fisico.
+* Possono contenere qualsiasi valore di byte
+* Vengono letti e scritti a blocchi
+* Non sono leggibili direttamente con editor di testo
+* Sono spesso più compatti ed efficienti
+* Possono dipendere dall'architettura del sistema
+* Esempi:
 
-```c++
-int main(int argc, char *argv[]) {
-    FILE *source;
-    
-    // do stuff
-    
-    exit(EXIT_SUCCESS);
-}
-```
+  * file eseguibili
+  * immagini
+  * audio/video
+  * archivi compressi
 
-## struct file (kernel-space)
+## Portabilità dei file binari
 
-```c++
-struct file {
-    ...
-	struct path		        f_path;
-	struct inode		    *f_inode;	/* cached value */
-	const struct file_operations	*f_op;
-	...
-	unsigned int 		    f_flags;
-	fmode_t			        f_mode;
-	struct mutex		    f_pos_lock;
-	loff_t			        f_pos;
-	struct fown_struct	    f_owner;
-	const struct cred	    *f_cred;
-	struct file_ra_state	f_ra;
-	...
-};
-```
+I file binari possono dipendere da:
 
-## Apertura e chiusura di file
-Per utilizzare un file è necessario sia *aprirlo* che *chiuderlo*. Le funzioni di apertura e chiusura di file operano su variabili di tipo puntatore a FILE.
-* Aprire un file significa comunicare al sistema operativo che si intende accedere al contenuto del file attravero l'utilizzo della funzione *fopen* (File OPEN)
-* Quando il file non è più utilizzato il file deve essere chiuso utilizzando la funzione *fclose* (File CLOSE)
+* endianness
+* dimensione dei tipi primitivi
+* padding delle struct
+* architettura CPU
+* compilatore
 
-```c++
-FILE *fopen(char *path, char *mode);
-int fclose(FILE *fp);
-```
+Per questo motivo i file di testo sono generalmente più interoperabili tra sistemi diversi.
 
-### fopen()
+---
 
-```c++
-FILE *fopen(char *path, char *mode);
-```
+# La libreria stdio e il tipo FILE
 
-*fopen()* accetta due parametri di tipo puntatore a carattere: 
-* *path* contiene il percorso del file da aprire
-* *mode* specifica il modo con il quale aprire il file
+Le funzioni per la gestione dei file sono dichiarate nel file di intestazione:
 
-Un file può essere aperto per diversi scopi:
-* lettura
-* scrittura
-* append (scrittura alla fine del file). 
-
-La stringa *mode* può quindi valere:
-  * **r** (lettura)
-  * **r+** (lettura e scrittura) -> se il file esiste, esso viene sovrascritto, altrimenti un nuovo file viene creato
-  * **w** (scrittura)  
-  * **w+** (lettura e scrittura) 
-  * **a** (scrittura in append) -> la scrittura avviene a partire dalla fine del file
-  * **a+** (lettura e strittura in append) 
-
-E' anche possibile aggiungere il carattere *b* alla fine o in mezzo alla combinazione di caratteri che rappresentano *mode* (es., ottenendo wb o ab+) per indicare che il file va trattato come binario. **Molti sistemi trattano i file binari e i file di testo allo stesso modo, quindi il fatto di specificare la b risulta superfluo**. Altri sistemi operativi potrebbero operare delle distinzioni, e quindi potrebbe essere necessario specificare esplicitamente il tipo di file trattato.
-
-*fopen()* restituisce:
-* un puntatore di tipo FILE correttamente inizializzato se l'operazione ha avuto successo
-* NULL in caso di errore
-
-Tipiche fonti di errore:
-* aprire un file che non esiste
-* aprire un file senza i permessi necessari
-    
-
-### fclose()
-
-```c++
-int fclose(FILE *f);
-```
-
-I file devono essere chiusi utilizzando la funzione *fclose()*. La chiusura del file libera le aree di memoria allocate dalle funzioni della libreria per memorizzare le informazioni lette e scritte sul file
-
-*fclose()* accetta come parametro il puntatore a FILE che identifica il file da chiudere
-
-*fclose()* restituisce 0 in caso di successo, EOF in caso di fallimento
-
-### fflush()
-
-```c++
-int fflush(FILE *f);
-```
-
-La funzione *fflush()* forza la scrittura di tutti i dati non ancora scritti sul dispositivo fisico. In caso riceva come parametro un puntatore null, forza la scrittura in tutti i file aperti. *fclose()* chiama *fflush()* prima di chiudere definitivamente i file.
-
-*fflush()* accetta come parametro il puntatore a FILE che identifica il file di cui eseguire il flush
-
-*fflush()* restituisce 0 in caso di successo, EOF in caso di fallimento
-
-### Esempio: apertura di un file
-
-```c++
-FILE *fin, *fout;
-if (!(fin = fopen("song.mp3", "r"))) {
-    perror("song.mp3");
-    exit(EXIT_FAILURE);
-}
-
-if (!(fout = fopen("music/song2.mp3", "w"))) {
-    perror("music/song2.mp3");
-    exit(EXIT_FAILURE);
-}
-
-/* ... corpo del programma ... */
-
-fclose(fin);
-fclose(fout);
-```
-
-Nel codice sopra:
-* Il file *song.mp3* viene aperto in lettura
-* Il file *music/song2.mp3* viene aperto in scrittura
-* I test verificano che i puntatori restituiti siano non nulli, cioè che i file siano stati aperti correttamente
-* La funzione *perror()* (print error) viene usata per visualizzare un eventuale messaggio
-  * Il messaggio descrive l'ultimo errore che si è verificato durante la chiamata a una funzione di libreria, memorizzato all'interno della variabile *errno*
-  * Se il parametro della perror è diverso da NULL, la funzione prima visualizza la stringa passatale come parametro, seguita dai due punti e dal messaggio di errore
-* I file vengono chiusi con la chiamata a *fclose()*
-
-## Lettura e scrittura di file binari
-
-```c++
+```c
 #include <stdio.h>
-size_t fread(void *ptr, size_t size, size_t nelem, FILE *f);
-size_t fwrite(void *ptr, size_t size, size_t nelem, FILE *f);
 ```
 
-Le funzioni *fread()* ed *fwrite()* vengono utilizzate per leggere e scrivere dati in formato binario e richiedono i seguenti parametri:
-  * *ptr* puntatore all'area di memoria che contiene di dati da scrivere o in cui memorizzare i dati letti
-  * *size* la dimensione del singolo elemento da leggere o scrivere
-  * *nelem* il numero degli elementi da leggere o scrivere
-  * *f* puntatore a FILE da cui leggere o scrivere
+La libreria standard usa il tipo:
 
-Ritornano una variabile di tipo *size_t* che rappresenta il numero degli elementi effettivamente letti o scritti (utile per verificare errori o il raggiungimento della fine del file)
-
-### Esempio: copia di un file binario
-
-```c++
-int copy_by_byte_blocks(FILE *source, FILE *target) {
-    size_t nread, nwrite;
-    unsigned char buffer[BUFFER_SIZE];
-    do {
-        nread = fread(buffer, 1, sizeof(buffer), source);
-        nwrite = 0;
-        if (nread > 0) {
-            nwrite = fwrite(buffer, 1, nread, target);
-        }
-    } while ((nread > 0) && (nread == nwrite));
-
-    if (nread != nwrite) return FALSE;
-    return TRUE;
-}
+```c
+FILE *
 ```
 
-## Lettura e scrittura di file di testo
+che rappresenta uno stream associato a un file.
 
+Il programmatore normalmente non conosce il contenuto interno della struttura `FILE`, ma utilizza le funzioni della libreria standard.
 
-```c++
-#include <stdio.h>
-int fgetc(FILE *stream)
-int fputc(int char, FILE *stream)
-char *fgets(char *str, int n, FILE *stream)
-int fputs(const char *str, FILE *stream)
-```
-
-Le funzioni *fgetc()* ed *fputc()* vengono utilizzate per leggere e scrivere singoli caratteri (impacchettati all'interno di una variabile di tipo intero). Le funzioni *fgets()* ed *fputs()* vengono utilizzate per leggere e scrivere array di caratteri. La funzione *fgets()* è particolarmente utile in quanto consente la lettura di un file di testo orientata alla singola linea (la lettura viene interrotta in corrispondenza del carattere *newline* oppure in caso dell'esaurimento del buffer)
-
-**Nota bene**: la lettura orientata alla linea ha significato solo nel caso di file di testo. Nei file binari, il carattere a capo ('\\n') non ha significato. Rappresenta solo un byte di valore 10.
-
-### Esempio: copia di un file di testo
-
-```c++
-void copy_by_char(FILE *source, FILE *target) {
-    int ch;
-    while ((ch = fgetc(source)) != EOF) {
-        fputc(ch, target);
-    }
-}
-
-void copy_by_line(FILE *source, FILE *target) {
-    char buffer[LINE_MAX];
-    while ((fgets(buffer, LINE_MAX, source)) != NULL) {
-        fputs(buffer, target);
-    }
-}
-
-int main() {
-    char *source_file = "example.c";
-    char *target_file = "example.c.bak";
-
-    FILE *source, *target;
-    ...
-}
-```
-
-## Posizione corrente all'interno del file
-
-Dal punto di vista logico, un file è una sequenza di byte [0, size - 1]. Quando un programma accede a un file, in lettura o in scrittura, il sistema ricorda la sua posizione corrente (all'interno della struttura FILE). 
-
-**La posizione corrente è relativa a un singola apertura**. Un file può essere aperto contemporaneamente più volte e avere di conseguenza molteplici posizioni correnti (ognuna annotata all'interno della variabile FILE dedicata)
-
-```c++
-#include <stdio.h>
-/* whence [SEEK_SET, SEEK_CUR, SEEK_END] */
-int fseek(FILE *stream, long offset, int whence);
-long ftell(FILE *stream);
-void rewind(FILE *stream);
-
-/* alternatives to fseek, ftell */
-int fsetpos(FILE *stream, fpos_t *pos);
-int fgetpos(FILE *stream, fpos_t *pos);
-```
-
-### fseek()
-
-```c++
-int fseek(FILE *stream, long offset, int whence);
-```
-
-*fseek()* accetta tre parametri:
-* *stream* rappresenta il file da trattare
-* *offset* rappresenta un offset
-* *whence* specifica il punto di riferimento a cui applicare *offset*
-
-Il paramtro *whence* può assumere tre valori:
-* *SEEK_SET* rappresenta l'inizio del file
-* *SEEK_CUR* rappresenta la posizione corrente
-* *SEEK_END* rappresenta la fine del file
-
-*fseek()* restituisce:
-* 0 se l'operazione ha avuto successo
-* -1 in caso di problemi
-
-### ftell()
-
-```c++
-long ftell(FILE *stream);
-```
-
-*ftell()* accetta un solo parametro:
-* *stream* rappresenta il file da trattare
-
-*ftell()* restituisce:
-* offset corrente (rispetto all'inizio del file)
-* -1 in caso di problemi
-
-### rewind()
-
-```c++
-void rewind(FILE *stream);
-```
-
-*rewind()* accetta un solo parametro:
-* *stream* rappresenta il file da trattare
-
-*rewind()* non restituisce nulla, ma posiziona l'offset all'inizio del file. Equivalente a fseek(stream, 0L, SEEK_SET).
-
-### feof()
-
-```c++
-int feof(FILE *stream);
-```
-
-`feof()` accetta un solo parametro:
-* *stream* rappresenta il file da controllare
-
-`feof()` restituisce un valore diverso da zero (true) se è stato raggiunto l'**end-of-file** (EOF) per il file indicato, altrimenti restituisce **0**.  
-Viene comunemente usata per verificare la fine di un file durante la lettura ciclica.
-
-**Nota:** `feof()` non prevede il futuro — restituisce true **solo dopo** che un tentativo di lettura è fallito (perché il file è finito).
-
-### Esempio: stabilire la dimensione di un file
-
-```c++
-FILE *source = fopen("/etc/passwd", "r");
-fseek(source, 0, SEEK_END);
-long size = ftell(source);
-```
-
-### Esempio: lettura di un file di testo al contrario (carattere per carattere)
-
-```bash
-echo -n "0123456789" > test.txt
-```
-
-```c++
-int main(void) {
-    FILE *src;
-    long i, length;
-
-    if (!(src = fopen("example.c", "r"))) {
-        perror("fopen()");
-        exit(EXIT_FAILURE);
-    }
-
-    fseek(src, 0L, SEEK_END);
-    length = ftell(src);
-    for (i = 1; i <= length; i++) {
-        fseek(src, -i, SEEK_END);
-        printf("%c", fgetc(src));
-    }
-}
-```
-
-## Flussi standard
-* In C, le azioni di scrivere su video o leggere un dato da tastiera sono assimilate rispettivamente alla scrittura del  dato su file e della sua lettura da file. I file standard sono utilizzati a questo scopo.
-* In stdio.h sono definite tre variabili di tipo puntatore a FILE: 
-  * *stdin*: standard input (normalmente la tastiera) 
-  * *stdout*: standard output (normalmente il video)
-  * *stderr*: standard error (normalmente il video)
-* Vengono aperti automaticamente dal programma ed ereditati dalla shell:
-  * *scrivere su standard output* equivale alla visualizzazione a video
-  * *leggere da standard input* equivale alla lettura da tastiera
-* Invocando l'esecuzione da linea di comando, è possibile utilizzare gli operatori di ridirezione
-
-## Lettura e scrittura formattata
-```c++
-int printf(const char *format, ...);
-int fprintf(FILE *stream, const char *format, ...);
-int sprintf(char *str, const char *format, ...);
-int snprintf(char *str, size_t size, const char *format, ...);
-```
-
-```c++
-int scanf(const char *format, ...);
-int fscanf(FILE *stream, const char *format, ...);
-int sscanf(const char *str, const char *format, ...);
-```
-
-*scanf()* e *printf()* offrono funzionità di input (lettura) ed output (scrittura) formattate. In particolare è possibile specificare un formato all'interno del quale posizionare delle variabili.
-
-Ne esistono diverse versioni, caratterizzate dalla lettera iniziale, che utilizzano canali di input o di output diversi. Ad esempio, *fprintf()* stampa stringhe formattate su un file, mentre *sprintf()* su una stringa di caratteri.
-
-```c++
+```c
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(void) {
-  printf("Hello World!\n");
-  fprintf(stdout, "Hello World!\n"); // the same as normal printf
+    FILE *fp;
 
-  char buffer[1024];
-  sprintf(buffer, "Hello World!\n");
-  printf("%s", buffer); // prints Hello World!
-
-  char buffer_short[10];
-  sprintf(buffer_short, "Hello World!\n");
-  printf("%s", buffer_short); // prints Hello World! Potential stack overflow
-
-  snprintf(buffer_short, 10, "Hello World!\n");
-  printf("%s", buffer_short); // prints Hello Wor Avoids potential stack overflow
+    return EXIT_SUCCESS;
 }
 ```
-  
-## Argomenti a linea di comando
 
-```c++
-int main(void) { /* ... */ }
-int main (int argc, char *argv[]) { /* ... */ }
+---
+
+# FILE (user-space) e struct file (kernel-space)
+
+È importante distinguere:
+
+* `FILE *` → struttura della libreria C (user-space)
+* `struct file` → struttura interna del kernel Linux (kernel-space)
+
+```text
+Applicazione C
+    ↓
+stdio (FILE *)
+    ↓
+system call
+    ↓
+kernel (struct file)
+    ↓
+filesystem/dispositivo
 ```
 
-La funzione *main()* può essere invocata utilizzando due interfacce distinte in base alla necessità, o meno, di intercettare parametri passati dalla shell
-* **int argc**: contiene il numero di stringhe inserite dall’utente a linea di comando
-* **char *argv[]**: l’array che contiene le stringhe inserite dall’utente a linea di comando (ogni elemento dell’array è un puntatore a carattere). argv[argc] contiene un puntatore NULL (per terminare la lista di stringhe)
+La libreria `stdio` introduce:
 
-```c++
-int main(int argc, char **argv) {
+* buffering
+* lettura/scrittura formattata
+* funzioni ad alto livello
+
+mentre il kernel espone primitive più semplici basate su file descriptor.
+
+---
+
+# FILE * vs file descriptor
+
+## FILE *
+
+Interfaccia ad alto livello della libreria standard:
+
+```c
+FILE *fp;
+```
+
+Funzioni tipiche:
+
+```c
+fopen()
+fread()
+fprintf()
+fclose()
+```
+
+## File descriptor
+
+Interfaccia a basso livello del kernel:
+
+```c
+int fd;
+```
+
+Funzioni POSIX:
+
+```c
+open()
+read()
+write()
+close()
+```
+
+## Confronto
+
+| FILE *         | File descriptor  |
+| -------------- | ---------------- |
+| Libreria stdio | Kernel           |
+| Bufferizzato   | Non bufferizzato |
+| Alto livello   | Basso livello    |
+| fopen()        | open()           |
+| fread()        | read()           |
+| fwrite()       | write()          |
+| fclose()       | close()          |
+
+---
+
+# Apertura e chiusura di file
+
+Per utilizzare un file è necessario:
+
+1. aprirlo
+2. utilizzarlo
+3. chiuderlo
+
+```c
+FILE *fopen(const char *path, const char *mode);
+int fclose(FILE *fp);
+```
+
+---
+
+# fopen()
+
+```c
+FILE *fopen(const char *path, const char *mode);
+```
+
+## Modalità di apertura
+
+| Mode | Significato                              |
+| ---- | ---------------------------------------- |
+| r    | sola lettura                             |
+| r+   | lettura e scrittura (file deve esistere) |
+| w    | scrittura, crea/tronca                   |
+| w+   | lettura e scrittura, crea/tronca         |
+| a    | append, crea se non esiste               |
+| a+   | lettura e append, crea se non esiste     |
+
+È possibile aggiungere `b` per indicare modalità binaria:
+
+```text
+rb
+wb
+ab+
+```
+
+Su Linux/Unix spesso non cambia nulla, mentre su Windows può essere importante.
+
+## Modalità testo vs modalità binaria
+
+Su Windows:
+
+```text
+'\n'  ↔  "\r\n"
+```
+
+In modalità testo il sistema può tradurre automaticamente i caratteri newline.
+
+Per questo motivo:
+
+* il numero di byte fisici può differire
+* `ftell()` può non coincidere col numero reale di byte
+* per file binari è corretto usare `"rb"` e `"wb"`
+
+## Valore restituito
+
+`fopen()` restituisce:
+
+* puntatore valido a `FILE`
+* `NULL` in caso di errore
+
+Errori tipici:
+
+* file inesistente
+* permessi insufficienti
+* percorso errato
+
+---
+
+# perror() ed errno
+
+```c
+#include <stdio.h>
+#include <errno.h>
+
+FILE *fp;
+
+fp = fopen("missing.txt", "r");
+
+if (fp == NULL) {
+    perror("fopen");
+}
+```
+
+Possibile output:
+
+```text
+fopen: No such file or directory
+```
+
+`perror()` stampa:
+
+* stringa passata come parametro
+* descrizione dell'errore associato a `errno`
+
+---
+
+# fclose()
+
+```c
+int fclose(FILE *fp);
+```
+
+Chiude il file e libera le risorse associate.
+
+Restituisce:
+
+* `0` → successo
+* `EOF` → errore
+
+---
+
+# fflush()
+
+```c
+int fflush(FILE *fp);
+```
+
+Forza la scrittura dei dati buffered sul dispositivo fisico.
+
+```c
+printf("Hello");
+fflush(stdout);
+```
+
+`fclose()` esegue automaticamente `fflush()`.
+
+---
+
+# Buffering
+
+La libreria `stdio` usa buffering per ridurre il numero di system call.
+
+## stdout
+
+Normalmente:
+
+* line-buffered su terminale
+* fully-buffered su file
+
+```c
+printf("Hello");
+sleep(5);
+```
+
+Potrebbe non apparire nulla fino al newline:
+
+```c
+printf("Hello\n");
+```
+
+oppure:
+
+```c
+fflush(stdout);
+```
+
+## stderr
+
+Normalmente non bufferizzato.
+
+---
+
+# Esempio: apertura file
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    FILE *fin;
+    FILE *fout;
+
+    fin = fopen("song.mp3", "rb");
+
+    if (fin == NULL) {
+        perror("song.mp3");
+        exit(EXIT_FAILURE);
+    }
+
+    fout = fopen("copy.mp3", "wb");
+
+    if (fout == NULL) {
+        perror("copy.mp3");
+        fclose(fin);
+        exit(EXIT_FAILURE);
+    }
+
+    fclose(fin);
+    fclose(fout);
+
+    return EXIT_SUCCESS;
+}
+```
+
+---
+
+# Lettura e scrittura binaria
+
+```c
+size_t fread(void *ptr, size_t size, size_t nmemb, FILE *fp);
+
+size_t fwrite(const void *ptr,
+              size_t size,
+              size_t nmemb,
+              FILE *fp);
+```
+
+## Parametri
+
+* `ptr` → buffer
+* `size` → dimensione singolo elemento
+* `nmemb` → numero elementi
+* `fp` → file
+
+## Valore restituito
+
+Numero di elementi effettivamente letti/scritti.
+
+---
+
+# Copia di un file binario
+
+```c
+#include <stdio.h>
+
+#define BUFFER_SIZE 4096
+
+int copy_file(FILE *src, FILE *dst) {
+    unsigned char buffer[BUFFER_SIZE];
+
+    size_t nread;
+    size_t nwrite;
+
+    do {
+        nread = fread(buffer, 1, BUFFER_SIZE, src);
+
+        if (nread > 0) {
+            nwrite = fwrite(buffer, 1, nread, dst);
+
+            if (nwrite != nread) {
+                return 0;
+            }
+        }
+
+    } while (nread > 0);
+
+    return 1;
+}
+```
+
+---
+
+# Lettura e scrittura di struct
+
+```c
+#include <stdio.h>
+
+typedef struct {
+    int id;
+    char name[32];
+} Student;
+
+int main(void) {
+    FILE *fp;
+    Student s = {1, "Alice"};
+
+    fp = fopen("students.bin", "wb");
+
+    fwrite(&s, sizeof(Student), 1, fp);
+
+    fclose(fp);
+
+    return 0;
+}
+```
+
+Vantaggi:
+
+* compatto
+* veloce
+
+Svantaggi:
+
+* poca portabilità
+* dipendenza da padding e endianness
+
+---
+
+# Lettura e scrittura di testo
+
+```c
+int fgetc(FILE *stream);
+int fputc(int c, FILE *stream);
+
+char *fgets(char *str, int n, FILE *stream);
+int fputs(const char *str, FILE *stream);
+```
+
+---
+
+# Copia di un file di testo
+
+## Per caratteri
+
+```c
+void copy_by_char(FILE *src, FILE *dst) {
+    int ch;
+
+    while ((ch = fgetc(src)) != EOF) {
+        fputc(ch, dst);
+    }
+}
+```
+
+## Per linee
+
+```c
+#include <stdio.h>
+
+#define LINE_MAX 1024
+
+void copy_by_line(FILE *src, FILE *dst) {
+    char buffer[LINE_MAX];
+
+    while (fgets(buffer, LINE_MAX, src) != NULL) {
+        fputs(buffer, dst);
+    }
+}
+```
+
+---
+
+# feof()
+
+```c
+int feof(FILE *stream);
+```
+
+Restituisce valore diverso da zero se è stato raggiunto EOF.
+
+## Attenzione
+
+`feof()` diventa vero solo DOPO un tentativo di lettura fallito.
+
+## Pattern scorretto
+
+```c
+while (!feof(fp)) {
+    ch = fgetc(fp);
+}
+```
+
+## Pattern corretto
+
+```c
+while ((ch = fgetc(fp)) != EOF) {
+    ...
+}
+```
+
+---
+
+# Posizione corrente nel file
+
+Ogni stream mantiene una posizione corrente.
+
+Un file aperto più volte può avere più offset indipendenti.
+
+```c
+int fseek(FILE *stream, long offset, int whence);
+
+long ftell(FILE *stream);
+
+void rewind(FILE *stream);
+```
+
+---
+
+# fseek()
+
+```c
+fseek(fp, 0, SEEK_SET);
+```
+
+## whence
+
+| Costante | Significato        |
+| -------- | ------------------ |
+| SEEK_SET | inizio file        |
+| SEEK_CUR | posizione corrente |
+| SEEK_END | fine file          |
+
+---
+
+# ftell()
+
+```c
+long pos = ftell(fp);
+```
+
+Restituisce l'offset corrente.
+
+---
+
+# rewind()
+
+```c
+rewind(fp);
+```
+
+Equivalente a:
+
+```c
+fseek(fp, 0L, SEEK_SET);
+```
+
+---
+
+# Esempio: dimensione file
+
+```c
+FILE *fp;
+
+fp = fopen("/etc/passwd", "r");
+
+fseek(fp, 0L, SEEK_END);
+
+long size = ftell(fp);
+
+fclose(fp);
+```
+
+---
+
+# Esempio: lettura al contrario
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    FILE *fp;
+
+    long i;
+    long size;
+
+    fp = fopen("test.txt", "r");
+
+    if (fp == NULL) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(fp, 0L, SEEK_END);
+
+    size = ftell(fp);
+
+    for (i = 1; i <= size; i++) {
+        fseek(fp, -i, SEEK_END);
+        putchar(fgetc(fp));
+    }
+
+    fclose(fp);
+
+    return EXIT_SUCCESS;
+}
+```
+
+---
+
+# Flussi standard
+
+La libreria standard definisce:
+
+| Stream | Significato     |
+| ------ | --------------- |
+| stdin  | input standard  |
+| stdout | output standard |
+| stderr | output errori   |
+
+Sono aperti automaticamente dal sistema.
+
+---
+
+# Redirezione shell
+
+```bash
+./program < input.txt
+./program > output.txt
+./program >> output.txt
+./program 2> errors.txt
+```
+
+---
+
+# Lettura e scrittura formattata
+
+```c
+int printf(const char *format, ...);
+int fprintf(FILE *stream, const char *format, ...);
+
+int scanf(const char *format, ...);
+int fscanf(FILE *stream, const char *format, ...);
+```
+
+---
+
+# sprintf() e snprintf()
+
+```c
+char buffer[10];
+
+sprintf(buffer, "Hello World!");
+```
+
+Pericoloso: possibile overflow.
+
+Versione sicura:
+
+```c
+snprintf(buffer, sizeof(buffer),
+         "Hello World!");
+```
+
+In codice moderno `snprintf()` è generalmente preferibile.
+
+---
+
+# scanf() vs fgets()
+
+## scanf("%s")
+
+```c
+char str[32];
+
+scanf("%s", str);
+```
+
+Problemi:
+
+* interrompe sugli spazi
+* possibile overflow
+
+## fgets()
+
+```c
+char str[32];
+
+fgets(str, sizeof(str), stdin);
+```
+
+Più sicura.
+
+---
+
+# Argomenti a linea di comando
+
+```c
+int main(int argc, char *argv[])
+```
+
+## Parametri
+
+* `argc` → numero argomenti
+* `argv` → array di stringhe
+
+---
+
+# Esempio
+
+```c
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
     int i;
+
     printf("argc=%d\n", argc);
-    
+
     for (i = 0; i < argc; i++) {
         printf("argv[%d] = %s\n", i, argv[i]);
     }
-    
-    /* argv[argc] is printed as an int (NULL pointer) */
-    printf("argv[%d] = %d\n", i, argv[i]);
+
+    return 0;
 }
 ```
 
+Esecuzione:
+
 ```bash
-./example a b c 
+./example a b c
+```
+
+Output:
+
+```text
 argc=4
 argv[0] = ./example
 argv[1] = a
 argv[2] = b
 argv[3] = c
-argv[4] = 0
 ```
+
+---
+
+# Esempio realistico: copia file
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+
+    FILE *src;
+    FILE *dst;
+
+    int ch;
+
+    if (argc != 3) {
+        fprintf(stderr,
+                "Usage: %s source target\n",
+                argv[0]);
+
+        exit(EXIT_FAILURE);
+    }
+
+    src = fopen(argv[1], "rb");
+
+    if (src == NULL) {
+        perror(argv[1]);
+        exit(EXIT_FAILURE);
+    }
+
+    dst = fopen(argv[2], "wb");
+
+    if (dst == NULL) {
+        perror(argv[2]);
+        fclose(src);
+        exit(EXIT_FAILURE);
+    }
+
+    while ((ch = fgetc(src)) != EOF) {
+        fputc(ch, dst);
+    }
+
+    fclose(src);
+    fclose(dst);
+
+    return EXIT_SUCCESS;
+}
+```
+
+---
+
+# Condivisione offset dopo fork()
+
+Nei sistemi Unix:
+
+```c
+fork();
+```
+
+padre e figlio condividono il file descriptor e quindi anche la posizione corrente del file.
+
+Questo comportamento è molto importante nella programmazione concorrente e nei sistemi operativi.
