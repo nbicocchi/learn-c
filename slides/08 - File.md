@@ -169,7 +169,7 @@ Funzioni tipiche:
 ```c
 fopen()
 fread()
-fprintf()
+fwrite()
 fclose()
 ```
 
@@ -392,14 +392,15 @@ int main(void) {
 
     if (fout == NULL) {
         perror("copy.mp3");
-        fclose(fin);
         exit(EXIT_FAILURE);
     }
+    
+    // do stuff here
 
     fclose(fin);
     fclose(fout);
 
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
 }
 ```
 
@@ -590,7 +591,7 @@ void rewind(FILE *stream);
 # fseek()
 
 ```c
-fseek(fp, 0, SEEK_SET);
+fseek(fp, 0L, SEEK_SET);
 ```
 
 ## whence

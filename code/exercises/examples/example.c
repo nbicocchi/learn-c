@@ -1,30 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+
 #define true 1
 #define false 0
+#include <stdio.h>
 
-int main(void) {
+int main(int argc, char *argv[]) {
     int i;
-    char *nomi[] = {
-        "Sara",
-        "Sebastiano",
-        "Paolo",
-        "Agostino",
-        "Elvira",
-        NULL
-};
-    char **p;
 
-    for (i = 0; i < 5; i++) {
-        printf("[%d] %s\n", i, nomi[i]);
+    printf("argc=%d\n", argc);
+
+    for (i = 0; i < argc; i++) {
+        printf("argv[%d] = %s\n", i, argv[i]);
     }
 
-    for (i = 0; i < 5; i++) {
-        printf("[%d] %s\n", i, *(nomi + i));
-    }
-
-    i = 0;
-    for (p = nomi; *p; p++) {
-        printf("[%d] %s\n", i++, *p);
-    }
+    return 0;
 }
