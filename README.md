@@ -55,7 +55,7 @@ Esercizi di implementazione: partire dalle consegne e confrontare successivament
 
 Analisi e piccola riprogettazione di codice C: uno scenario, una crocetta e una domanda aperta, con soluzioni richiudibili.
 
-* [20 esercizi con soluzioni](exercises/exercises-ai/README.md)
+* [Esercizi con soluzioni](exercises/exercises-ai/README.md)
 * [Prompt per generare altri esercizi](exercises/exercises-ai/PROMPT.md)
 
 Gli esercizi generati autonomamente con il prompt non sono automaticamente validati dal docente.
