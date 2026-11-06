@@ -71,13 +71,13 @@ void say_hi(void) {
 }
 
 int main() {
-    say_hi():
+    say_hi();
     return 0;
 }
 ```
 
 ## Tempo di vita delle variabili locali
-Le variabili che abbiamo utilizzato fin’ora sono *variabili locali*, visibili solo all’interno della funzione.
+Le variabili locali sono visibili nel blocco in cui sono dichiarate e nei suoi blocchi interni, salvo eventuali omonimie.
 
 La gestione della memoria delle variabili locali è *automatica*:
   * Le variabili vengono allocate al momento dell’invocazione della funzione
@@ -87,13 +87,13 @@ Ad ogni invocazione, le variabili della funzione non dipendono dalle esecuzioni 
 
 
 ## Variabili globali
-Il C supporta anche *variabili globali*, visibili sempre e da tutte le funzioni. *E' Preferibile limitare al massimo l'utilizzo di variabili globali (tutti possono scriverle!), oppure utilizzarle come costanti.*
+Il C supporta anche variabili dichiarate a livello di file, comunemente dette *globali*. La loro visibilità dipende dalle dichiarazioni e dal linkage. È preferibile limitarne l'uso e le modifiche condivise.
 
 ```c
 #include <stdio.h>
 
 int a;
-/* const int a; -> errore! */
+/* const int a; sarebbe valido, ma impedirebbe le assegnazioni successive. */
 
 void try_modification(void){
     a = 10;
@@ -107,7 +107,7 @@ int main(){
 ```
 
 ## Variabili locali static
-Una variabile locale è detta *static* se il suo tempo di vita corrisponde a quelllo del processo. E' possibile utilizzare variabili *static* per avere funzioni che mantengono uno stato fra diverse invocazioni.
+Una variabile locale dichiarata *static* ha durata pari all'intera esecuzione del programma. Permette di mantenere uno stato fra diverse invocazioni della funzione.
 
 ```c
 void counter() {
@@ -147,8 +147,8 @@ int main() {
 ![Passaggio di parametri per valore](./images/passaggio_valore.avif)
 
 
-## Passaggio per riferimento (copia del riferimento)
-Il passaggio per riferimento *implica il passaggio in copia di un puntatore alla variabile* e permette alla funzione chiamata di modificare il valore della variabile passata dal chiamante.
+## Passaggio tramite puntatori (copia dell'indirizzo)
+In C i parametri sono sempre passati per valore. Passare una copia dell'indirizzo di una variabile permette alla funzione di modificarne il contenuto tramite dereferenziazione.
 
 
 ```c
@@ -171,7 +171,7 @@ int main() {
 ## Passaggio di puntatori const
 Talvolta è necessario passare alla funzione variabili di grandi dimensioni (array, matrici). Per evitare la copia della variabile si usa un puntatore alla variabile. Tuttavia, questa possibilità si scontra con il fatto che, tramite il puntatore, la funzione può modificare i dati del chiamante. Questo può determinare che un errore di implementazione nella funzione propaghi esiti non voluti. 
 
-Il problema è risolvibile attraverso *puntatori definiti costanti*
+Si possono impedire modifiche attraverso questi parametri usando *puntatori a dati const*, distinti dai puntatori costanti.
 
 ```c
 void scambia(const int *a, const int *b) {
@@ -209,6 +209,7 @@ Ad esempio:
 ```c
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 int main(int argc, char *argv[]) {
     int a;
@@ -254,6 +255,9 @@ In molti casi, un approccio iterativo può essere più efficiente, evitando il r
 
 
 ### Ricorsione (fattoriale)
+
+Gli esempi assumono n non negativo e un fattoriale rappresentabile come int: l'overflow signed non ha un risultato garantito.
+
 ```c
 // implementazione fattoriale iterativa
 int fatt(int n) {
@@ -271,7 +275,7 @@ int fattr(int n) {
     if (n == 0) {
         return 1;
     }
-    return n * fatt_r(n - 1);
+    return n * fattr(n - 1);
 }
 ```
 
@@ -283,13 +287,13 @@ int fattr(int n) {
 
 // implementazione fibonacci iterativa
 unsigned int fibonacci(unsigned int n) {
-  int x = 0, y = 1, z = 0;
-  for (int i = 0; i < n - 1; i++) {
-    z = x + y;
+  unsigned int x = 0, y = 1;
+  for (unsigned int i = 0; i < n; i++) {
+    unsigned int z = x + y;
     x = y;
     y = z;
   }
-  return z;
+  return x;
 }
 
 // implementazione fibonacci ricorsiva
@@ -307,7 +311,7 @@ int main() {
 
   // iterative benchmark
   start = clock();
-  printf("iterative benchmark: %ud\n", fibonacci(n));
+   printf("iterative benchmark: %u\n", fibonacci(n));
   end = clock();
 
   duration = (double) (end - start) / CLOCKS_PER_SEC;
@@ -315,7 +319,7 @@ int main() {
 
   // recursive benchmark
   start = clock();
-  printf("recursive benchmark: %ud\n", fibonaccir(n));
+   printf("recursive benchmark: %u\n", fibonaccir(n));
   end = clock();
 
   duration = (double) (end - start) / CLOCKS_PER_SEC;

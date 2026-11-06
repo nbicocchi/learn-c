@@ -42,7 +42,7 @@ Thumbs.db
 
 # CMake
 cmake-build-*/
-
+/build/
 
 
 

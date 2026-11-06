@@ -73,6 +73,8 @@ add eax, ebx  ; somma EAX + EBX → risultato in EAX
 
 ## Memoria
 
+Schema semplificato di un processo su un sistema comune: il C non impone questa disposizione né che parametri e variabili locali siano sempre materializzati sullo stack; il compilatore può usare registri o eliminare oggetti non necessari.
+
 ```text
 +---------------------------+  <- Indirizzi alti
 | Stack                     |
@@ -163,7 +165,7 @@ frame2 --> frame1
 
 ## Heap – Memoria dinamica
 
-* L’heap è una **zona della RAM** dove il programmatore può allocare memoria **durante l’esecuzione del programma**.
+* L’heap è una zona dello **spazio di indirizzamento del processo** usata per allocare memoria **durante l’esecuzione del programma**.
 * A differenza dello **stack**, la memoria allocata nell’heap **non viene rimossa automaticamente** quando una funzione termina.
 * Viene utilizzata per:
 
@@ -193,9 +195,9 @@ int main() {
 }
 ```
 
-* `malloc` chiede alla RAM uno spazio di 5 interi
-* La CPU riceve un **indirizzo di partenza** nello heap e lo salva nel puntatore `array` nello stack
-* Accesso: `array[i]` → la CPU calcola l’indirizzo relativo all’inizio dell’heap e legge/scrive i valori
+* `malloc` richiede all'allocatore uno spazio sufficiente per 5 interi
+* L'indirizzo iniziale del **blocco allocato** viene salvato nel puntatore `array`
+* Accesso: `array[i]` → viene calcolato l'indirizzo relativo all'inizio del blocco, non all'inizio dell'intero heap
 * `free(array)` libera la memoria per riutilizzo futuro
 
 ---
@@ -217,7 +219,7 @@ Heap:
 +-------------------------+
 ```
 
-* Lo **stack** contiene il puntatore `array` (indirizzo iniziale dello heap)
+* Nel modello illustrato, lo **stack** contiene il puntatore `array` (indirizzo iniziale del blocco allocato)
 * Lo **heap** contiene i dati reali (array di 5 interi)
 * La CPU accede alla memoria **usando il puntatore nello stack** come base
 
@@ -268,12 +270,12 @@ Viene considerato un linguaggio di **basso livello**:
 * Linguaggi di **alto livello**: gestione automatica della memoria, oggetti, stream, stringhe, collections...). Esempi: Python, Java, Javascript, C#, Dart, Kotlin
 * Linguaggi di **basso livello**: gestione manuale della memoria e astrazioni semplici (tipi di dati, funzioni,
   strutture dati), parziale visibilità architetturale. Esempi: C, Rust
-* Linguaggi di **bassissimo livello**: programmi scritti specificamente per un tipo di architettura hardware. Esempi: assembly, VHDL
+* Linguaggi vicini all'hardware: assembly per descrivere istruzioni di una specifica architettura; VHDL è invece un linguaggio di descrizione dell'hardware, non un linguaggio per programmare la CPU.
 
 I linguaggi sono creature vive e vengono migliorati periodicamente. La possibilità di utilizzare certe funzionalità del C dipende strettamente dal supporto del compilatore:
 
-  * 1973: invenzione del linguaggio C da parte di Rennis Ritchie
-  * 1983: National Standard Institute (ANSI) inizia la definizione di ANSI C o C standard
+  * 1972: sviluppo del linguaggio C da parte di Dennis Ritchie
+  * 1983: l'American National Standards Institute (ANSI) avvia la standardizzazione del C
   * 1989: definizione dello standard [C89](https://en.wikipedia.org/wiki/ANSI_C#C89) 
   * 1999: definizione dello standard [C99](https://en.wikipedia.org/wiki/C99) 
   * 2011: definizione dello standard [C11](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
@@ -296,12 +298,12 @@ Il linguaggio è pensato per essere **efficiente**: lo sviluppatore ha il contro
 
 ## Ambito di utilizzo del C
 
-* Sistemi Operativi (e.g., kernel Windows/Linux/Mac/IoS/Android)
+* Sistemi operativi (ad es. componenti dei kernel di Windows, Linux, macOS, iOS e Android)
 * Sistemi embedded (e.g., Arduino)
 * Database (e.g., MySQL, MS SQL Server, and PostgreSQL)
 * Linguaggi di programmazione (e.g., Python)
-* Librerie e routine ad alte performance (e.g., numpy, webassembly)
-* Motori grafici 3D (e.g., Unreal Engine C++)
+* Librerie e routine ad alte prestazioni (ad es. componenti di NumPy e codice compilabile in WebAssembly)
+* Componenti di motori grafici 3D; Unreal Engine usa principalmente C++, linguaggio distinto dal C
 * Software per telecomunicazioni (e.g., openWrt)
 * Software di controllo per processi industriali (e.g., PLC)
 
@@ -341,6 +343,7 @@ Come regola generale, è preferibile un commento descrittivo all'inizio di ogni 
  */
 int sum(int a, int b) {
     // Questo è un commento singola-linea
+    return a + b;
 }
 ```
 
@@ -357,7 +360,7 @@ int sum(int a, int b) {
 ## Identificatori
 In C un identificatore è un nome che si riferisce a funzioni, variabili, etc. definiti nel codice. 
 
-* Non può essere una parola chive del linguaggio
+* Non può essere una parola chiave del linguaggio
 * Non può cominciare con un numero
 * Può contenere qualsiasi combinazione di:
   * lettere maiuscole e minuscole
@@ -403,4 +406,4 @@ sqrt(a * b - c) <= 10
 max = a > b ? a : b
 a % b
 ```
-Non esiste in C una reale delimitazione fra espressioni logiche e aritmetiche in quanto *0* è considerato equivalente al valore logico *falso*, mentre *1* è considerato equivalente al valore logico *vero*.
+Nelle condizioni, un valore scalare uguale a zero è interpretato come *falso*, un valore diverso da zero come *vero*. Gli operatori logici e di confronto producono un risultato intero pari a 0 oppure 1.

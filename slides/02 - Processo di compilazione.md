@@ -50,13 +50,13 @@ helloworld.c:2:1: warning: Unused "#include <stdlib.h>"
 ```
 
 ## makefile
-Per gestire la compilazione di un progetto C complesso si fa uso di tool ausiliari (e.g., make). Il comando make cerca all'intero della directory corrente un file di nome *makefile* o *Makefile*.
+Per gestire la compilazione di un progetto C complesso si fa uso di strumenti ausiliari (ad es. make). GNU make cerca nella directory corrente *GNUmakefile*, *makefile* o *Makefile*, in quest'ordine.
 
 *make* evita di eseguire operazioni inutili: il codice viene compilato solo se vengono rilevate modifiche ai sorgenti.
 
 ```make
 helloworld: helloworld.c
-    gcc -Wall -o helloworld helloworld.c
+	gcc -Wall -o helloworld helloworld.c
 ```
 
 *make* supporta l'utilizzo di variabili e simboli speciali:
@@ -69,17 +69,18 @@ helloworld: helloworld.c
 CC=gcc
 CFLAGS=-Wall -g
 
-clean:
-    rm -rf helloworld
-
 helloworld: helloworld.c
-    $(CC) $(CFALGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
+
+.PHONY: clean
+clean:
+	rm -f helloworld
 ```
 
 ## CMake
 Si tratta di un sistema automatico per generare il Makefile molto utile per aumentare la portabilità e la robustezza del processo di compilazione.
 
-CLion utilizza un sistema chiamato CMake (https://cmake.org/). Il file che gestisce i processi di compilazione è chiamato *CmakeLists.txt*. 
+CLion supporta CMake (https://cmake.org/). Il file che descrive il progetto e i target di compilazione è chiamato *CMakeLists.txt*.
 
 Esempio di *CMakeLists.txt*:
 
@@ -102,9 +103,9 @@ target_link_libraries(hello m)
 
 
 ## Preprocessore
-Non è un comando o programma aggiuntivo, ma solo un termine con cui si definisce questa fase del processo di compilazione. La si può immaginare come una procedura di manipolazione di testo: l’input è codice sorgente l’output è codice sorgente.
+Il preprocessore svolge una fase del processo di compilazione e può anche essere invocato separatamente. Lo si può immaginare come una procedura di manipolazione di testo: l'input è codice sorgente e l'output è codice sorgente preprocessato.
 
-Le direttive al preprocessore non esistono più nel codice sorgente che viene effettivamente compilato nè tantomento nel codice compilato. Si tratta di un meccanismo per manipolare il codice sorgente *prima della compilazione vera e propria*.
+Le direttive vengono elaborate prima della compilazione vera e propria e non diventano istruzioni del programma eseguibile.
 
 Per mostrare/salvare solo l’output del preprocessore si può usare:
 
@@ -254,10 +255,12 @@ Il preprocessore non può valutare il contenuto di variabili o di codice a runti
 Esempio: utilizzando define possiamo definire l'architettura di riferimento.
 
 ```c++
-#define ARCH amd64
+#define AMD64 1
+#define I386 2
+#define ARCH AMD64
 
 int main(void) {
-#if (ARCH==amd64)
+#if (ARCH == AMD64)
     printf("amd64\n");
 #else
     printf("i386\n");
@@ -417,16 +420,16 @@ CFLAGS=-Wall -g
 all: main
 
 main: main.o mymath.o
-    $(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 main.o: main.c mymath.h
-    $(CC) $(CFLAGS) -c main.c
+	$(CC) $(CFLAGS) -c main.c
 
 mymath.o: mymath.c mymath.h
-    $(CC) $(CFLAGS) -c mymath.c
+	$(CC) $(CFLAGS) -c mymath.c
 
 clean:
-    rm -f *.o main
+	rm -f *.o main
 ```
 
 **Spiegazione:**
@@ -453,4 +456,3 @@ add_executable(main main.c mymath.c)
 
 * CMake gestisce automaticamente le dipendenze e il linking
 * Basta specificare tutti i file sorgente con `add_executable`
-

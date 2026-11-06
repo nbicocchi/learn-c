@@ -11,6 +11,8 @@
 | `<<`     | Left Shift       | Shifts bits left (multiplies by 2ⁿ)     |
 | `>>`     | Right Shift      | Shifts bits right (divides by 2ⁿ)       |
 
+Le equivalenze aritmetiche richiedono le opportune condizioni: usare unsigned per le maschere, con ampiezza dello shift non negativa e minore della larghezza del tipo promosso. Gli shift sui signed negativi e l'overflow signed non seguono in generale queste semplici equivalenze. Le rappresentazioni a 8 bit sotto sono schemi illustrativi, non la dimensione garantita di int.
+
 
 ### Examples
 
@@ -63,14 +65,16 @@ a ^ (1 << 3)    10101010 ^ 00001000 = 10100010  (bit 3 flipped from 1 to 0)
 
 ## Puntatori a void
 La parola chiave *void* può essere usata per dichiarare dei puntatori che non puntano a nessun tipo di dato in particolare. 
-* È sempre consentito l'assegnamento di un puntatore a *void* a qualunque altro tipo di puntatore. 
-* Lo è pure l'assegnamento di qualunque puntatore a un puntatore a *void*
+* Un puntatore a un oggetto può essere convertito in void * e viceversa, preservando gli eventuali qualificatori const.
+* Questa garanzia non si estende ai puntatori a funzione; la conversione non rende automaticamente valido dereferenziare un oggetto con un tipo incompatibile.
 * L'assegnamento tra puntatori di tipi diversi da void causa messaggi di warning. 
   
 ```c
-void *ptr;
+int value = 0;
+float other = 0.0f;
+void *ptr = &value;
 int *i;
-float *f;
+float *f = &other;
 
 i = ptr;
 ptr = i;
@@ -163,7 +167,7 @@ Nota bene:
 
 
 
-È anche possibile **eseguire la differenza (ma non la somma!) tra puntatori** dello stesso tipo:
+È possibile **sottrarre due puntatori** a elementi dello stesso array, incluso il puntatore subito oltre l'ultimo elemento, se la differenza è rappresentabile in ptrdiff_t. Il solo fatto che abbiano lo stesso tipo non basta:
 * Il risultato della differenza fra puntatori è un numero intero che rappresenta **il numero di elementi** (non di bytes!) che separano i due puntatori
 * La dimensione di un singolo elemento è quella definita dal tipo di dato puntato
 
@@ -174,11 +178,11 @@ int main(void) {
     p = v;
     
     q = p + 2;
-    printf("%ld\n", q - p);     /* Output: 2 */
+    printf("%td\n", q - p);     /* Output: 2 */
     printf("%d %d\n", *p, *q);  /* Output: 0 2 */
 
     q = p + 4;
-    printf("%ld\n", q - p);     /* Output: 4 */
+    printf("%td\n", q - p);     /* Output: 4 */
     printf("%d %d\n", *p, *q);  /* Output: 0 4 */
 }
 ```
@@ -186,9 +190,9 @@ int main(void) {
 ## Puntatori e stringhe
 Vettori e puntatori sono concetti affini, ma esistono sottili differenze:
   * *sizeof* si comporta in modo diverso. Ritorna la dimensione dell'array o la dimensione del puntatore
-  * *&* si comporta in modo diverso. Ritorna l'indirizzo del primo elemento o l'indirizzo del puntatore
+  * *&array* è un puntatore all'intero array; *&puntatore* è l'indirizzo della variabile puntatore
   * I puntatori possono contenere indirizzi variabili nel corso dell'esecuzione, mentre i vettori rappresentano *indirizzi costanti* (non è possibile modificare l'indirizzo a un array!)
-  * Le stringhe memorizzate in un array possono essere modificate in ogni momento o accedendo ai singoli elementi oppure tramite apposite funzioni (e.g., *strcpy*). Le stringhe memorizzate attraverso puntatore sono invece memorizzate in aree di memoria in *sola lettura*
+  * Un array di caratteri modificabile può essere aggiornato nei suoi limiti. Un puntatore può riferirsi sia a memoria modificabile sia a un letterale stringa: modificare un letterale causa comportamento indefinito, non un errore runtime garantito.
 
   
 ```c++
@@ -197,12 +201,12 @@ int main(void) {
     char *s2 = "Hello World!";
 
     s1[0] = 'a';    /* OK */
-    s2[0] = 'a';    /* Errore a runtime */
+    s2[0] = 'a';    /* Comportamento indefinito: modifica di un letterale */
 
     s2 = s1;        /* OK */
     s1 = s2;        /* Errore in compilazione */
 
-    printf("%lu %lu\n", sizeof(s1), sizeof(s2));    /* Output: 13 8 */
+    printf("%zu %zu\n", sizeof(s1), sizeof(s2)); /* 13 e dimensione del puntatore */
 }
 ```
 
@@ -333,7 +337,7 @@ int main(void) {
 ## L'allocazione dinamica della memoria
 Il linguaggio C permette di effettuare l'allocazione di memoria anche durante l'esecuzione del programma, sulla base di opportune condizioni che possono verificarsi durante l'esecuzione.
 
-Questo tipo di allocazione di memoria è detta dinamica (*heap*), proprio perché avviene dinamicamente durante l'esecuzione. L'allocazione cosiddetta statica (*stack*) è quella che invece viene effettuata dal compilatore dopo la dichiarazione delle variabili.
+L'allocazione dinamica viene gestita esplicitamente tramite l'allocatore, tipicamente nell'heap. Va distinta sia dalla durata automatica delle variabili locali, tipicamente sullo stack, sia dalla durata statica delle variabili globali e static: stack e allocazione statica non sono sinonimi.
 
 ![](images/stack-heap.webp)
 
@@ -344,14 +348,14 @@ Il tempo di vita di porzioni di memoria allocate dinamicamente **non dipende** d
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
-free(void *ptr);
+void free(void *ptr);
 ```
 
 ```c++
 #include <string.h>
-void *memset(void *ptr, int c, size_t size)
+void *memset(void *ptr, int c, size_t size);
 void *memcpy(void *destination, const void *source, size_t size);
-void *memmove(void *destination, const void *source, size_t size)
+void *memmove(void *destination, const void *source, size_t size);
 ```
 
 ### malloc()
@@ -415,9 +419,9 @@ int main(void) {
 ```c++
 void *realloc(void *ptr, size_t size);
 ```
-*realloc* ridimensiona a *size* un blocco di memoria già allocato e puntato da *ptr*. Preserva il contenuto della memoria già allocata e non inizializza il blocco di memoria aggiuntivo.
+*realloc* ridimensiona a size un blocco già allocato: preserva i dati fino al minimo tra vecchia e nuova dimensione, mentre l'eventuale spazio aggiuntivo non è inizializzato.
 
-*In caso \*p sia un puntatore non allocato o su cui è già stata chiamata free(), il comportamento è non definito*
+ptr deve essere NULL oppure un puntatore ancora valido restituito dall'allocatore. Con dimensione positiva, un fallimento restituisce NULL senza liberare il vecchio blocco: usare un puntatore temporaneo per non perderlo.
 
 Nell'esempio seguente viene allocato dinamicamente (e inizializzato a 0) lo spazio necessario a contenere 10 interi. Successivamente, lo spazio allocato viene allargato per contenere 20 interi e la memoria aggiuntiva viene, a sua volta, inizializzata a 0.
 
@@ -426,15 +430,22 @@ int main(void) {
     int i, *p;
 
     p = calloc(10, sizeof(*p));
+    if (p == NULL) return 1;
     for (i = 0; i < 10; i++) {
         printf("%d\n", p[i]);
     }
 
     // inizializza a zero la nuova porzione allocata
-    p = realloc(p, 20 * sizeof(*p));
+    int *tmp = realloc(p, 20 * sizeof(*p));
+    if (tmp == NULL) {
+        free(p);
+        return 1;
+    }
+    p = tmp;
     for (i = 10; i < 20; i++) {
         p[i] = 0;
     }
+    free(p);
 }
 ```
 
@@ -442,7 +453,7 @@ int main(void) {
 
 ```c++
 void *memset(void *str, int c, size_t n);
-void *bzero(void *str, size_t n);
+void bzero(void *str, size_t n); // funzione storica non ISO C; usare memset
 ```
 
 *memset* e *bzero* scrivono all'interno di un'area contigua di memoria un valore preciso. 
@@ -468,11 +479,11 @@ bzero(p, 10 * sizeof(*p));
 void free(void *ptr);
 ```
 
-*free* libera il blocco di memoria di indirizzo precedentemente allocato tramite *malloc*, *calloc* o *realloc*. La memoria liberata dall'invocazione di *free* diventa disponibile per altre applicazioni
+*free* rilascia un blocco ancora valido ottenuto da malloc, calloc o realloc, rendendolo riutilizzabile dall'allocatore. Non garantisce l'immediata restituzione della memoria al sistema operativo. free(NULL) non ha effetto.
 
 La memoria allocata dinamicamente deve essere rilasciata quando non è più necessaria, per evitare di occupare inutilmente memoria. 
 
-> Con *memory leak* si intende il mancato utilizzo della funzione *free*. Come conseguenza, il sistema perde memoria disponibile.
+> Un *memory leak* è il mancato rilascio di memoria dinamica non più necessaria, ad esempio dopo aver perso l'ultimo puntatore che permetteva di raggiungerla.
 
 ```c++
 int *p;
@@ -496,11 +507,14 @@ char *strdup(const char *s);
 *strdup* (STRing DUPlicate) dichiarata in *string.h*, ritorna un puntatore a una nuova stringa che è un duplicato
   della stringa *s* passata come parametro.
 
+È una funzione POSIX, non ISO C99. In un ambiente POSIX si può renderne visibile la dichiarazione definendo `_POSIX_C_SOURCE 200809L` prima degli include.
+
 La funzione, al suo interno, alloca memoria per la nuova stringa con *malloc*. Quando la copia generata non viene più utilizzata, la memoria deve essere esplicitamente liberata con *free*.
 
 Il manuale di *strdup()* riporta testualmente: *The strdup() function returns a pointer to a new string which is a duplicate of the string s.  Memory for the new string is obtained with malloc(3), and can be freed with free(3).*
 
 ```c++
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -508,6 +522,7 @@ Il manuale di *strdup()* riporta testualmente: *The strdup() function returns a 
 int main(void) {
     char *str = "hello world!";
     char *str_copy = strdup(str);
+    if (str_copy == NULL) return 1;
 
     printf("%s %s\n", str, str_copy);
 
@@ -588,7 +603,7 @@ p2 = p1;
 ```
 
 ## Allocazione dinamica e matrici
-È possibile allocare dinamicamente matrici (array bi-dimensionali), utilizzando sia un singolo puntatore (type *matrix) che un puntatore a puntatore (type **matrix)
+È possibile rappresentare matrici dinamiche con un blocco lineare o con un array di puntatori a righe. Esistono anche puntatori ad array, che consentono indicizzazione matrix[i][j] su un blocco contiguo. Negli esempi seguenti si assumono dimensioni positive e prodotti delle dimensioni rappresentabili in size_t.
 * Il primo approccio (singolo puntatore) è semplice, immediato, ma impedisce uso di indicizzazione esplicita (matrix[i][j]) e necessita di calcolo manuale dell'offset (offset = i * cols + j)
 * Il secondo approccio (puntatore a puntatore) richiede un meccanismo più complesso per allocare e disallocare la memoria, ma consente l'uso di indicizzazione esplicita (matrix[i][j])
 
@@ -600,7 +615,7 @@ p2 = p1;
 int *allocate_matrix(unsigned rows, unsigned cols) {
     int *m;
 
-    m = malloc((unsigned long)(rows * cols) * sizeof(*m));
+    m = calloc((size_t)rows * cols, sizeof(*m));
     return m;
 }
 
@@ -625,7 +640,7 @@ int main(void) {
 
     m = allocate_matrix(3, 2);
     if (m == NULL) {
-        /* allocation error */
+        return 1;
     }
     
     show_matrix(3, 2, m);
@@ -644,8 +659,12 @@ int **allocate_matrix(unsigned rows, unsigned cols) {
     m = malloc((unsigned long)(rows) * sizeof(*m));
     if (m == NULL) return NULL;
     for (i = 0; i < rows; i++) {
-        m[i] = malloc((unsigned long)(cols) * sizeof(**m));
-        if (m[i] == NULL) return NULL;
+        m[i] = calloc(cols, sizeof(**m));
+        if (m[i] == NULL) {
+            while (i > 0) free(m[--i]);
+            free(m);
+            return NULL;
+        }
     }
     return m;
 }
@@ -672,7 +691,7 @@ int main(void) {
     int **m;
     m = allocate_matrix(3, 2);
     if (m == NULL) {
-        /* allocation error */
+        return 1;
     }
 
     show_matrix(3, 2, m);
@@ -696,14 +715,23 @@ struct matrix *allocate_matrix(size_t rows, size_t cols) {
     size_t i;
 
     m = malloc(sizeof(*m));
+    if (m == NULL) return NULL;
     m->rows = rows;
     m->cols = cols;
     m->data = malloc((unsigned long) (rows) * sizeof(*(m->data)));
-    if (m == NULL) return NULL;
+    if (m->data == NULL) {
+        free(m);
+        return NULL;
+    }
 
     for (i = 0; i < rows; i++) {
-        m->data[i] = malloc((unsigned long) (cols) * sizeof(**(m->data)));
-        if (m->data[i] == NULL) return NULL;
+        m->data[i] = calloc(cols, sizeof(**(m->data)));
+        if (m->data[i] == NULL) {
+            while (i > 0) free(m->data[--i]);
+            free(m->data);
+            free(m);
+            return NULL;
+        }
     }
 
     return m;
@@ -733,7 +761,7 @@ int main(void) {
 
     m = allocate_matrix(3, 2);
     if (m == NULL) {
-        /* allocation error */
+        return 1;
     }
 
     show_matrix(m);
@@ -743,7 +771,7 @@ int main(void) {
 ```
 
 ## Puntatori a funzione
-In C, così come il nome di un array è un puntatore al suo primo elemento, il nome di una funzione è un puntatore alla funzione stessa. Il C permette la manipolazione esplicita dei puntatori a funzione. 
+Nella maggior parte delle espressioni, il designatore di una funzione viene convertito in un puntatore a quella funzione. Come per la conversione di array a puntatore, ciò non rende identici i rispettivi tipi.
 
 Data la funzione *f()*: 
 
@@ -803,16 +831,25 @@ struct matrix *allocate_matrix(size_t rows, size_t cols) {
     size_t i;
 
     m = malloc(sizeof(*m));
+    if (m == NULL) return NULL;
     m->rows = rows;
     m->cols = cols;
     m->get_rows = get_rows_impl;
     m->get_cols = get_cols_impl;
     m->data = malloc((unsigned long) (rows) * sizeof(*(m->data)));
-    if (m == NULL) return NULL;
+    if (m->data == NULL) {
+        free(m);
+        return NULL;
+    }
 
     for (i = 0; i < rows; i++) {
-        m->data[i] = malloc((unsigned long) (cols) * sizeof(**(m->data)));
-        if (m->data[i] == NULL) return NULL;
+        m->data[i] = calloc(cols, sizeof(**(m->data)));
+        if (m->data[i] == NULL) {
+            while (i > 0) free(m->data[--i]);
+            free(m->data);
+            free(m);
+            return NULL;
+        }
     }
 
     return m;
@@ -842,10 +879,10 @@ int main(void) {
 
     m = allocate_matrix(3, 2);
     if (m == NULL) {
-        /* allocation error */
+        return 1;
     }
 
-    printf("Matrix 'm' has size [%d, %d]\n", m->get_rows(m), m->get_cols(m));
+    printf("Matrix 'm' has size [%zu, %zu]\n", m->get_rows(m), m->get_cols(m));
 
     show_matrix(m);
 

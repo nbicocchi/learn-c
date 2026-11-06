@@ -46,7 +46,7 @@ double d;
 ```
 
 ## Definizione di variabili
-Dopo la dichiarazione le variabili non hanno un valore predefinito. E' necessario eseguire un'operazione di *assegnamento* per definirne un valore. In questo modo la memoria allocata per la variabile viene anche riempita con un valore specifico.
+Una definizione riserva lo spazio per una variabile e può includere un'inizializzazione. Le variabili automatiche non inizializzate hanno un valore indeterminato; quelle con durata statica vengono inizializzate a zero.
 
 ```c++
 // numeri interi
@@ -68,9 +68,9 @@ Le sequenze che iniziano con un numero (non possono essere identificatori!) sono
   * esadecimali: cominciano con *0x* o *0X* e proseguono con altre cifre da 0 a 9 o con lettere (maiuscole o minuscole) da *A* a *F*
 
 ```c++
-int n1 = 127  // 1 * 10^2 + 2 * 10^1 + 7 * 10^0
-int n2 = 0177 // 1 * 8^2  + 7 * 8^1  + 7 * 8^0 
-int n3 = 0x7f // 7 * 16^1 + 15 * 16^0
+int n1 = 127;  // 1 * 10^2 + 2 * 10^1 + 7 * 10^0
+int n2 = 0177; // 1 * 8^2  + 7 * 8^1  + 7 * 8^0
+int n3 = 0x7f; // 7 * 16^1 + 15 * 16^0
 ```
 
 Ogni letterale può essere inoltre seguita un postfisso (L=long, U=unsigned, F=float)
@@ -81,10 +81,10 @@ Ogni letterale può essere inoltre seguita un postfisso (L=long, U=unsigned, F=f
 ## Variabili costanti (di sola lettura)
 È possibile specificare che la variabile in memoria potrà essere solo letta, ovvero che è una variabile *read-only*, tramite la parola riservata *const*. Questa variabile è identica alle altre (ha una locazione di memoria e un tipo), se non per il fatto che nessun comando successivo potrà modificarne il valore.
 
-*Attenzione!* Nel caso di variabili *const* dobbiamo definirne il valore nel momento della dichiarazione.
+È buona pratica inizializzare gli oggetti const nella loro definizione: non possono essere assegnati successivamente. Una dichiarazione extern può invece riferirsi a un oggetto const definito altrove.
 
 ```c++
-const <tipo> <nome-varibile> = <espressione> ;
+const <tipo> <nome-variabile> = <espressione> ;
 const double pi_greco = 3.1415926535897932384;
 ```
 
@@ -114,7 +114,7 @@ int main(){
 Esistono due tipi di numeri interi (a prescindere dalla dimensione)
 * **signed**: con segno (il termine signed è implicito nei tipi)  
   * intervallo = [-2^(bit-1) : +2^(bit-1)-1] 
-* **unsigned**: senza segno, ovvero solo numeri positivi 
+* **unsigned**: senza segno, ovvero numeri non negativi
   * intervallo = [0 : +2^(bit)-1]            
   
 | **Nome**  | **Dimensione Tipica** | **Descrizione** |
@@ -128,6 +128,8 @@ Esistono due tipi di numeri interi (a prescindere dalla dimensione)
 
 I numeri positivi sono rappresentati alla stesso modo sia nei tipi signed che unsigned. I numeri negativi utilizzano la notazione in complemento a 2 (-N viene rappresentato come 2^bit – N)
 
+La tabella e gli esempi binari assumono byte di 8 bit e rappresentazione in complemento a due, tipici delle piattaforme considerate. In C99 la signedness di char e la rappresentazione dei signed dipendono dall'implementazione; anche long può avere dimensione diversa da quella indicata.
+
 ![Complemento a 2](./images/rappresentazione_int.avif)
 
 ---
@@ -140,7 +142,7 @@ Esistono due convenzioni principali:
 * **Big-endian**: il byte più significativo (MSB) viene memorizzato all’indirizzo più basso
 * **Little-endian**: il byte meno significativo (LSB) viene memorizzato all’indirizzo più basso
 
-> Le architetture moderne (es. x86) sono **little-endian**
+> x86 e molte altre architetture diffuse sono **little-endian**, ma non è una proprietà universale delle architetture moderne.
 >
 > In rete (protocolli TCP/IP) si usa **big-endian** (detto anche *network byte order*)
 
@@ -195,7 +197,7 @@ Little-endian:
 **Negativo**
 
 ```c
-char x = -5;
+signed char x = -5; // nell'esempio: byte di 8 bit e complemento a due
 ```
 
 ```
@@ -261,24 +263,23 @@ Little-endian:
 ### Overflow
 
 ```c++
-// esempio di overflow 
-// char[-128, 127]
-// dovrebbe terminare non NON termina!
+// Overflow signed: comportamento indefinito, non wrap-around garantito.
+#include <limits.h>
 int main() {
-  char a;
-  for (a = 0; a < 200; a++) { }
+  int a = INT_MAX;
+  a = a + 1; // nessun risultato numerico è garantito
   return 0;
 }
 ```
 
 ### Underflow
 ```c++
-// esempio di underflow 
-// unsigned int[0, 4.294.967.295], int[-2.147.483.648, 2.147.483.647]
-// non dovrebbe terminare MA termina!
+// Aritmetica unsigned: sottrarre 1 a zero produce UINT_MAX.
+#include <stdio.h>
 int main() {
-    int a;
-    for (a = 9; a >= 0; a++) { }
+    unsigned int a = 0;
+    a = a - 1;
+    printf("%u\n", a);
     return 0;
 }
 ```
@@ -333,14 +334,14 @@ Per questo si usa la libreria `stdint.h` (C99 e successivi, disponibile anche ne
 
 I tipi `float` e `double` sono tipi a **virgola mobile** e servono a rappresentare numeri reali, cioè valori positivi e negativi con parte decimale, anche molto grandi o molto piccoli.
 
-La differenza principale tra i due riguarda il numero di bit utilizzati per la rappresentazione: il `double` usa più bit rispetto al `float`, e quindi permette un **range più ampio** e una **maggiore precisione**, cioè più cifre significative dopo la virgola.
+Nelle implementazioni comuni, double offre un intervallo più ampio e maggiore precisione di float. La precisione riguarda il numero complessivo di cifre significative, non un numero fisso di cifre dopo la virgola.
 
 
 | **Nome** | **Dimensione Tipica** | **Descrizione** |
 | -------- | -------------- | --------------- |
 | float | 4 byte | numero in virgola mobile 32 bit |
 | double | 8 byte | numero in virgola mobile 64 bit |
-| long double | 16 byte | numero in virgola mobile 128 bit |
+| long double | dipende dall'implementazione | può usare precisione estesa o coincidere con double; 16 byte di memoria non implicano IEEE binary128 |
 
 Lo standard **IEEE 754** è il formato più utilizzato per la rappresentazione dei numeri in virgola mobile nei computer.
 Un numero in virgola mobile secondo IEEE 754 è rappresentato dalla seguente formula:
@@ -378,7 +379,7 @@ Per IEEE 754 dobbiamo avere un numero normalizzato nella forma:
 - In binario, 55 = 110111 → spostiamo il punto binario 5 posizioni a sinistra:  
   `55.327 = 1.10111… * 2^5`
 
-- Esponente: E = 5 + 127 = 132 → binario: 10000100
+- Esponente effettivo: E = 5. Campo esponente memorizzato: E + bias = 5 + 127 = 132 → binario: 10000100
 
 > Ora dobbiamo ottenere i restanti 23 bit della mantissa dalla frazione.
 
@@ -388,8 +389,8 @@ Per IEEE 754 dobbiamo avere un numero normalizzato nella forma:
 
 Calcolo della frazione normalizzata:
 
-`55.327 / 2^5 ≈ 1.72959375`
-`1.72959375 - 1 = 0.72959375`
+`55.327 / 2^5 = 1.72896875`
+`1.72896875 - 1 = 0.72896875`
 
 > Questa è la frazione che diventerà la mantissa.
 
@@ -397,11 +398,11 @@ Calcolo della frazione normalizzata:
 
 **Calcolo della mantissa con una sola moltiplicazione**
 
-`mantissa_intera = int(0.72959375 * 2^23) ≈ 6118331`
+`mantissa_intera = round(0.72896875 * 2^23) = 6115033` (arrotondamento al più vicino)
 
 Convertito in binario a 23 bit:
 
-`mantissa = 1011101010011100101011`
+`mantissa = 10111010100111011011001`
 
 > Questi sono i 23 bit della mantissa da memorizzare.
 
@@ -411,7 +412,7 @@ Convertito in binario a 23 bit:
 
 | Segno | Esponente | Mantissa               |
 | ----- | --------- | ---------------------- |
-| 0     | 10000100  | 1011101010011100101011 |
+| 0     | 10000100  | 10111010100111011011001 |
 
 ---
 
@@ -427,7 +428,7 @@ Per altri esempi, vedi: https://www.h-schmidt.net/FloatConverter/IEEE754.html
 | 1000000.1     | 19            | 1.907348871231079  | 0.025               |
 | 123456789     | 26            | 1.8396495580673218 | 3.0                 |
 
-I limiti degli intervalli delle variabili intere sono disponibili nella forma di macro (*float.h*)
+I limiti dei tipi in virgola mobile sono disponibili come macro in *float.h*. I valori MIN elencati sono i minimi positivi normalizzati, non i valori negativi di modulo massimo.
   * FLT_MIN, FLT_MAX 
   * DBL_MIN, DBL_MAX
   * LDBL_MIN, LDBL_MAX
@@ -435,23 +436,23 @@ I limiti degli intervalli delle variabili intere sono disponibili nella forma di
 In ambito virgola mobile, non esistono tipi dalle dimensioni standard come nel caso dei numeri interi (e.g., int8_t, int16_t, int64_t)
   
 ## Operatore sizeof
-L'operatore *sizeof* si applica ad un tipo, ad un nome di variabile o ad un'espressione. Restituisce la dimensione in byte dell'oggetto indicato. Il calcolo viene effettuato durante la fase di compilazione in base al tipo di dato che viene passato.
+L'operatore *sizeof* si applica a un tipo o a un'espressione e restituisce la dimensione in byte. Il risultato è normalmente determinato in compilazione; per i tipi array a lunghezza variabile può richiedere una valutazione a runtime.
 
-*sizeof* ritorna una variabile di tipo *unsigned long*
+*sizeof* restituisce un valore di tipo *size_t*, da stampare con `%zu`.
 
 ```c++
-printf("char=%lu\n", sizeof(char));
-printf("short=%lu\n", sizeof(short));
-printf("int=%lu\n", sizeof(int));
-printf("long=%lu\n", sizeof(long));
-printf("longlong=%lu\n", sizeof(long long));
-printf("float=%lu\n", sizeof(float));
-printf("double=%lu\n", sizeof(double));
+printf("char=%zu\n", sizeof(char));
+printf("short=%zu\n", sizeof(short));
+printf("int=%zu\n", sizeof(int));
+printf("long=%zu\n", sizeof(long));
+printf("longlong=%zu\n", sizeof(long long));
+printf("float=%zu\n", sizeof(float));
+printf("double=%zu\n", sizeof(double));
 ```
 
 ## Casting implicito
 
-In C, il casting implicito (o type promotion) si verifica automaticamente quando un valore di un tipo di dati viene convertito in un altro tipo più "capiente" senza necessità di un cast esplicito da parte del programmatore. 
+Le conversioni implicite avvengono secondo le regole delle espressioni, degli assegnamenti e delle chiamate. Possono anche ridurre l'intervallo o la precisione rappresentabile; le promozioni intere sono soltanto un caso particolare di conversione.
 
 ```c++
 int main(void) {
@@ -473,7 +474,7 @@ int main(void) {
 
 ## Casting esplicito
 
-Il casting esplicito in C consente di convertire manualmente un valore da un tipo di dato a un altro, utilizzando la sintassi (<tipo>) <espressione>. Questo avviene per evitare la perdita di precisione o overflow e garantire la correttezza delle operazioni aritmetiche.
+Un cast richiede esplicitamente una conversione con la sintassi (<tipo>) <espressione>. Non garantisce l'assenza di perdita di precisione, overflow o comportamento indefinito: il valore deve essere rappresentabile secondo le regole della conversione.
 
 ```c++
 int main(void) {
@@ -502,13 +503,13 @@ int main(void) {
 
     d = DBL_MAX;
     u = (unsigned int)d;
-    printf("u=%u\n", u);  /* u=0 (comportamento indefinito) */
+    printf("u=%u\n", u);  /* comportamento indefinito: nessun valore garantito */
     printf("d=%lf\n", d); /* d=179769313486231570814527... */
 }
 ```
 
 ## Puntatori
-Un puntatore è una variabile che contiene un indirizzo di memoria. Dal momento che gli indirizzi di memoria sono interi positivi, in pratica un puntatore è un numero intero senza segno.
+Un puntatore è un valore di un tipo distinto dai tipi interi; può riferirsi a un oggetto o a una funzione, oppure essere nullo. La sua rappresentazione dipende dall'implementazione: non va identificato con un intero senza segno.
 
 Un puntatore non contiene il valore di una variabile tradizionale, ma l'indirizzo di una locazione di memoria in cui sono immagazzinati un numero congruo di bit per essere interpretati come il tipo indicato. 
 * L'operatore *&* (si legge *l'indirizzo di*) e consente di conoscere l'indirizzo di una variabile
@@ -519,13 +520,13 @@ int *p;
 int num = 42;
 
 /* p memorizza indirizzo di num */
-p = &num
+p = &num;
         
 /* p viene utilizzato per modificare il valore di num */
-*p = 3
+*p = 3;
 
 /* stampa il contenuto di p (indirizzo di num) */
-printf("p (indirizzo di num) = %p\n", p);
+printf("p (indirizzo di num) = %p\n", (void *)p);
 ```
 
 ![Puntatore](./images/puntatore.avif)
@@ -556,17 +557,17 @@ int main(){
 
 ## Puntatore nullo
 Il *puntatore nullo* vale zero e non è un puntatore valido; nelle funzioni che ritornano un puntatore è spesso ritornato come segnalazione di errore.
-La macro *NULL* vale 0, e 0 è confrontabile con un puntatore.
+NULL rappresenta una costante di puntatore nullo, ad esempio 0 oppure `(void *)0`; la rappresentazione interna non deve necessariamente essere composta da bit tutti zero.
 
 ```c++
-char *p;
+char *p = NULL;
 if (p != NULL) {
   /* istruzioni */
 }
 ```
 
 ```c++
-char *p;
+char *p = NULL;
 if (p) {
   /* istruzioni */
 }
@@ -613,12 +614,12 @@ int n[10] = {1, 5, 3};
 Un modo semplice per inizializzare a 0 tutti gli elementi di un array è:
 
 ```c++
-int n[10] = {};
+int n[10] = {0};
 ```
 
 
 ## Array in memoria
-Il nome di un array è un *puntatore costante (non può essere modificato!)* il cui valore corrisponde all'indirizzo del primo elemento del'array
+Un array non è un puntatore. Nella maggior parte delle espressioni il suo nome viene convertito in un puntatore al primo elemento; sizeof e l'operatore & sono importanti eccezioni.
 
 ```c++
 num == &num[0]
@@ -630,10 +631,10 @@ num == &num[0]
 
 ```c++
 int main() {
-    int n[16] = {};
+    int n[16] = {0};
 
-    printf("%p\n", n);
-    printf("%p\n", &n[0]);
+    printf("%p\n", (void *)n);
+    printf("%p\n", (void *)&n[0]);
     
     printf("%d\n", *n);
     printf("%d\n", n[0]);
@@ -766,7 +767,7 @@ for (i = 0; i < MAX; i++) {
 Una macro utile per essere utilizzata con gli array e che restituisce il numero di elementi:
 
 ```c++
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 ```
 Ad esempio:
 
@@ -777,15 +778,17 @@ int dim = ARRAY_SIZE(v);
 
 A *dim* viene  assegnato il valore 10. Si noti che il risultato non dipende dal tipo di dato.
 
+La macro va usata su un vero array, non su un puntatore o su un parametro di funzione dichiarato con notazione array.
+
 ## Array e puntatori
 Nella maggior parte dei casi, puntatori ed array possono essere utilizzati in modo intercambiabile. Esistono però alcune eccezioni:
 
 Operatore *sizeof*
   * *sizeof(array)* ritorna la quantità di memoria usata dall'array nel suo complesso
-  * *sizeof(puntatore)* ritorna la quantità di memoria usata dal puntatore stesso (8 byte)
+  * *sizeof(puntatore)* restituisce la dimensione del puntatore, dipendente dall'implementazione
 
 Operatore *&*
-  * *&array* è un alias di &array[0] e ritorna l'indirizzo del primo elemento dell'array
+  * *&array* è un puntatore all'intero array: ha un tipo diverso da &array[0], pur riferendosi allo stesso indirizzo iniziale
   * *&pointer* ritorna l'indirizzo del puntatore stesso
 
 ```c++
@@ -801,14 +804,14 @@ int main(void) {
     int v[16];
     int *v2 = v;
 
-    printf("%ld\n", sizeof(v));     /* 64 */
-    printf("%ld\n", sizeof(v2));    /* 8 */
+    printf("%zu\n", sizeof(v));     /* 64 se sizeof(int) == 4 */
+    printf("%zu\n", sizeof(v2));    /* 8 su molte piattaforme a 64 bit */
     
-    printf("%p\n", v);              /* 0x7ffee0d7c8a0 */
-    printf("%p\n", &v);             /* 0x7ffee0d7c8a0 */
-    printf("%p\n", &v[0]);          /* 0x7ffee0d7c8a0 */
+    printf("%p\n", (void *)v);
+    printf("%p\n", (void *)&v);
+    printf("%p\n", (void *)&v[0]);
     
-    printf("%p\n", &v2);            /* 0x7ffee0d7c898 */
+    printf("%p\n", (void *)&v2);
 }
 ```
 
@@ -877,9 +880,9 @@ int main() {
     char str3[4] = "str3";
 
     // output: 5 128 4
-    printf("%d %d %d\n", sizeof(str1), sizeof(str2), sizeof(str3));
+    printf("%zu %zu %zu\n", sizeof(str1), sizeof(str2), sizeof(str3));
     
-    // output: str1 str2 str3randomstuff
+    // Comportamento indefinito: str3 non contiene il terminatore nullo.
     printf("%s %s %s\n", str1, str2, str3);
 
     /* replaces char '3' with standard termination (0) */
@@ -896,16 +899,16 @@ char *s = "a"; // puntatore alla stringa costante "a"
 char v[] = "a"; // array di 2 caratteri inizializzato a {'a', '\0'}
 
 // Output: 1 8 2
-printf("%d %d %d\n", sizeof(c), sizeof(s), sizeof(v));
+printf("%zu %zu %zu\n", sizeof(c), sizeof(s), sizeof(v));
 ```
 
 Caratteri e stringhe sono diversi e non vanno confusi:
 * un carattere è in realtà un numero intero (usato per rappresentare un carattere secondo il codice ASCII)
-* una stringa è un array di caratteri che termina con un byte aggiuntivo di valore 0 (da non confondere con lo '0' carattere che ha invece valore 48). Detto in altro modo: una variabile di tipo stringa è un puntatore al primo carattere di un array di caratteri
+* una stringa C è una sequenza di caratteri terminata da un byte di valore 0, distinto da '0' (48 in ASCII). Un array può contenerla e un puntatore può riferirsi al suo primo carattere, ma array e puntatore restano tipi diversi.
 
 ```c++
 // stampa carattere per carattere la stringa "Hello world"
-// mostrando sia la rapppresentazione del carattere che il valore numerico
+// mostrando sia la rappresentazione del carattere che il valore numerico
 int main(void) {
   char str[] = "Hello World";
   for (int i = 0; i < strlen(str) + 1; i++) {
@@ -944,7 +947,7 @@ int main() {
     unsigned long lu = 1;
     unsigned long long llu = 1;
     
-    printf("%cu\n", cu);
+    printf("%c\n", cu);
     printf("%u\n", u);
     printf("%lu\n", lu);
     printf("%llu\n", llu);
@@ -1004,7 +1007,7 @@ printf("%s\n", settimana[0]); /* Output: lunedi */
 
 ![Puntatore a puntatore a carattere](./images/puntatore_puntatore_char.avif)
 
-Nell'esempio seguente un array di puntatori a carattere è utilizzato per costruire un indice per un gruppo di strighe memorizzate di un array di caratteri separato.
+Nell'esempio seguente un array di puntatori a carattere è utilizzato per costruire un indice per un gruppo di stringhe memorizzate in un array di caratteri separato.
 
 ```c++
 #include <stdio.h>
@@ -1013,7 +1016,7 @@ Nell'esempio seguente un array di puntatori a carattere è utilizzato per costru
 int main() {
   int n;
   printf("How many strings ? ");
-  scanf("%d", &n);
+  if (scanf("%d", &n) != 1 || n <= 0 || n > 100) return 1;
 
   char *strings[n];
   char content[n][128];
@@ -1021,7 +1024,7 @@ int main() {
   // fill char array with actual strings
   for (int i = 0; i < n; i++) {
     printf("Enter string %d: ", i + 1);
-    scanf("%s", content[i]);
+    if (scanf("%127s", content[i]) != 1) return 1;
   }
 
   // build index with pointers
@@ -1239,7 +1242,7 @@ int main() {
 **strcasecmp (Confronta due stringhe, case-insensitive)**
 ```c
 #include <stdio.h>
-#include <string.h>
+#include <strings.h> // POSIX, non ISO C
 
 int main() {
     char str1[] = "Hello";
@@ -1279,7 +1282,11 @@ int main() {
 ```
 
 **strdup (Duplica una stringa, allocando memoria dinamicamente)**
+
+Questa funzione è POSIX e non fa parte della libreria ISO C99 usata dal corso. Nell'esempio si richiede un ambiente POSIX; la macro di funzionalità precede tutti gli include.
+
 ```c
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1287,6 +1294,7 @@ int main() {
 int main() {
     char str[] = "Memory duplication";
     char *copy = strdup(str);
+    if (copy == NULL) return 1;
     printf("strdup: %s\n", copy);
     free(copy);  // Importante liberare la memoria allocata
     return 0;
@@ -1343,7 +1351,7 @@ int main () {
    srand((unsigned) time(NULL));
    for(i = 0; i < 5; i++) {
       printf("%d\n", rand() % 50);              /* int numbers [0, 49] */
-      printf("%lf\n", rand()/(double)RAND_MAX); /* double numbers [0, 1]
+      printf("%lf\n", rand()/(double)RAND_MAX); /* double numbers [0, 1] */
    }
 }
 ```

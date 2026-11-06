@@ -29,13 +29,13 @@ File binario:
 Un file di testo è un caso particolare di file binario che utilizza principalmente caratteri ASCII stampabili e caratteri di controllo (`\n`, `\t`, ecc.).
 
 ```c
-/* Prints the full ASCII table */
+/* Prints the ASCII codes from 0 to 127 */
 #include <stdio.h>
 
 int main(void) {
     int i;
 
-    for (i = 0; i < 255; i++) {
+    for (i = 0; i < 128; i++) {
         printf("[%3d] -> %c\n", i, i);
     }
 
@@ -195,7 +195,7 @@ close()
 | FILE *         | File descriptor  |
 | -------------- | ---------------- |
 | Libreria stdio | Kernel           |
-| Bufferizzato   | Non bufferizzato |
+| Buffering stdio configurabile | Nessun buffer stdio; può esserci caching nel kernel |
 | Alto livello   | Basso livello    |
 | fopen()        | open()           |
 | fread()        | read()           |
@@ -326,7 +326,7 @@ Restituisce:
 int fflush(FILE *fp);
 ```
 
-Forza la scrittura dei dati buffered sul dispositivo fisico.
+Trasferisce i dati nel buffer di output della libreria all'ambiente di esecuzione, tipicamente al kernel. Non garantisce la persistenza sul dispositivo fisico.
 
 ```c
 printf("Hello");
@@ -456,7 +456,7 @@ int copy_file(FILE *src, FILE *dst) {
 
     } while (nread > 0);
 
-    return 1;
+    return !ferror(src);
 }
 ```
 
@@ -477,10 +477,11 @@ int main(void) {
     Student s = {1, "Alice"};
 
     fp = fopen("students.bin", "wb");
+    if (fp == NULL) return 1;
 
-    fwrite(&s, sizeof(Student), 1, fp);
-
-    fclose(fp);
+    size_t written = fwrite(&s, sizeof(Student), 1, fp);
+    int closed = fclose(fp);
+    if (written != 1 || closed == EOF) return 1;
 
     return 0;
 }
@@ -552,7 +553,7 @@ Restituisce valore diverso da zero se è stato raggiunto EOF.
 
 ## Attenzione
 
-`feof()` diventa vero solo DOPO un tentativo di lettura fallito.
+`feof()` verifica l'indicatore di fine file, impostato quando una lettura incontra la fine del file. Non predice la lettura successiva e non distingue da solo tutti gli errori: per quelli si usa ferror().
 
 ## Pattern scorretto
 
@@ -626,6 +627,8 @@ Equivalente a:
 fseek(fp, 0L, SEEK_SET);
 ```
 
+Quanto al posizionamento; rewind azzera anche l'indicatore di errore dello stream, mentre fseek non lo fa.
+
 ---
 
 # Esempio: dimensione file
@@ -646,6 +649,8 @@ fclose(fp);
 
 # Esempio: lettura al contrario
 
+Il seguente esempio legge i byte in ordine inverso, non i caratteri Unicode. Richiede un file regolare posizionabile, aperto in modalità binaria, e il controllo degli esiti di fseek e ftell in codice di produzione.
+
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -656,7 +661,7 @@ int main(void) {
     long i;
     long size;
 
-    fp = fopen("test.txt", "r");
+    fp = fopen("test.txt", "rb");
 
     if (fp == NULL) {
         perror("fopen");
@@ -851,11 +856,17 @@ int main(int argc, char *argv[]) {
     }
 
     while ((ch = fgetc(src)) != EOF) {
-        fputc(ch, dst);
+        if (fputc(ch, dst) == EOF) {
+            fclose(src);
+            fclose(dst);
+            return EXIT_FAILURE;
+        }
     }
 
-    fclose(src);
-    fclose(dst);
+    int failed = ferror(src);
+    int src_close = fclose(src);
+    int dst_close = fclose(dst);
+    if (failed || src_close == EOF || dst_close == EOF) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
@@ -871,6 +882,6 @@ Nei sistemi Unix:
 fork();
 ```
 
-padre e figlio condividono il file descriptor e quindi anche la posizione corrente del file.
+Padre e figlio hanno tabelle dei descrittori distinte, ma i descrittori ereditati fanno riferimento alla stessa open file description nel kernel e ne condividono l'offset. Gli eventuali buffer stdio, invece, vengono copiati nello spazio utente.
 
 Questo comportamento è molto importante nella programmazione concorrente e nei sistemi operativi.

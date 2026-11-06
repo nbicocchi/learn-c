@@ -183,7 +183,7 @@ Per far riferimento ai valori memorizzati nei singoli campi di una struttura si 
 ```c++
 <nome variabile>.<nome campo>
 pt.x = 5;
-pt.y = -7
+pt.y = -7;
 ```
 
 Le strutture si possono anche assegnare direttamente (i valori vengono **copiati** fra le due aree di memoria come nel caso delle normali variabili).
@@ -247,7 +247,7 @@ struct info {
     char *nome;
     int valore;
     int privato;
-}
+};
 
 struct info el1 = {3, "aldo", 45};
 struct info el2 = {id: 3, nome: "aldo", valore: 45};
@@ -266,7 +266,7 @@ Tutti i campi non specificati (e.g., privato) vengono impostati a 0
 ### Strutture come parametri di funzioni
 Il passaggio dei parametri per valore richiede l'allocazione di una copia locale delle variabili dichiarate nella lista dei parametri. Questo comporta la copia esplicita di una porzione di memoria dalla variabile utilizzata per la chiamata alla variabile locale della funzione (proporzionale alla dimensione della variabile).
 
-*Il passaggio per riferimento elimina il tempo necessario per effettuare la copia*. Viene copiato soltanto l'indirizzo della variabile che ha dimensione limitata e fissa (64bit).
+Passare un puntatore evita la copia dell'intera struttura: si copia il valore del puntatore. La dimensione del puntatore dipende dall'implementazione e il vantaggio prestazionale dipende dal contesto.
 
 
 ```c++
@@ -291,14 +291,13 @@ int main(void) {
 ```
 
 ```c++
-```c++
 // copia del riferimento
 double distanza(struct punto *p1, struct punto *p2) {
     return hypot((*p1).x - (*p2).x, (*p1).y - (*p2).y);
 }
 
-// copia del riferimento
-double distanza(struct punto *p1, struct punto *p2) {
+// Forma equivalente (alternativa alla funzione precedente):
+double distanza_freccia(struct punto *p1, struct punto *p2) {
     return hypot(p1->x - p2->x, p1->y - p2->y);
 }
 
@@ -321,7 +320,7 @@ struct data {
 };
 
 /**
- * Confronta 2 date, ritorna 0 se sono uguali.
+ * Confronta 2 date, ritorna 1 se sono uguali, 0 altrimenti.
  */
 int datecmp(const struct data *d1, const struct data *d2) {
     return (d1->a == d2->a) &&
@@ -382,7 +381,7 @@ typedef tipo nuovo-tipo;
 ```
 
 #### time_t
-In UNIX, per tenere traccia del trascorrere del tempo in unità discrete si usa la seguente definizione:
+time_t è un tipo definito dagli header standard per rappresentare il tempo. Una possibile definizione implementativa è:
 
 ```c
 typedef long time_t;
@@ -390,7 +389,7 @@ typedef long time_t;
 
 Questo permette di individuare facilmente nel programma le variabili che sono collegate alla gestione del tempo. Esse sono dichiarate di tipo *time_t*, distinguendole da generiche variabili di tipo long utilizzate per altri scopi
 
-Il fatto di affermare che le variabili sono *dichiarate di tipo time_t è improprio*. L'assegnazione del nome time_t al tipo long non crea un nuovo tipo di dato. *Dal punto di vista semantico una variabile dichiarata di tipo long è perfettamente equivalente a una di tipo time_t*
+Un typedef introduce un alias, non un tipo distinto. Nell'implementazione ipotizzata time_t è un alias di long, ma il codice portabile non deve presumere che sia sempre così.
 
 #### cerchio_t
 È anche possibile assegnare un nome sintetico a tipi complessi. Dopo l'utilizzo di **typedef**, si possono definire e utilizzare variabili di tipo cerchio_t.
@@ -418,7 +417,7 @@ Le enumerazioni sono usate per definire degli insiemi omogenei di costanti inter
 
 A ciascuna costante viene associato un nome univoco. Una variabile di tipo enum può essere usata in tutti i contesti nei quali è possibile usare variabili intere (l'indicizzazione di vettori, espressioni).
 
-Le enumerazioni rappresentano una alternativa alle macro del preprocessore per la definizione di costanti. Hanno il vantaggio che i valori numerici vengono assegnati automaticamente dal compilatore. Al contrario delle macro, si tratta di tipi veri e propri su cui vengono fatti tutti i controlli di coerenza d'uso
+Le enumerazioni sono un'alternativa alle macro per definire costanti correlate e un tipo enumerato. I valori possono essere assegnati automaticamente; il C consente comunque conversioni con tipi interi, quindi non garantisce che una variabile enum contenga soltanto i valori elencati.
 
 La sintassi è la seguente:
 

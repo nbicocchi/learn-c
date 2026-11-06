@@ -44,7 +44,7 @@ if (espressione1) {
 * Operatori di confronto: < , > , == , != , >= , <=
 * Operatori logici: AND (&&), OR (||), NOT (!)
 
-Le condizioni valutate dal costrutto *if* sono valori *interi* interpretati come *valori di verità* (convenzionalmente, 0 == falso, 1 == vero). Il tipo *bool* è stato introdotto a partire dallo standard C99.
+Il costrutto *if* accetta espressioni di tipo scalare: zero significa falso, un valore diverso da zero significa vero. In C99, il tipo booleano è `_Bool`; includendo `<stdbool.h>` si può usare il nome `bool`.
 
 Alcuni esempi di seguito:
 
@@ -97,14 +97,13 @@ int main() {
 int main() {
     int a = 5, b = -2;
     if ((a > 0) && (b > 0)) {
-            printf("a>0, b>0\n");
-        }
+        printf("a>0, b>0\n");
     }
 }
 ```
 
 ## Operatore \?
-L' operatore *?* (*ternary condition*) e' la forma piu' efficente per esprimere semplici costrutti if. 
+L'operatore condizionale *?:* permette di scegliere fra due espressioni in forma compatta; non garantisce maggiore efficienza rispetto a un if equivalente.
 
 ```c++
 espressione1 ? espressione2 : espressione3
@@ -114,9 +113,9 @@ che equivale a:
 
 ```c++
 if (espressione1) {
-  espressione2
+  espressione2;
 } else { 
-  espressione3
+  espressione3;
 }
 ```
 
@@ -139,9 +138,9 @@ if (a > b) {
 
 
 ## Costrutto switch-case
-Lo switch case consente di implementare decisioni multiple e si basa sul confronto tra il risultato di un’espressione e un insieme di valori costanti. L'espressione deve essere di tipo *int* o *char*.
+Lo switch consente di implementare decisioni multiple confrontando il risultato di un'espressione di tipo intero, incluse le enumerazioni, con valori costanti interi.
 
-Il costrutto è composto da una espressione di controllo e da diversi blocchi di istruzione *case*, ognuno dei quali è associato a un particolare valore dell'espressione di controllo iniziale. Ogni blocco di istruzioni termine con l'istruzione *break*. L'ultimo blocco di istruzioni è detto *default* e' facoltativo e raggruppa tutti gli altri casi.
+Il costrutto comprende un'espressione di controllo e diverse etichette *case*. L'istruzione *break*, se presente, termina lo switch; in sua assenza l'esecuzione prosegue nelle istruzioni successive (*fall-through*). L'etichetta *default* è facoltativa, gestisce i valori non elencati e non deve necessariamente essere l'ultima.
 
 ```c++
 switch (espressione) { 
@@ -208,7 +207,7 @@ while (i < 10) {
 ```
 
 ## Costrutto do-while
-Il costrutto *do-while* è un costrutto post-condizionale dove prima sono eseguite le istruzioni che formano il blocco dell’iterazione e successivamente è verificata la la condizione. Se la condizione è vera allora si ripete il ciclo, altrimenti si passa all’istruzione successiva.
+Il costrutto *do-while* è post-condizionale: prima esegue il blocco dell'iterazione e successivamente verifica la condizione. Se è vera ripete il ciclo, altrimenti passa all'istruzione successiva.
 
 Il costrutto *do-while* può servire in tutti i casi in cui la prima iterazione deve essere eseguita a prescindere dal successo dell’istruzione di controllo.
 
@@ -269,7 +268,7 @@ for (int i = 0; i < 5; i++) {
 ```
 
 ## Istruzione continue
-L'istruzione *continue* interrompe l'**iterazione corrente** tornando all'espressione di controllo per iniziare l'interazione successiva. **Il ciclo non viene interrotto**.
+L'istruzione *continue* interrompe l'**iterazione corrente**, non il ciclo. Nei cicli while e do-while passa alla condizione; nel for esegue prima l'espressione di aggiornamento e poi verifica la condizione.
 
 Ad esempio:
 
@@ -323,7 +322,5 @@ end:
     return 0;
 }
 ```
-
-
 
 
