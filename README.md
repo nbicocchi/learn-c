@@ -39,7 +39,7 @@ Materiale didattico, esempi ed esercizi per lo studio del linguaggio C.
 ## Exercises
 
 <details>
-<summary>Esercizi senza AI e allenamento con AI</summary>
+<summary>Esercizi e materiale aggiuntivo</summary>
 
 ### Senza AI
 
